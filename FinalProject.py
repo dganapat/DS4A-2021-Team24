@@ -84,8 +84,8 @@ elif section == "Datasets":
         dict(Variable='Birth Data', Source="CDC", URL="https://wonder.cdc.gov/Natality.html", Details="Births occurring within the US to US residents, with county of residence. Derived from birth certificates issued in (1995-2019)"),
         dict(Variable='Natural Disasters', Source="FEMA", URL="https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2", Details="Natural disasters by date, type of incident, programs declared, and county going back to 1950s"),
         dict(Variable='AQI', Source="EPA", URL="https://aqs.epa.gov/aqsweb/airdata/download_files.html#Annual" , Details="Natural disasters by date, type of incident, programs declared, and county going back to 1950s"),
-        dict(Variable='Employment', Source="BEA", URL="https://drive.google.com/drive/folders/1Tx8qoPBaEFBte7kSy5K8MU7Ktxzfeh4p?usp=sharing" , Details="Employment (total number of full time and part time jobs) by County from 1969-2019"),
-        dict(Variable='Income', Source="BEA", URL="https://drive.google.com/drive/folders/1QXPGKwCpgaW4pRX5RUxpgU7vxkFNeE7L?usp=sharing" , Details="Personal Income and Population by County from 1969-2019"),
+        dict(Variable='Employment', Source="BEA", URL="https://apps.bea.gov/iTable/iTable.cfm?reqid=70&step=1&acrdn=6" , Details="Employment (total number of full time and part time jobs) by County from 1969-2019"),
+        dict(Variable='Income', Source="BEA", URL="https://apps.bea.gov/iTable/iTable.cfm?reqid=70&step=1&acrdn=6" , Details="Personal Income and Population by County from 1969-2019"),
         dict(Variable='HPI', Source="FHFA", URL="https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_AT_BDL_county.xlsx" ,Details="Housing Price Index by County from 1986 to 2020, with both 1990 and 2000 base"),
         dict(Variable='FMR', Source="HUD", URL="https://www.huduser.gov/portal/dataset/fmr-api.html" , Details="Fair Market Rent (40th Percentile) by County from 2000-2022")]
 
