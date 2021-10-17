@@ -12,23 +12,31 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
     counties = json.load(response)
 import plotly.express as px
 import plotly.figure_factory as pff
-plt.style.use('../EDA/mplstyles/DGplots.mplstyle')
+plt.style.use('plotstyles/DGplots.mplstyle')
 
 ##### DATA IMPORTING SECTION #####
 # Import all relevant datasets in this section so they'll be accessible in all sections
-lowNet = pd.read_csv('../Datasets/Cleaned Data/smallestNetOutflows.csv')
-highNet = pd.read_csv('../Datasets/Cleaned Data/largestNetOutflows.csv')
-lowNet = lowNet.rename(columns={'Unnamed: 0':'FIPS'})
-highNet = highNet.rename(columns={'Unnamed: 0':'FIPS'})
-lowNet['FIPS'] = ["%05d" % elem for elem in lowNet['FIPS']]
-highNet['FIPS'] = ["%05d" % elem for elem in highNet['FIPS']]
-popmig = pd.read_csv('../Datasets/Cleaned Data/population_migration.csv')
-popmig['FIPS'] = ["%05d" % elem for elem in popmig['FIPS']]
-popmig['dest_FIPS'] = ["%05d" % elem for elem in popmig['dest_FIPS']]
-aqis = pd.read_csv('../Datasets/Cleaned Data/AQI_by_County.csv')
-aqis['FIPS'] = ["%05d" % elem for elem in aqis['FIPS']]
-lowFIPS = lowNet['FIPS'].to_list()
-highFIPS = highNet['FIPS'].to_list()
+
+@st.cache
+def import_data():
+    lowNet = pd.read_csv('Datasets/smallestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
+    highNet = pd.read_csv('Datasets/largestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
+    lowNet['FIPS'] = ["%05d" % elem for elem in lowNet['FIPS']]
+    highNet['FIPS'] = ["%05d" % elem for elem in highNet['FIPS']]
+    lowFIPS = lowNet['FIPS'].to_list()
+    highFIPS = highNet['FIPS'].to_list()
+
+    popmig = pd.read_csv('Datasets/population_migration.csv')
+    popmig['FIPS'] = ["%05d" % elem for elem in popmig['FIPS']]
+    popmig['dest_FIPS'] = ["%05d" % elem for elem in popmig['dest_FIPS']]
+
+    aqis = pd.read_csv('Datasets/AQI_by_County.csv')
+    aqis['FIPS'] = ["%05d" % elem for elem in aqis['FIPS']]
+
+    return lowFIPS,highFIPS,popmig,aqis
+
+lowFIPS,highFIPS,popmig,aqis = import_data()
+
 
 ##### END DATA IMPORTING SECTION #####
 
@@ -38,8 +46,7 @@ st.markdown(''' # Landscape of the New America: How the US population will be re
 st.markdown(''' ## Team 24 ''')
 st.markdown('''Danah Park | Devi Ganapathi | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana | Liz Peterson | Noemi Valdez ''')
 
-section = st.sidebar.selectbox("Outline",("Project Description","Exploratory Data Analysis",
-"Model Building","Results","Conclusions"))
+section = st.sidebar.selectbox("Outline",("Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions"))
 
 if section == "Project Description":
     st.markdown(''' 
@@ -64,14 +71,66 @@ if section == "Project Description":
     - Real estate: Being aware of where population hubs will be growing could help inform future housing supply, housing cost & even possibly if certain areas seen as rural right now will transition to more urban in the near future.
     - Education: As our population in the US now tends to have children at an older age, some questions educators would want to know are: what will birth rates look like in the future? What areas will need more schools or teachers? What areas will have less children and might not need extra funding? 
     - Business: Finding out what, where & how demographics have shifted in the US, will help marketers scope out audiences, refine product targeting & plan out advertising buys in the future. In parallel being able to see where the younger populations will inhabit will also help companies make choices on where to open offices to boost hiring. 
-    
-    ## Data Analysis & Computation
 
     ''')
 
-    st.markdown(' ### AQI ')
+elif section == "Datasets":
+
+    # Make table with all data sources - cached
+    @st.cache()
+    def make_dataset_table():
+        datasets = [dict(Variable='Population Migration', Source="IRS", URL="https://www.irs.gov/statistics/soi-tax-stats-migration-data", Details="Migration data (inflows and outflows) by county, estimated annually (1991-2019)"),
+        dict(Variable='Population', Source="US Census", URL="https://www2.census.gov/programs-surveys/popest/datasets/", Details="Population data by county, broken down by age, race and gender, estimated annually (1970-2020)"),
+        dict(Variable='Birth Data', Source="CDC", URL="https://wonder.cdc.gov/Natality.html", Details="Births occurring within the US to US residents, with county of residence. Derived from birth certificates issued in (1995-2019)"),
+        dict(Variable='Natural Disasters', Source="FEMA", URL="https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2", Details="Natural disasters by date, type of incident, programs declared, and county going back to 1950s"),
+        dict(Variable='AQI', Source="EPA", URL="https://aqs.epa.gov/aqsweb/airdata/download_files.html#Annual" , Details="Natural disasters by date, type of incident, programs declared, and county going back to 1950s"),
+        dict(Variable='Employment', Source="BEA", URL="https://drive.google.com/drive/folders/1Tx8qoPBaEFBte7kSy5K8MU7Ktxzfeh4p?usp=sharing" , Details="Employment (total number of full time and part time jobs) by County from 1969-2019"),
+        dict(Variable='Income', Source="BEA", URL="https://drive.google.com/drive/folders/1QXPGKwCpgaW4pRX5RUxpgU7vxkFNeE7L?usp=sharing" , Details="Personal Income and Population by County from 1969-2019"),
+        dict(Variable='HPI', Source="FHFA", URL="https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_AT_BDL_county.xlsx" ,Details="Housing Price Index by County from 1986 to 2020, with both 1990 and 2000 base"),
+        dict(Variable='FMR', Source="HUD", URL="https://www.huduser.gov/portal/dataset/fmr-api.html" , Details="Fair Market Rent (40th Percentile) by County from 2000-2022")]
+
+        dataset_table = pd.DataFrame(datasets)
+
+        def make_clickable(url, name):
+            return '<a href="{}" rel="noopener noreferrer" target="_blank">{}</a>'.format(url,name)
+
+        dataset_table['Source'] = dataset_table.apply(lambda x: make_clickable(x['URL'], x['Source']), axis=1)
+
+        dataset_table = dataset_table[['Variable','Source','Details']]
+
+        return dataset_table
+
+    # Run the function to make the dataset table and display it
+    dataset_table = make_dataset_table()
+    st.write(dataset_table.to_html(escape=False,index=False),unsafe_allow_html=True)
+
+    st.markdown('''  &nbsp;  
+    ### Population Migration
+    The population migration dataset was obtained from the IRS. The Outflow dataset contains information of the estimated number of individuals that moved from county A to county B. The dataset was available on a yearly basis from 1991-2019. However, because 1991 and 1992 had very different formats, we decided to use data from 1993-2019. We combined the yearly datasets into one CSV file for use in our model. The columns include the origin state and county, the destination state and county, the number of individuals that moved from origin to destination, and the aggregated gross income of all the individuals. If we want to obtain the number of individuals that moved into a certain county, then we would sum the number of individuals that had a destination county of interest. 
+
+    ### Population
+    The total population dataset was downloaded from the US Census. The data was available per year per county, with years grouped in 10 year increments. Demographic data was also available in these datasets, but the demographic categories were not consistent decade to decade. The datasets were also structured differently decade to decade so combining the datasets was challenging. The totals of the populations summed over all demographics were used to get the total population of each county per year. This dataset will be used as a dependent variable if we want to explore beyond net migration outflows for each county.
+
+    ### AQI
+    The AQI dataset was downloaded from the United States Environmental Protection Agency (aqs.epa.gov). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis.
+
+    ### Economic and Income/Population
+    Data for total Full-time and Part-time Employment as well as data for Personal Income were downloaded from the Bureau of Economic Analysis (https://www.bea.gov/) for the years 1969 to 2019. This data is available at a county-by-county level. Personal Income data includes the total personal income for all residents of a county, the population of that county, and per capita personal income. 
+
+    ### Disasters
+    The Disasters Dataset was downloaded from the U.S. Department of Homeland Security FEMA website. This data set states the specific states and counties in which disasters have occured (whether natural or man-made). The data goes back to 1953 and captures up to the year 2021. One of the key variables we looked at was “incidentType” to understand what type of emergency had been declared and how many types that specific disaster had occurred. This can allow us to dive deeper into analyzing what areas might be the most affected by a specific type of disaster and focus on what population migration looks like in that region. 
+
+    ### Housing
+    The Housing Price Index (HPI) dataset was downloaded from the Fair Housing Finance Agency (FHFA) website. Data is available by county and by year from 1986-2019 with HPIs referenced to housing prices in 1986. Fair Market Rent (FMR) data was downloaded from the Department of Housing and Urban Development (HUD) website via their Office of Policy Development and Research (PD&R). This dataset includes the 40th percentile rental rates by county and by year for Studio, 1, 2, 3, and 4 Bedroom units from 2004-2021.
+    ''')
     
 elif section == "Exploratory Data Analysis":
+    
+    st.markdown('''
+    ### Visualizing Trends for Counties
+    To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
+    ''')
+
     #### START AQI TIME PLOTS ####
     # Counties with lowest net migration outflow
     start_year,end_year = st.select_slider(label='Year Range to Plot',options=np.arange(1993,2020,1),value=(1993,2019))
@@ -125,44 +184,4 @@ elif section == "Results":
     # fig = pff.create_choropleth(fips = aqi_map['FIPS'],values=aqi_map['Median AQI'])
     
     st.write(fig)
-    
-    # year = st.slider(label="Year", min_value=1993,max_value=2020,value=2019)
-    # with st.echo():
-    observers = observable("Year",notebook="@ialsjbn/map_2019",targets=["year_select","chart"],observe=["year_select"])
-    # year_select = observers.get("year_select")
-    # observable("Selected Year Projection",notebook="@ialsjbn/map_2019",targets=["chart"],redefine={"year_select":year})
-    # with st.echo():
-    #     observers_a = observable("Matrix Input A", 
-    #         notebook="d/9e0aa2504039dbcd",
-    #         targets=["viewof a"],
-    #         observe=["a"]
-    #     )
-    #     observers_b = observable("Matrix Input B", 
-    #         notebook="d/9e0aa2504039dbcd",
-    #         targets=["viewof b"],
-    #         observe=["b"]
-    #     )
-    #     if bool(observers_a) and bool(observers_b):
-    #         with st.echo():
-    #             a = observers_a.get("a")
-    #             b = observers_b.get("b")
-
-    #     # if explain:
-    #     #     st.write("Then let's multiply these two matricies together:")
-
-    #     with st.echo():
-    #         result = np.matmul(a, b)
-
-    #     # if explain:
-    #     #     st.write("""Finally, let's use that `"prettyExample"` cell
-    #     #         to render the multiplication result out!""")
-
-    #     with st.echo():
-    #         observable("np.matmul result", 
-    #             notebook="d/9e0aa2504039dbcd",
-    #             targets=["prettyExample"],
-    #             redefine={
-    #                 "example": result.tolist()
-    #             }
-    #         )
  

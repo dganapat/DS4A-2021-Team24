@@ -1,0 +1,17 @@
+font.size : 18
+figure.dpi : 200
+figure.figsize: 6,6
+axes.titlesize : 20
+axes.labelsize : 18
+axes.facecolor : white
+axes.edgecolor : darkgrey
+lines.linewidth : 3
+lines.markersize : 10
+legend.loc : upper left
+legend.fontsize: 18
+xtick.labelsize : 18
+ytick.labelsize : 18
+axes.grid : True
+grid.color : gainsboro
+grid.linewidth : 0.5
+grid.alpha : 0.8
