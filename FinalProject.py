@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit_observable import observable
+import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -184,4 +185,22 @@ elif section == "Results":
     # fig = pff.create_choropleth(fips = aqi_map['FIPS'],values=aqi_map['Median AQI'])
     
     st.write(fig)
+
  
+    components.html(
+        """
+        <div id="observablehq-a70836fb">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
