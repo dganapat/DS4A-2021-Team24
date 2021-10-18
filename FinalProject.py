@@ -132,6 +132,14 @@ elif section == "Exploratory Data Analysis":
     To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
     ''')
 
+  # Notes from Chris: Drop EDA into the appendix (change section name)
+  # Features are not that interesting
+  # Do EDA on response variable
+  # Journalistic style writing - most important first
+  # Add Executive summary section at the beginning
+  # Make consistent first person
+  # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
+
     #### START AQI TIME PLOTS ####
     # Counties with lowest net migration outflow
     start_year,end_year = st.select_slider(label='Year Range to Plot',options=np.arange(1993,2020,1),value=(1993,2019))
