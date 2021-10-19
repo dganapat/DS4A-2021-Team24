@@ -34,9 +34,11 @@ def import_data():
     aqis = pd.read_csv('Datasets/AQI_by_County.csv')
     aqis['FIPS'] = ["%05d" % elem for elem in aqis['FIPS']]
 
-    return lowFIPS,highFIPS,popmig,aqis
+    all_aqi_data = pd.read_csv('Datasets/all_aqi_migration_data.csv')
 
-lowFIPS,highFIPS,popmig,aqis = import_data()
+    return lowFIPS,highFIPS,popmig,aqis,all_aqi_data
+
+lowFIPS,highFIPS,popmig,aqis,all_aqi_data = import_data()
 
 
 ##### END DATA IMPORTING SECTION #####
@@ -47,7 +49,7 @@ st.markdown(''' # Landscape of the New America: How the US population will be re
 st.markdown(''' ## Team 24 ''')
 st.markdown('''Danah Park | Devi Ganapathi | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana | Liz Peterson | Noemi Valdez ''')
 
-section = st.sidebar.selectbox("Outline",("Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions"))
+section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions","Supplemental Information"))
 
 if section == "Project Description":
     st.markdown(''' 
@@ -112,9 +114,6 @@ elif section == "Datasets":
     ### Population
     The total population dataset was downloaded from the US Census. The data was available per year per county, with years grouped in 10 year increments. Demographic data was also available in these datasets, but the demographic categories were not consistent decade to decade. The datasets were also structured differently decade to decade so combining the datasets was challenging. The totals of the populations summed over all demographics were used to get the total population of each county per year. This dataset will be used as a dependent variable if we want to explore beyond net migration outflows for each county.
 
-    ### AQI
-    The AQI dataset was downloaded from the United States Environmental Protection Agency (aqs.epa.gov). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis.
-
     ### Economic and Income/Population
     Data for total Full-time and Part-time Employment as well as data for Personal Income were downloaded from the Bureau of Economic Analysis (https://www.bea.gov/) for the years 1969 to 2019. This data is available at a county-by-county level. Personal Income data includes the total personal income for all residents of a county, the population of that county, and per capita personal income. 
 
@@ -177,6 +176,20 @@ elif section == "Exploratory Data Analysis":
 
     #### END AQI TIME PLOTS ####
      
+elif section =="Model Building":
+  st.markdown("""
+  ## Methodology
+  ### Time Series and Machine Learning Models
+  In this project, we experimented with three different approaches to model the net population migration: a pure time-series ARIMA model, linear regression, and XGBoost. We used all three models to predict a **one-step forecast** of the net population migration (i.e. predict the value for the next year). 
+
+- **ARIMA**: ARIMA is a model that is commonly used for analyzing and forecasting time series data. This model only takes historical time series data as an input, to predict the future values. The ARIMA model has three parameters that include the number of lagged terms, the order of moving average, and the number of differencing required to make the time series stationary. This model is our baseline results. 
+- **Linear Regression**: Linear regression is a classic model used to predict continuous values. Using this model, we transformed our time series prediction problem into a regression problem by incorporating many other features that we hypothesize can help predict the values of the net migration better. The main assumption is that our predictors and the response variable have a linear relationship. 
+- **XGBoost**: Finally, we also experimented with the XGBoost model, a type of ensemble machine learning model. Because the algorithm leverages decision trees to make predictions, XGBoost is able to capture more non-linear relationships. 
+
+### Feature Selection
+To determine the number of lagged values to include as a feature, we calculated the partial autocorrelation values for each county. Then, we took the lagged value that was most important across the counties. An example of the partial autocorrelation plot for a specific county (in this case Carroll County, MD)  is shown in the figure below. 
+  """)
+
 
 elif section == "Results":
         
@@ -212,3 +225,27 @@ elif section == "Results":
           });
         </script>
         """, height = 600,)
+
+elif section=="Supplemental Information":
+  
+  st.markdown(''' 
+  ### AQI 
+  We downloaded the AQI dataset from the United States Environmental Protection Agency (aqs.epa.gov). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis. Exploratory data analysis was performed on this dataset (below), but unfortunately too many counties were missing, so AQI was not included as a descriptor in the final model.
+  ''')
+  # Make AQI Correlation Plot
+  corr = pearsonr(all_aqi_data['AQI'],all_aqi_data['Net Migration Outflow'])
+  fig,ax = plt.subplots(1,1,figsize=(7,6))
+  plt.scatter(all_aqi_data['AQI'],all_aqi_data['Net Migration Outflow'],c=all_aqi_data['year'])  
+  plt.xlabel('Median AQI')
+  plt.ylabel('Net Migration Outflow')
+  plt.colorbar()
+  # Customize where the annotation appears by changing the scaling values below
+
+  plt.text(x=0.37*np.max(all_aqi_data['AQI']),y=np.min(all_aqi_data['Net Migration Outflow'])-0*(np.max(all_aqi_data['Net Migration Outflow'])-np.min(all_aqi_data['Net Migration Outflow'])),s='Correlation: ' + "%0.3f" % corr[0])
+
+  plt.text(x=0.5*np.max(all_aqi_data['AQI']),y=np.min(all_aqi_data['Net Migration Outflow'])+0.1*(np.max(all_aqi_data['Net Migration Outflow'])-np.min(all_aqi_data['Net Migration Outflow'])),s='p-value: ' + "%0.3f" % corr[1])
+
+  st.pyplot(fig)
+  st.markdown('''
+  This is an aggregate correlation plot of all the counties in the dataset. For each year available for each county, the AQI at that year vs the net migration outflow (total outflow from - total inflow to the county) is plotted as a datapoint. The colorbar shows the year that datapoint was taken at. There is a slight correlation in the direction we would expect, with higher AQIs (worse air quality) leading to higher migration outflows. However, this trend is not very strong.
+  ''')
