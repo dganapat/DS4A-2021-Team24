@@ -144,6 +144,7 @@ elif section == "Exploratory Data Analysis":
   # Add Executive summary section at the beginning
   # Make consistent first person
   # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
+
   st.markdown('''
         ### Number of Disasters
 
@@ -174,6 +175,69 @@ elif section == "Exploratory Data Analysis":
           if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
           if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
           if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
+
+  st.markdown('''
+        ### Housing Price Index
+        ''')
+  # Insert Housing Price Index by Year Time Series Plots Here
+
+  st.markdown(""" Housing Price Index by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively""")
+
+  st.markdown("""
+  In the figure above, the Housing Price Index is plotted by year for the 20 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively.  Considering exclusively these counties we observe that the counties that experienced the largest outflow are in general the counties in which housing price indices have increased the most dramatically in the wake of the subprime mortgage crisis. Counties that experienced the largest inflow largely recovered from the subprime mortgage crisis but have not recovered prices beyond their pre-crisis level. For context, the three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
+  """)
+
+  # Insert HPI vs Net Population Outflow Scatter Plot Here
+
+  st.markdown("""Housing price index by county and by year vs. net population outflow""")
+
+  st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation between increased housing price index and increased net population outflow, as plotted in Figure 7. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas that are becoming more expensive.
+  """)
+
+  components.html("""
+      <div id="observablehq-d9baf6ed">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
+
+  st.markdown('''
+        ### Income
+        ''')
+
+  # Insert Per Capita Income By Year Time Series Plots Here
+
+  st.markdown("""
+  Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
+  """)
+
+  st.markdown
+  components.html("""
+      <div id="observablehq-324b9012">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/income.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-324b9012 .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-324b9012 .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-324b9012 .observablehq-update")();
         });
       </script>
       """, height = 600,)
@@ -220,26 +284,7 @@ elif section == "Exploratory Data Analysis":
       </script>
       """, height = 600)
 
-  st.markdown('''
-        ### Income
-        ''')
 
-  components.html("""
-      <div id="observablehq-324b9012">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/income.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-324b9012 .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-324b9012 .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-324b9012 .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
 
   st.markdown('''
         ### Employment
@@ -258,27 +303,6 @@ elif section == "Exploratory Data Analysis":
           if (name === "viewof year_select") return Inspector.into("#observablehq-7388290f .observablehq-viewof-year_select")();
           if (name === "chart") return Inspector.into("#observablehq-7388290f .observablehq-chart")();
           if (name === "update") return Inspector.into("#observablehq-7388290f .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
-
-  st.markdown('''
-        ### Housing Price Index
-        ''')
-
-  components.html("""
-      <div id="observablehq-d9baf6ed">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
         });
       </script>
       """, height = 600,)
