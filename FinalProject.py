@@ -164,6 +164,133 @@ elif section == "Exploratory Data Analysis":
   # Make consistent first person
   # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
 
+    st.markdown('''
+        ### Population Migration
+        ''')
+    components.html(
+            """
+            <div id="observablehq-a70836fb">
+              <div class="observablehq-viewof-year_select"></div>
+              <div class="observablehq-chart"></div>
+              <div class="observablehq-update" style="display:none"></div>
+            </div>
+            <script type="module">
+              import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+              import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
+              (new Runtime).module(define, name => {
+                if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
+                if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
+                if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
+              });
+            </script>
+            """, height = 600,)
+
+    st.markdown('''
+        ### Population
+        ''')
+
+    components.html("""
+        <div id="observablehq-ff6b2a54">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
+          });
+        </script>
+        """, height = 600)
+
+    st.markdown('''
+        ### Income
+        ''')
+
+    components.html("""
+        <div id="observablehq-324b9012">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/income.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-324b9012 .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-324b9012 .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-324b9012 .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
+
+    st.markdown('''
+        ### Employment
+        ''')
+
+    components.html("""
+        <div id="observablehq-7388290f">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/employment.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-7388290f .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-7388290f .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-7388290f .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
+
+    st.markdown('''
+        ### Housing Price Index
+        ''')
+
+    components.html("""
+        <div id="observablehq-d9baf6ed">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
+
+    st.markdown('''
+        ### Number of Disasters
+        ''')
+
+    components.html("""
+        <div id="observablehq-eb1119d4">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
+
+
 
      
 elif section =="Model Building":
@@ -197,37 +324,22 @@ elif section =="Model Building":
 elif section == "Results":
         
      #### AQI Heat Map ####
-    year = st.slider(label='Year',min_value = 1993, max_value = 2020)
-    aqi_map = aqis[aqis['year']==year]
-    #  fips = aqi_map['FIPS']
+    # year = st.slider(label='Year',min_value = 1993, max_value = 2020)
+    # aqi_map = aqis[aqis['year']==year]
+    # #  fips = aqi_map['FIPS']
     
-    st.write(len(aqi_map[aqi_map['State']=='Wyoming']))
+    # st.write(len(aqi_map[aqi_map['State']=='Wyoming']))
     
-    fig = px.choropleth(aqi_map,geojson=counties, locations="FIPS",color='Median AQI',hover_name="County",color_continuous_scale="Viridis",range_color=(0,250),scope="usa",labels={'Median AQI':'Median AQI'})
-    # fig.add_scattergeo(geojson=counties,locations=)
+    # fig = px.choropleth(aqi_map,geojson=counties, locations="FIPS",color='Median AQI',hover_name="County",color_continuous_scale="Viridis",range_color=(0,250),scope="usa",labels={'Median AQI':'Median AQI'})
+    # # fig.add_scattergeo(geojson=counties,locations=)
     
-    # fig = pff.create_choropleth(fips = aqi_map['FIPS'],values=aqi_map['Median AQI'])
+    # # fig = pff.create_choropleth(fips = aqi_map['FIPS'],values=aqi_map['Median AQI'])
     
-    st.write(fig)
+    # st.write(fig)
+    st.markdown("""to do""")
 
  
-    components.html(
-        """
-        <div id="observablehq-a70836fb">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
+    
 
 elif section=="Supplemental Information":
   
