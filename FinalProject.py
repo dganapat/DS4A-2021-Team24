@@ -137,14 +137,6 @@ elif section == "Exploratory Data Analysis":
   To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
   ''')
 
-  # ### HPI Heat Map
-  # year = st.slider(label='Year',min_value = 1993, max_value = 2020)
-  # hpi_map = hpis[hpis['year']==year]
-  
-  # fig = px.choropleth(hpi_map,geojson=counties, locations="FIPS",color='hpi',color_continuous_scale="Viridis",scope="usa",labels={'hpi':'HPI'})
-  
-  # st.write(fig)
-
   # Notes from Chris: Drop EDA into the appendix (change section name)
   # Features are not that interesting
   # Do EDA on response variable
@@ -152,6 +144,39 @@ elif section == "Exploratory Data Analysis":
   # Add Executive summary section at the beginning
   # Make consistent first person
   # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
+  st.markdown('''
+        ### Number of Disasters
+
+        At a very basic level, we want to understand the disasters that have occurred during the time period of population migration that we are studying, from 1993 until 2019. FEMA disaster data encompasses a wide array of disaster types, ranging from tornadoes to droughts. 
+        ''')
+
+  # Insert Number of Incidents by Disaster Type Plot Here
+
+  st.markdown('''
+  As a starting point, we want to understand what are some of the disasters that have been most prominent. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
+  ''')
+  # Insert Number of Disasters by Year Plot Here
+  st.markdown("""Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019 """)
+
+  st.markdown(""" Aggregation of the total number of disasters of all types for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically experienced more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
+  """)
+  
+  components.html("""
+      <div id="observablehq-eb1119d4">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
 
   st.markdown('''
         ### Population Migration
@@ -254,27 +279,6 @@ elif section == "Exploratory Data Analysis":
           if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
           if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
           if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
-
-  st.markdown('''
-        ### Number of Disasters
-        ''')
-
-  components.html("""
-      <div id="observablehq-eb1119d4">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
         });
       </script>
       """, height = 600,)
