@@ -138,13 +138,13 @@ elif section == "Exploratory Data Analysis":
   To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
   ''')
 
-  ### HPI Heat Map
-  year = st.slider(label='Year',min_value = 1993, max_value = 2020)
-  hpi_map = hpis[hpis['year']==year]
+  # ### HPI Heat Map
+  # year = st.slider(label='Year',min_value = 1993, max_value = 2020)
+  # hpi_map = hpis[hpis['year']==year]
   
-  fig = px.choropleth(hpi_map,geojson=counties, locations="FIPS",color='hpi',color_continuous_scale="Viridis",scope="usa",labels={'hpi':'HPI'})
+  # fig = px.choropleth(hpi_map,geojson=counties, locations="FIPS",color='hpi',color_continuous_scale="Viridis",scope="usa",labels={'hpi':'HPI'})
   
-  st.write(fig)
+  # st.write(fig)
 
   # Notes from Chris: Drop EDA into the appendix (change section name)
   # Features are not that interesting
@@ -154,131 +154,131 @@ elif section == "Exploratory Data Analysis":
   # Make consistent first person
   # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
 
-    st.markdown('''
+  st.markdown('''
         ### Population Migration
         ''')
-    components.html(
-            """
-            <div id="observablehq-a70836fb">
-              <div class="observablehq-viewof-year_select"></div>
-              <div class="observablehq-chart"></div>
-              <div class="observablehq-update" style="display:none"></div>
-            </div>
-            <script type="module">
-              import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-              import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
-              (new Runtime).module(define, name => {
-                if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
-                if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
-                if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
-              });
-            </script>
-            """, height = 600,)
+  components.html(
+          """
+          <div id="observablehq-a70836fb">
+            <div class="observablehq-viewof-year_select"></div>
+            <div class="observablehq-chart"></div>
+            <div class="observablehq-update" style="display:none"></div>
+          </div>
+          <script type="module">
+            import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+            import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
+            (new Runtime).module(define, name => {
+              if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
+              if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
+              if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
+            });
+          </script>
+          """, height = 600,)
 
-    st.markdown('''
+  st.markdown('''
         ### Population
         ''')
 
-    components.html("""
-        <div id="observablehq-ff6b2a54">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
-          });
-        </script>
-        """, height = 600)
+  components.html("""
+      <div id="observablehq-ff6b2a54">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
+        });
+      </script>
+      """, height = 600)
 
-    st.markdown('''
+  st.markdown('''
         ### Income
         ''')
 
-    components.html("""
-        <div id="observablehq-324b9012">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/income.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-324b9012 .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-324b9012 .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-324b9012 .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
+  components.html("""
+      <div id="observablehq-324b9012">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/income.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-324b9012 .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-324b9012 .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-324b9012 .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
 
-    st.markdown('''
+  st.markdown('''
         ### Employment
         ''')
 
-    components.html("""
-        <div id="observablehq-7388290f">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/employment.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-7388290f .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-7388290f .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-7388290f .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
+  components.html("""
+      <div id="observablehq-7388290f">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/employment.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-7388290f .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-7388290f .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-7388290f .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
 
-    st.markdown('''
+  st.markdown('''
         ### Housing Price Index
         ''')
 
-    components.html("""
-        <div id="observablehq-d9baf6ed">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
+  components.html("""
+      <div id="observablehq-d9baf6ed">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
 
-    st.markdown('''
+  st.markdown('''
         ### Number of Disasters
         ''')
 
-    components.html("""
-        <div id="observablehq-eb1119d4">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
+  components.html("""
+      <div id="observablehq-eb1119d4">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
 
 
 
@@ -351,7 +351,7 @@ elif section =="Model Building":
   We chose the best performing model to perform our projection predictions of the population migration in 2030. Because our model only predicts a one-step forecast, the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030. 
   """)
 elif section == "Results":
-         
+
     components.html(
         """
         <div id="observablehq-a70836fb">
