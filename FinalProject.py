@@ -139,42 +139,7 @@ elif section == "Exploratory Data Analysis":
   # Make consistent first person
   # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
 
-    #### START AQI TIME PLOTS ####
-    # Counties with lowest net migration outflow
-    start_year,end_year = st.select_slider(label='Year Range to Plot',options=np.arange(1993,2020,1),value=(1993,2019))
-    colors = cm.viridis(np.linspace(0,1,len(lowFIPS)))
-    fig,ax = plt.subplots()
-    i = 0
-    for fips in lowFIPS:
-      x = aqis[aqis['FIPS']==fips]
-      x = x[x['year'].isin(np.arange(start_year,end_year,1))]['year']
-      y = aqis[aqis['FIPS']==fips]
-      y = y[y['year'].isin(np.arange(start_year,end_year,1))]['Median AQI']
-      plt.plot(x,y,color=colors[i])
-      i += 1
-    plt.xlabel('Year')
-    plt.ylabel('Median AQI')
-    plt.title('Counties with Highest Net Inflows')
-    
-    st.pyplot(fig)
 
-# Counties with highest net migration outflow
-    if st.button('Plot AQIs for Counties with Highest Net Migration Outflow in 2018'):
-        colors = cm.viridis(np.linspace(0,1,len(highFIPS)))
-        i = 0
-        fig,ax = plt.subplots()
-        for fips in highFIPS:
-          x = aqis[aqis['FIPS']==fips]['year']
-          y = aqis[aqis['FIPS']==fips]['Median AQI']
-          plt.plot(x,y,color=colors[i])
-          i += 1
-        plt.xlabel('Year')
-        plt.ylabel('Median AQI')
-        plt.title('Counties with Highest Net Outflows')
-        
-        st.pyplot(fig)
-
-    #### END AQI TIME PLOTS ####
      
 elif section =="Model Building":
   st.markdown("""
@@ -232,6 +197,48 @@ elif section=="Supplemental Information":
   ### AQI 
   We downloaded the AQI dataset from the United States Environmental Protection Agency (aqs.epa.gov). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis. Exploratory data analysis was performed on this dataset (below), but unfortunately too many counties were missing, so AQI was not included as a descriptor in the final model.
   ''')
+
+  #### START AQI TIME PLOTS ####
+  # Counties with lowest net migration outflow
+  start_year,end_year = st.select_slider(label='Year Range to Plot',options=np.arange(1993,2020,1),value=(1993,2019))
+  colors = cm.viridis(np.linspace(0,1,len(lowFIPS)))
+  fig,ax = plt.subplots(figsize=(10,6))
+  i = 0
+  for fips in lowFIPS:
+    x = aqis[aqis['FIPS']==fips]
+    x = x[x['year'].isin(np.arange(start_year,end_year,1))]['year']
+    y = aqis[aqis['FIPS']==fips]
+    y = y[y['year'].isin(np.arange(start_year,end_year,1))]['Median AQI']
+    plt.plot(x,y,color=colors[i])
+    i += 1
+  plt.xlabel('Year')
+  plt.ylabel('Median AQI')
+  plt.title('Counties with Highest Net Inflows')
+    
+  st.pyplot(fig)
+
+  # Counties with highest net migration outflow
+  # start_year,end_year = st.select_slider(label='Year Range to Plot',options=np.arange(1993,2020,1),value=(1993,2019))
+  colors = cm.viridis(np.linspace(0,1,len(lowFIPS)))
+  fig,ax = plt.subplots(figsize=(10,6))
+  i = 0
+  for fips in highFIPS:
+    x = aqis[aqis['FIPS']==fips]
+    x = x[x['year'].isin(np.arange(start_year,end_year,1))]['year']
+    y = aqis[aqis['FIPS']==fips]
+    y = y[y['year'].isin(np.arange(start_year,end_year,1))]['Median AQI']
+    plt.plot(x,y,color=colors[i])
+    i += 1
+  plt.xlabel('Year')
+  plt.ylabel('Median AQI')
+  plt.title('Counties with Highest Net Outflows')
+  
+  st.pyplot(fig)
+
+  #### END AQI TIME PLOTS ####
+
+  st.markdown(''' Each line plotted in this graph represents an individual county. In general, the AQI appears to decrease over time, which is consistent with policy being enacted and technology being improved to reduce emissions. ''')
+
   # Make AQI Correlation Plot
   corr = pearsonr(all_aqi_data['AQI'],all_aqi_data['Net Migration Outflow'])
   fig,ax = plt.subplots(1,1,figsize=(7,6))
@@ -249,3 +256,5 @@ elif section=="Supplemental Information":
   st.markdown('''
   This is an aggregate correlation plot of all the counties in the dataset. For each year available for each county, the AQI at that year vs the net migration outflow (total outflow from - total inflow to the county) is plotted as a datapoint. The colorbar shows the year that datapoint was taken at. There is a slight correlation in the direction we would expect, with higher AQIs (worse air quality) leading to higher migration outflows. However, this trend is not very strong.
   ''')
+
+
