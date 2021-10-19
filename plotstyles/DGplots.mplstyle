@@ -15,3 +15,4 @@ axes.grid : True
 grid.color : gainsboro
 grid.linewidth : 0.5
 grid.alpha : 0.8
+axes.linewidth : 2

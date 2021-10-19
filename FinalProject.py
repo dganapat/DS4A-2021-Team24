@@ -220,11 +220,19 @@ elif section == "Exploratory Data Analysis":
 
   # Insert Per Capita Income By Year Time Series Plots Here
 
-  st.markdown("""
-  Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
+  st.markdown(""" Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
   """)
 
-  st.markdown
+  st.markdown("""
+  In the figure above we plot the per capita income for the counties with the highest net outflow and inflow, again color coded by the magnitude of the outflow or inflow. In general, per capita income is significantly higher in counties with high net outflow than in counties with high net inflow. Interestingly, the county in each plot that has the highest outflow or inflow (indicated in yellow) appears roughly in the middle of each set of counties.
+  """)
+
+  # Insert Per Capita Income vs Net Population Outflow Scatterplot Here
+
+  st.markdown("""
+  To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income and found that while there is a small net correlation between per capita income and net population outflow (0.38), it is not a particularly strong relationship. One factor that is not accounted for in our income dataset that could be very relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
+  """)
+
   components.html("""
       <div id="observablehq-324b9012">
         <div class="observablehq-viewof-year_select"></div>
@@ -289,6 +297,14 @@ elif section == "Exploratory Data Analysis":
   st.markdown('''
         ### Employment
         ''')
+
+  # Insert Employment Time Series Plots Here
+
+  st.markdown("""
+  Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
+  """)
+
+  # Insert Total Jobs vs Net Population Outflow Scatterplot here
 
   components.html("""
       <div id="observablehq-7388290f">
