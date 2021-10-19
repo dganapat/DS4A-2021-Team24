@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_observable import observable
+# from streamlit_observable import observable
 import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
@@ -9,6 +9,7 @@ from scipy.stats import pearsonr
 from matplotlib import cm
 from urllib.request import urlopen
 import json
+import statsmodels.api as sm
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
     counties = json.load(response)
 import plotly.express as px
@@ -20,25 +21,49 @@ plt.style.use('plotstyles/DGplots.mplstyle')
 
 @st.cache
 def import_data():
-    lowNet = pd.read_csv('Datasets/smallestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
-    highNet = pd.read_csv('Datasets/largestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
-    lowNet['FIPS'] = ["%05d" % elem for elem in lowNet['FIPS']]
-    highNet['FIPS'] = ["%05d" % elem for elem in highNet['FIPS']]
-    lowFIPS = lowNet['FIPS'].to_list()
-    highFIPS = highNet['FIPS'].to_list()
+  lowNet = pd.read_csv('Datasets/smallestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
+  highNet = pd.read_csv('Datasets/largestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
+  lowNet['FIPS'] = ["%05d" % elem for elem in lowNet['FIPS']]
+  highNet['FIPS'] = ["%05d" % elem for elem in highNet['FIPS']]
+  lowFIPS = lowNet['FIPS'].to_list()
+  highFIPS = highNet['FIPS'].to_list()
 
-    popmig = pd.read_csv('Datasets/population_migration.csv')
-    popmig['FIPS'] = ["%05d" % elem for elem in popmig['FIPS']]
-    popmig['dest_FIPS'] = ["%05d" % elem for elem in popmig['dest_FIPS']]
+  popmig = pd.read_csv('Datasets/population_migration.csv')
+  popmig['FIPS'] = ["%05d" % elem for elem in popmig['FIPS']]
+  popmig['dest_FIPS'] = ["%05d" % elem for elem in popmig['dest_FIPS']]
 
-    aqis = pd.read_csv('Datasets/AQI_by_County.csv')
-    aqis['FIPS'] = ["%05d" % elem for elem in aqis['FIPS']]
+  aqis = pd.read_csv('Datasets/AQI_by_County.csv')
+  aqis['FIPS'] = ["%05d" % elem for elem in aqis['FIPS']]
 
-    all_aqi_data = pd.read_csv('Datasets/all_aqi_migration_data.csv')
+  all_aqi_data = pd.read_csv('Datasets/all_aqi_migration_data.csv')
+  county_net_out = pd.read_csv('Datasets/county_net_out.csv')
+  # Irene's Code for population migration
+  # net_mig_out = []
+  # total_mig_out = []
+  # total_mig_in = []
+  # years = popmig['year'].unique()
+  # fips = popmig['FIPS'].unique()
+  # for fip in fips:
+  #     m_out = popmig[popmig['FIPS'] == fip]
+  #     m_in = popmig[popmig['dest_FIPS'] == fip]
+  #     for year in years:
+  #         mig_out = m_out[m_out['year']==year]['num_ind'].sum()
+  #         mig_in = m_in[m_in['year']==year]['num_ind'].sum()
+  #         net_val = mig_out - mig_in
+  #         total_mig_out.append({'fips': fip, 'year':year,"num_ind": mig_out})
+  #         total_mig_in.append({'fips': fip, 'year':year,"num_ind": mig_in})
+  #         net_mig_out.append({'fips': fip, 'year':year,"num_ind": net_val})
+          
+  # # Convert to dataframe
+  # county_net_out = pd.DataFrame(net_mig_out)
+  # county_in = pd.DataFrame(total_mig_in)
+  # county_out = pd.DataFrame(total_mig_out)
 
-    return lowFIPS,highFIPS,popmig,aqis,all_aqi_data
 
-lowFIPS,highFIPS,popmig,aqis,all_aqi_data = import_data()
+
+  return lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out
+
+lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out = import_data()
 
 
 ##### END DATA IMPORTING SECTION #####
@@ -147,14 +172,27 @@ elif section =="Model Building":
   ### Time Series and Machine Learning Models
   In this project, we experimented with three different approaches to model the net population migration: a pure time-series ARIMA model, linear regression, and XGBoost. We used all three models to predict a **one-step forecast** of the net population migration (i.e. predict the value for the next year). 
 
-- **ARIMA**: ARIMA is a model that is commonly used for analyzing and forecasting time series data. This model only takes historical time series data as an input, to predict the future values. The ARIMA model has three parameters that include the number of lagged terms, the order of moving average, and the number of differencing required to make the time series stationary. This model is our baseline results. 
-- **Linear Regression**: Linear regression is a classic model used to predict continuous values. Using this model, we transformed our time series prediction problem into a regression problem by incorporating many other features that we hypothesize can help predict the values of the net migration better. The main assumption is that our predictors and the response variable have a linear relationship. 
-- **XGBoost**: Finally, we also experimented with the XGBoost model, a type of ensemble machine learning model. Because the algorithm leverages decision trees to make predictions, XGBoost is able to capture more non-linear relationships. 
+  - **ARIMA**: ARIMA is a model that is commonly used for analyzing and forecasting time series data. This model only takes historical time series data as an input, to predict the future values. The ARIMA model has three parameters that include the number of lagged terms, the order of moving average, and the number of differencing required to make the time series stationary. This model is our baseline results. 
+  - **Linear Regression**: Linear regression is a classic model used to predict continuous values. Using this model, we transformed our time series prediction problem into a regression problem by incorporating many other features that we hypothesize can help predict the values of the net migration better. The main assumption is that our predictors and the response variable have a linear relationship. 
+  - **XGBoost**: Finally, we also experimented with the XGBoost model, a type of ensemble machine learning model. Because the algorithm leverages decision trees to make predictions, XGBoost is able to capture more non-linear relationships. 
 
-### Feature Selection
-To determine the number of lagged values to include as a feature, we calculated the partial autocorrelation values for each county. Then, we took the lagged value that was most important across the counties. An example of the partial autocorrelation plot for a specific county (in this case Carroll County, MD)  is shown in the figure below. 
-  """)
+  ### Feature Selection
+  To determine the number of lagged values to include as a feature, we calculated the partial autocorrelation values for each county. Then, we took the lagged value that was most important across the counties. An example of the partial autocorrelation plot for a specific county (in this case Carroll County, MD)  is shown in the figure below. 
+    """)
 
+  # Make autocorrelation Plot
+  fips = st.number_input(label='Enter FIPS Code',value=13237)
+  series = county_net_out.loc[county_net_out['fips'] == fips, 'num_ind']
+  # st.write(series)
+  try:
+    fig = sm.graphics.tsa.plot_pacf(series.values.squeeze(),lags=10)
+    st.pyplot(fig)  
+  except:
+    st.write('**Not enough data for this county**')
+
+  st.markdown('''
+  From the autocorrelation plot above, we see that the first lagged value is the most important to predicting the net migration of a specific year. Though the 8th and 13th values also had larger values, we decided to not include those as we do not expect any seasonality occurring in our data. As a result, we only included the first lagged values in all our models. 
+  ''')
 
 elif section == "Results":
         
