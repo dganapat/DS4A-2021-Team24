@@ -44,8 +44,6 @@ def import_data():
   return lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis
 
 lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis = import_data()
-
-
 ##### END DATA IMPORTING SECTION #####
 
 #### TITE AND HEADER ####
@@ -54,6 +52,7 @@ st.markdown(''' # Landscape of the New America: How the US population will be re
 st.markdown(''' ## Team 24 ''')
 st.markdown('''Danah Park | Devi Ganapathi | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana | Liz Peterson | Noemi Valdez ''')
 
+#### Outline Options for Sidebar
 section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions","Supplemental Information"))
 
 if section == "Project Description":
