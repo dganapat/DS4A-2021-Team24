@@ -41,9 +41,11 @@ def import_data():
   hpis = pd.read_csv('Datasets/HPI.csv')
   hpis['FIPS'] = ["%05d" % elem for elem in hpis['FIPS']]
 
-  return lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis
+  migration_net = pd.read_csv('Datasets/migration_net.csv')
 
-lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis = import_data()
+  return lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net
+
+lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net = import_data()
 ##### END DATA IMPORTING SECTION #####
 
 #### TITE AND HEADER ####
@@ -144,7 +146,43 @@ elif section == "Exploratory Data Analysis":
   # Add Executive summary section at the beginning
   # Make consistent first person
   # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
+  
+  st.markdown('''
+        ### Population Migration
+        ''')
+  
+  # Make time series net migration plot
+  fig, ax = plt.subplots(figsize= (12,6))
+  for FIPS in migration_net.FIPS.drop_duplicates():
+      plt.plot(migration_net.loc[migration_net.FIPS == FIPS].year, migration_net.loc[migration_net.FIPS == FIPS].tot_out, color = plt.get_cmap('viridis')(0.1), alpha = 0.3)
+      
+  ax.set_title('Total Individuals Leaving Counties by Year', pad = 15)
+  ax.set_xlabel('Year')
+  ax.set_ylabel('Total Outflow')
 
+  ax.tick_params(axis='both', which='major', length = 10, width = 2)
+  ax.set_xlim([min(migration_net.year),max(migration_net.year)])
+
+  st.pyplot(fig)
+
+  components.html(
+          """
+          <div id="observablehq-a70836fb">
+            <div class="observablehq-viewof-year_select"></div>
+            <div class="observablehq-chart"></div>
+            <div class="observablehq-update" style="display:none"></div>
+          </div>
+          <script type="module">
+            import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+            import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
+            (new Runtime).module(define, name => {
+              if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
+              if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
+              if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
+            });
+          </script>
+          """, height = 600,)
+  
   st.markdown('''
         ### Number of Disasters
 
@@ -249,27 +287,6 @@ elif section == "Exploratory Data Analysis":
         });
       </script>
       """, height = 600,)
-
-  st.markdown('''
-        ### Population Migration
-        ''')
-  components.html(
-          """
-          <div id="observablehq-a70836fb">
-            <div class="observablehq-viewof-year_select"></div>
-            <div class="observablehq-chart"></div>
-            <div class="observablehq-update" style="display:none"></div>
-          </div>
-          <script type="module">
-            import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-            import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
-            (new Runtime).module(define, name => {
-              if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
-              if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
-              if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
-            });
-          </script>
-          """, height = 600,)
 
   st.markdown('''
         ### Population
