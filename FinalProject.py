@@ -14,6 +14,7 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
 import plotly.express as px
 import plotly.figure_factory as pff
 import matplotlib as mpl
+import io
 plt.style.use('plotstyles/DGplots.mplstyle')
 
 ##### DATA IMPORTING SECTION #####
@@ -546,6 +547,8 @@ elif section == "Exploratory Data Analysis":
     ax.set_ylabel('Net Population Outflow')
 
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
+    
+
     st.pyplot(fig)
 
     st.markdown("""**Above: Total number of jobs by county and by year vs. net population outflow**
