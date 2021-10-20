@@ -1,5 +1,4 @@
 import streamlit as st
-# from streamlit_observable import observable
 import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
@@ -78,6 +77,7 @@ st.markdown('''Danah Park | Devi Ganapathi | Emily Wang | Gabrielle Cardoza | Ir
 #### Outline Options for Sidebar
 section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions","Supplemental Information"))
 
+#### PROJECT DESCRIPTION SECTION ####
 if section == "Project Description":
     st.markdown(''' 
     ## Project Description
@@ -104,6 +104,7 @@ if section == "Project Description":
 
     ''')
 
+#### DATASETS SECTION ####
 elif section == "Datasets":
 
     # Make table with all data sources - cached
@@ -152,21 +153,23 @@ elif section == "Datasets":
   We downloaded the Housing Price Index (HPI) dataset from the Fair Housing Finance Agency ([FHFA](https://www.fhfa.gov/)) website. Data is available by county and by year from 1986-2019 with HPIs referenced to housing prices in 1986. We downloaded fair Market Rent (FMR) data from the Department of Housing and Urban Development ([HUD](https://www.huduser.gov/portal/datasets/fmr.html)) website via their Office of Policy Development and Research (PD&R). This dataset includes the 40th percentile rental rates by county and by year for Studio, 1, 2, 3, and 4 Bedroom units from 2004-2021. 
 
     ''')
-    
+
+#### EDA SECTION #### 
 elif section == "Exploratory Data Analysis":
   st.markdown('''
   ### Visualizing Trends for Counties
   To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
   ''')
 
-  choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Number of Disasters","Housing Price Index","Income","Employment","Population","All Variables"])
+  choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Number of Disasters","Housing Price Index","Income","Employment","All Variables"])
+
+  # Population Migration EDA
   if choice == "Population Migration" or choice == "All Variables":
     st.markdown('''
           ### Population Migration
           ''')
     
     # Make time series net migration plot
-    
     fig, ax = plt.subplots(figsize= (12,6))
     for FIPS in migration_net.FIPS.drop_duplicates():
         plt.plot(migration_net.loc[migration_net.FIPS == FIPS].year, migration_net.loc[migration_net.FIPS == FIPS].tot_out, color = plt.get_cmap('viridis')(0.1), alpha = 0.3)
@@ -201,6 +204,7 @@ elif section == "Exploratory Data Analysis":
             </script>
             """, height = 600,)
   
+  # Disasters EDA
   if choice == "Number of Disasters" or choice == "All Variables":
     st.markdown('''
           ### Number of Disasters
@@ -208,6 +212,7 @@ elif section == "Exploratory Data Analysis":
           At a very basic level, we want to understand the disasters that have occurred during the time period of population migration that we are studying, from 1993 until 2019. FEMA disaster data encompasses a wide array of disaster types, ranging from tornadoes to droughts. 
           ''')
     
+    # Disasters Heat Map
     components.html("""
     <div id="observablehq-eb1119d4">
       <div class="observablehq-viewof-year_select"></div>
@@ -225,8 +230,8 @@ elif section == "Exploratory Data Analysis":
     </script>
     """, height = 600,)
 
+    # Number of Incidents by Disaster Type Bar Plot
     fig, ax = plt.subplots(figsize= (10,5))
-
     plt.bar(disaster_types.index, disaster_types.num_incidents, color = plt.get_cmap('viridis')(0.1), edgecolor = 'k')
 
     inc_types = disaster_types.incidentType
@@ -246,6 +251,7 @@ elif section == "Exploratory Data Analysis":
     As a starting point, we want to understand what are some of the disasters that have been most prominent. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
     ''')
 
+    # Number of Disasters by Year Bar Plot
     disaster_highNet, disaster_lowNet = get_high_low_dfs(disaster_migration,highNet,lowNet)
     disaster_highNet_all = disaster_highNet.groupby(['year']).agg({'num_disasters':'sum'}).reset_index()
     disaster_lowNet_all = disaster_lowNet.groupby(['year']).agg({'num_disasters':'sum'}).reset_index()
@@ -265,6 +271,7 @@ elif section == "Exploratory Data Analysis":
     st.markdown(""" Aggregation of the total number of disasters of all types for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically experienced more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
     """)
 
+    # Disaster Correlation Plot - Might Delete Later
     fig, ax = plt.subplots(figsize=(8,6))
     corr_disasters_all = pearsonr(disaster_migration.num_disasters.tolist(), disaster_migration.net_out.tolist())
     years = disaster_migration.year.drop_duplicates()
@@ -288,11 +295,12 @@ elif section == "Exploratory Data Analysis":
 
     st.pyplot(fig)
 
+  # Housing Price Index EDA
   if choice == "Housing Price Index" or choice == "All Variables":
     st.markdown('''
           ### Housing Price Index
           ''')
-    # Heat Map
+    # Housing Price Index Heat Map
     components.html("""
         <div id="observablehq-d9baf6ed">
           <div class="observablehq-viewof-year_select"></div>
@@ -309,6 +317,8 @@ elif section == "Exploratory Data Analysis":
           });
         </script>
         """, height = 600,)
+    
+    # Data cleaning
     years = hpi_migration.year.drop_duplicates()
     hpi_highNet, hpi_lowNet = get_high_low_dfs(hpi_migration,highNet,lowNet)
     hpi_highNet_v0 = hpi_highNet.copy()
@@ -336,9 +346,6 @@ elif section == "Exploratory Data Analysis":
     ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
     ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
 
-    #ax[0].set_ylim([0,2500])
-    #ax[1].set_ylim([0,2500])
-
     # Color bar indicating most/least outflow/inflow
     cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
     cb.set_ticks([0, 1])
@@ -365,9 +372,6 @@ elif section == "Exploratory Data Analysis":
     cb.set_ticks([0, 1])
     cb.set_ticklabels([str(min(years)), str(max(years))])
     cb.ax.tick_params(size = 0)
-
-    #ax.text(1200,170000, 'Correlation: ' + "%0.3f" % corr_hpi_all[0])
-    #ax.text(1200,150000, 'p-value: ' + "%0.3f" % corr_hpi_all[1])
     ax.text(1200,-60000, 'Correlation: ' + "%0.3f" % corr_hpi_all[0])
     ax.text(1200,-90000, 'p-value: ' + "%0.3f" % corr_hpi_all[1])
 
@@ -383,11 +387,12 @@ elif section == "Exploratory Data Analysis":
     st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation between increased housing price index and increased net population outflow, as plotted in Figure 7. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas that are becoming more expensive.
     """)
 
+  # Income EDA
   if choice == "Income" or choice == "All Variables":
     st.markdown('''
           ### Income
           ''')
-
+    # Income Heat Map
     components.html("""
         <div id="observablehq-324b9012">
           <div class="observablehq-viewof-year_select"></div>
@@ -464,6 +469,7 @@ elif section == "Exploratory Data Analysis":
     To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income and found that while there is a small net correlation between per capita income and net population outflow (0.38), it is not a particularly strong relationship. One factor that is not accounted for in our income dataset that could be very relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
     """)
 
+  # Employment EDA
   if choice == "Employment" or choice == "All Variables":
     st.markdown('''
           ### Employment
@@ -532,9 +538,6 @@ elif section == "Exploratory Data Analysis":
     cb.set_ticks([0, 1])
     cb.set_ticklabels([str(min(years)), str(max(years))])
     cb.ax.tick_params(size = 0)
-
-    #ax.text(1200,170000, 'Correlation: ' + "%0.3f" % corr_hpi_all[0])
-    #ax.text(1200,150000, 'p-value: ' + "%0.3f" % corr_hpi_all[1])
     ax.text(3.3e6,-70000, 'Correlation: ' + "%0.3f" % corr_employment_all[0])
     ax.text(3.3e6,-95000, 'p-value: ' + "%0.3f" % corr_employment_all[1])
 
@@ -550,29 +553,6 @@ elif section == "Exploratory Data Analysis":
     st.markdown("""In contrast to the housing price index and income data, the correlation between total number of jobs and net population outflow is relatively strong, 0.491, as we display in Figure 11. This could be related to counties with large numbers of jobs also being more densely populated and having higher cost of living. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue combinations of these factors further in our statistical modeling.
     """)
 
-
-
-  if choice == "Population" or choice == "All Variables":
-    st.markdown('''
-          ### Population
-          ''')
-
-    components.html("""
-        <div id="observablehq-ff6b2a54">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
-          });
-        </script>
-        """, height = 600)
 
 
 
@@ -678,8 +658,36 @@ elif section == "Results":
         </script>
         """, height = 600,)
 
+elif section=="Conclusions":
+  st.markdown("""
+  
+  """)
+
 elif section=="Supplemental Information":
   
+  st.markdown("""
+  ### Population
+
+  We originally planned to use the population data we found online as part of our model. However, we instead chose to use the population data that was available in a model we followed closely (with projections into the future), so we didn't end up using the population data we found online. However, a heat map is shown below to visualize how population changes by county in time.
+  """)
+
+  components.html("""
+      <div id="observablehq-ff6b2a54">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
+        });
+      </script>
+      """, height = 600)
+
   st.markdown(''' 
   ### AQI 
   We downloaded the AQI dataset from the United States Environmental Protection Agency (aqs.epa.gov). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis. Exploratory data analysis was performed on this dataset (below), but unfortunately too many counties were missing, so AQI was not included as a descriptor in the final model.
