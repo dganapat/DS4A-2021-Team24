@@ -61,10 +61,12 @@ def import_data():
   color_dict_years = get_color_dict(disaster_migration, 'year')
 
   hpi_migration = pd.read_csv('Datasets/hpi_migration.csv')
+  income_migration = pd.read_csv('Datasets/income_migration.csv')
+  employment_migration = pd.read_csv('Datasets/employment_migration.csv')
 
-  return highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration
+  return highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration
 
-highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration = import_data()
+highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration = import_data()
 ##### END DATA IMPORTING SECTION #####
 
 #### TITE AND HEADER ####
@@ -165,18 +167,21 @@ elif section == "Exploratory Data Analysis":
     
     # Make time series net migration plot
     
-    # fig, ax = plt.subplots(figsize= (12,6))
-    # for FIPS in migration_net.FIPS.drop_duplicates():
-    #     plt.plot(migration_net.loc[migration_net.FIPS == FIPS].year, migration_net.loc[migration_net.FIPS == FIPS].tot_out, color = plt.get_cmap('viridis')(0.1), alpha = 0.3)
+    fig, ax = plt.subplots(figsize= (12,6))
+    for FIPS in migration_net.FIPS.drop_duplicates():
+        plt.plot(migration_net.loc[migration_net.FIPS == FIPS].year, migration_net.loc[migration_net.FIPS == FIPS].tot_out, color = plt.get_cmap('viridis')(0.1), alpha = 0.3)
         
-    # ax.set_title('Total Individuals Leaving Counties by Year', pad = 15)
-    # ax.set_xlabel('Year')
-    # ax.set_ylabel('Total Outflow')
+    ax.set_title('Total Individuals Leaving Counties by Year', pad = 15)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Total Outflow')
 
-    # ax.tick_params(axis='both', which='major', length = 10, width = 2)
-    # ax.set_xlim([min(migration_net.year),max(migration_net.year)])
+    ax.tick_params(axis='both', which='major', length = 10, width = 2)
+    ax.set_xlim([min(migration_net.year),max(migration_net.year)])
 
-    # st.pyplot(fig)
+    st.pyplot(fig)
+
+    st.markdown("""We subtracted the total county outflows and inflows to obtain the net outflow number, plotted in the figure above. A positive number indicates that more people move out of the county, whereas a negative number indicates that more people move into the county. From the plot below, we can see that in general, many counties have constant net migration near 0, which means that as many people are moving out, as they are moving in. However, some counties have consistently more people moving out of the county (for example, Los Angeles, CA), while others have consistently more people moving in (for example, Maricopa, AZ). Some counties experience anomalous increases in net outflow or net inflow, such as Cook, IL and Travis, TX.
+    """)
 
     components.html(
             """
@@ -241,7 +246,9 @@ elif section == "Exploratory Data Analysis":
     As a starting point, we want to understand what are some of the disasters that have been most prominent. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
     ''')
 
-    disaster_highNet, disaster_lowNet = get_high_low_dfs(disaster_migration)
+    disaster_highNet, disaster_lowNet = get_high_low_dfs(disaster_migration,highNet,lowNet)
+    disaster_highNet_all = disaster_highNet.groupby(['year']).agg({'num_disasters':'sum'}).reset_index()
+    disaster_lowNet_all = disaster_lowNet.groupby(['year']).agg({'num_disasters':'sum'}).reset_index()
     fig, ax = plt.subplots(figsize= (10,6))
     width = 0.4
     plt.bar(disaster_highNet_all.year - width/2, disaster_highNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.25), edgecolor = 'k')
@@ -285,6 +292,23 @@ elif section == "Exploratory Data Analysis":
     st.markdown('''
           ### Housing Price Index
           ''')
+    # Heat Map
+    components.html("""
+        <div id="observablehq-d9baf6ed">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
     years = hpi_migration.year.drop_duplicates()
     hpi_highNet, hpi_lowNet = get_high_low_dfs(hpi_migration,highNet,lowNet)
     hpi_highNet_v0 = hpi_highNet.copy()
@@ -359,42 +383,10 @@ elif section == "Exploratory Data Analysis":
     st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation between increased housing price index and increased net population outflow, as plotted in Figure 7. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas that are becoming more expensive.
     """)
 
-    components.html("""
-        <div id="observablehq-d9baf6ed">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
-
   if choice == "Income" or choice == "All Variables":
     st.markdown('''
           ### Income
           ''')
-
-    # Insert Per Capita Income By Year Time Series Plots Here
-
-    st.markdown(""" Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
-    """)
-
-    st.markdown("""
-    In the figure above we plot the per capita income for the counties with the highest net outflow and inflow, again color coded by the magnitude of the outflow or inflow. In general, per capita income is significantly higher in counties with high net outflow than in counties with high net inflow. Interestingly, the county in each plot that has the highest outflow or inflow (indicated in yellow) appears roughly in the middle of each set of counties.
-    """)
-
-    # Insert Per Capita Income vs Net Population Outflow Scatterplot Here
-
-    st.markdown("""
-    To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income and found that while there is a small net correlation between per capita income and net population outflow (0.38), it is not a particularly strong relationship. One factor that is not accounted for in our income dataset that could be very relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
-    """)
 
     components.html("""
         <div id="observablehq-324b9012">
@@ -413,19 +405,70 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
+    # Per Capita Income By Year Time Series Plots 
+    income_highNet, income_lowNet = get_high_low_dfs(income_migration,highNet,lowNet)
+    color_dict_highNet = get_color_dict(income_highNet.loc[income_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
+    color_dict_lowNet = get_color_dict(income_lowNet.loc[income_lowNet.year == 2018].sort_values('net_out', ascending = False), 'FIPS')
+
+    fig, ax = plt.subplots(1,2,figsize= (15,6), gridspec_kw={'width_ratios': [1, 1.25]})
+    for FIPS in income_highNet.FIPS.drop_duplicates():
+        ax[0].plot(income_highNet.loc[income_highNet.FIPS == FIPS].year, income_highNet.loc[income_highNet.FIPS == FIPS].per_capita_personal_income_dollars, color = color_dict_highNet[FIPS])
+
+    for FIPS in income_lowNet.FIPS.drop_duplicates():
+        ax[1].plot(income_lowNet.loc[income_lowNet.FIPS == FIPS].year, income_lowNet.loc[income_lowNet.FIPS == FIPS].per_capita_personal_income_dollars,  color = color_dict_lowNet[FIPS])
+    fig.suptitle('Per Capita Income by Year', y = 1.01)
+    ax[0].set_title('Highest Population Outflow', pad = 15)
+    ax[0].set_xlabel('Year')
+    ax[0].set_ylabel('Per Capita Income ($)')
+    ax[1].set_title('Highest Population Inflow', pad = 15)
+    ax[1].set_xlabel('Year')
+    ax[1].set_ylabel('')
+    ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
+    ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
+
+    # Color bar indicating most/least outflow/inflow
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels(['Least', 'Most'])
+    cb.ax.tick_params(size = 0)
+    st.pyplot(fig)
+
+    st.markdown("""**Above: Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**
+    """)
+
+    st.markdown("""
+    In the figure above we plot the per capita income for the counties with the highest net outflow and inflow, again color coded by the magnitude of the outflow or inflow. In general, per capita income is significantly higher in counties with high net outflow than in counties with high net inflow. Interestingly, the county in each plot that has the highest outflow or inflow (indicated in yellow) appears roughly in the middle of each set of counties.
+    """)
+
+    # Per Capita Income vs Net Population Outflow Scatterplot
+    corr_income_all = pearsonr(income_migration.per_capita_personal_income_dollars.tolist(), income_migration.net_out.tolist())
+    years = income_migration.year.drop_duplicates()
+    fig, ax = plt.subplots(figsize= (8,6))
+    color_dict_years = get_color_dict(income_migration, 'year')
+
+    for year in income_migration.year.drop_duplicates():
+        plt.scatter(income_migration.loc[income_migration.year == year].per_capita_personal_income_dollars, income_migration.loc[income_migration.year == year].net_out, color = color_dict_years[year])
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels([str(min(years)), str(max(years))])
+    cb.ax.tick_params(size = 0)
+    ax.text(120000,150000, 'Correlation: ' + "%0.3f" % corr_income_all[0])
+    ax.text(120000,120000, 'p-value: ' + "%0.3f" % corr_income_all[1])
+    ax.set_title('Per Capita Income vs. Net Population Outflow', pad = 15)
+    ax.set_xlabel('Per Capita Income ($)')
+    ax.set_ylabel('Net Population Outflow')
+    plt.tick_params(axis='both', which='major', length = 10, width = 2)
+    st.pyplot(fig)
+
+    st.markdown("""
+    To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income and found that while there is a small net correlation between per capita income and net population outflow (0.38), it is not a particularly strong relationship. One factor that is not accounted for in our income dataset that could be very relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
+    """)
+
   if choice == "Employment" or choice == "All Variables":
     st.markdown('''
           ### Employment
           ''')
-
-    # Insert Employment Time Series Plots Here
-
-    st.markdown("""
-    Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
-    """)
-
-    # Insert Total Jobs vs Net Population Outflow Scatterplot here
-
+    # Employment Heat Map
     components.html("""
         <div id="observablehq-7388290f">
           <div class="observablehq-viewof-year_select"></div>
@@ -442,6 +485,72 @@ elif section == "Exploratory Data Analysis":
           });
         </script>
         """, height = 600,)
+
+    # Employment Time Series Plots
+    employment_highNet, employment_lowNet = get_high_low_dfs(employment_migration,highNet,lowNet)
+    color_dict_highNet = get_color_dict(employment_highNet.loc[employment_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
+    color_dict_lowNet = get_color_dict(employment_lowNet.loc[employment_lowNet.year == 2018].sort_values('net_out', ascending = False), 'FIPS')
+
+    fig, ax = plt.subplots(1,2,figsize= (15,6), gridspec_kw={'width_ratios': [1, 1.25]})
+
+    for FIPS in employment_highNet.FIPS.drop_duplicates():
+        ax[0].plot(employment_highNet.loc[employment_highNet.FIPS == FIPS].year, employment_highNet.loc[employment_highNet.FIPS == FIPS].employment, color = color_dict_highNet[FIPS])
+
+    for FIPS in employment_lowNet.FIPS.drop_duplicates():
+        ax[1].plot(employment_lowNet.loc[employment_lowNet.FIPS == FIPS].year, employment_lowNet.loc[employment_lowNet.FIPS == FIPS].employment,  color = color_dict_lowNet[FIPS])
+    fig.suptitle('Total Jobs by Year', y = 1.01)
+    ax[0].set_title('Highest Population Outflow', pad = 15)
+    ax[0].set_xlabel('Year')
+    ax[0].set_ylabel('Number of Jobs')
+    ax[1].set_title('Highest Population Inflow', pad = 15)
+    ax[1].set_xlabel('Year')
+    ax[1].set_ylabel('')
+    ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
+    ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
+    # Color bar indicating most/least outflow/inflow
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels(['Least', 'Most'])
+    cb.ax.tick_params(size = 0)
+    st.pyplot(fig)
+
+    st.markdown("""**Above:
+    Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**
+    """)
+    st.markdown("""In the figure above we plot the total number of full time and part time jobs in each of the counties with the highest net inflow and outflow. In both cases, the counties with the highest total number of jobs have the highest population migration, whether out or in. 
+    """)
+
+    # Total Jobs vs Net Population Outflow Scatterplot
+    corr_employment_all = pearsonr(employment_migration.employment.tolist(), employment_migration.net_out.tolist())
+    years = employment_migration.year.drop_duplicates()
+    fig, ax = plt.subplots(figsize= (8,6))
+    color_dict_years = get_color_dict(employment_migration, 'year')
+    for year in employment_migration.year.drop_duplicates():
+        plt.scatter(employment_migration.loc[income_migration.year == year].employment, employment_migration.loc[employment_migration.year == year].net_out, color = color_dict_years[year])
+
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels([str(min(years)), str(max(years))])
+    cb.ax.tick_params(size = 0)
+
+    #ax.text(1200,170000, 'Correlation: ' + "%0.3f" % corr_hpi_all[0])
+    #ax.text(1200,150000, 'p-value: ' + "%0.3f" % corr_hpi_all[1])
+    ax.text(3.3e6,-70000, 'Correlation: ' + "%0.3f" % corr_employment_all[0])
+    ax.text(3.3e6,-95000, 'p-value: ' + "%0.3f" % corr_employment_all[1])
+
+    ax.set_title('Total Jobs vs. Net Population Outflow', pad = 15)
+    ax.set_xlabel('Total Jobs')
+    ax.set_ylabel('Net Population Outflow')
+
+    plt.tick_params(axis='both', which='major', length = 10, width = 2)
+    st.pyplot(fig)
+
+    st.markdown("""**Above: Total number of jobs by county and by year vs. net population outflow**
+    """)
+    st.markdown("""In contrast to the housing price index and income data, the correlation between total number of jobs and net population outflow is relatively strong, 0.491, as we display in Figure 11. This could be related to counties with large numbers of jobs also being more densely populated and having higher cost of living. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue combinations of these factors further in our statistical modeling.
+    """)
+
+
 
   if choice == "Population" or choice == "All Variables":
     st.markdown('''
@@ -533,7 +642,21 @@ elif section =="Model Building":
   For the ARIMA model, this method was performed for each county (i.e. we trained 3051 counties x 10 years = 30510 models). However, for the linear regression and XGBoost models, we did not explicitly train a model separately for each county. Instead, we used the data points from all counties and trained it for a single model every year (i.e we trained only 10 models). 
 
   ### Projection Method
-  We chose the best performing model to perform our projection predictions of the population migration in 2030. Because our model only predicts a one-step forecast, the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030. 
+  We chose the best performing model to perform our projection predictions of the population migration in 2030. 
+
+  In order to predict population migration in future years, we made approximate future projections of each of the input variables from 2020-2030. 
+
+  Future values of total population were calculated using a linear fit to historic population values.  
+
+  To project the total number of disasters per county per year into future years, we fit the aggregate number of disasters per county to a Poisson distribution. We calculated random samples of potential distributions of future disasters per year and averaged them over 100 samples in order to estimate the number of disasters per year but still provide a degree of variability per year.
+
+  In order to project housing price index values into future years for incorporation into the model, we first converted the historic HPI values per county to a logarithmic scale. The subprime mortgage crisis of 2008 caused extreme levels of fluctuations in the HPI trends, but when plotted logarithmically the trend appears to be approximately linear for each county, with minor deviations due to the subprime mortgage crisis. We applied a linear fit to the logarithmic HPI values for each county. We then exponentiated this to generate future HPI values. We expected that more significant fluctuations will occur in housing markets in the next 30 years that are not accounted for in this fit, however based on the historic data it is likely that these crises will only cause temporary deviations from the overall exponential trend.
+
+  We projected personal income per capita using an exponential fit for each county, which is reasonable due to the income data not being adjusted for inflation.
+
+  To project total employment numbers (full-time plus part-time jobs) into future years for incorporation into the statistical model, we applied a linear fit to the historic number of jobs per county per year. 
+
+  Our migration prediction models only predict a one-step forecast, thus the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030.  
   """)
 elif section == "Results":
 
