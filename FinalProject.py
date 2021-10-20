@@ -142,8 +142,8 @@ elif section == "Exploratory Data Analysis":
   To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
   ''')
 
-  choices = st.multiselect(label="EDA Variables to View",options=["Population Migration","Number of Disasters","Housing Price Index","Income","Employment","Populations"],default="Population Migration")
-  if "Population Migration" in choices:
+  choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Number of Disasters","Housing Price Index","Income","Employment","Population","All Variables"])
+  if ("Population Migration" or "All Variables") == choice:
     st.markdown('''
           ### Population Migration
           ''')
@@ -181,7 +181,7 @@ elif section == "Exploratory Data Analysis":
             </script>
             """, height = 600,)
   
-  if st.button("Numer of Disasters EDA"):
+  if choice == "Number of Disasters" or "All Variables":
     st.markdown('''
           ### Number of Disasters
 
@@ -247,7 +247,7 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
-  if st.button("Housing Price Index EDA"):
+  if choice == "Housing Price Index" or "All Variables":
     st.markdown('''
           ### Housing Price Index
           ''')
@@ -283,7 +283,7 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
-  if st.button("Income EDA"):
+  if choice == "Income" or "All Variables":
     st.markdown('''
           ### Income
           ''')
@@ -320,7 +320,7 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
-  if st.button("Employment EDA"):
+  if choice == "Employment" or "All Variables":
     st.markdown('''
           ### Employment
           ''')
@@ -350,7 +350,7 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
-  if st.button("Population EDA"):
+  if choice == "Population" or "All Variables":
     st.markdown('''
           ### Population
           ''')
