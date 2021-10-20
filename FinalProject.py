@@ -76,7 +76,7 @@ st.markdown(''' ## Team 24 ''')
 st.markdown('''Danah Park | Devi Ganapathi | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana | Liz Peterson | Noemi Valdez ''')
 
 #### Outline Options for Sidebar
-section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions","Supplemental Information"))
+section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions & Limitations","Supplemental Information"))
 
 #### PROJECT DESCRIPTION SECTION ####
 if section == "Project Description":
@@ -643,27 +643,49 @@ elif section =="Model Building":
   """)
 elif section == "Results":
 
-    components.html(
-        """
-        <div id="observablehq-a70836fb">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
+  components.html(
+      """
+      <div id="observablehq-a70836fb">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
+        });
+      </script>
+      """, height = 600,)
 
-elif section=="Conclusions":
-  st.markdown("""
   
+
+elif section=="Conclusions & Limitations":
+  st.markdown("""
+  ### Conclusions
+  
+  """)
+  st.markdown("""
+  ### Limitations
+  The limitations of our study can be broadly separated into two categories: data limitations and methodology approaches. 
+
+  #### Data Limitation
+  In regards to our data, one main limitation of this approach is that it uses tax return data to calculate the net migration outflow for each county. Tax returns are usually only filed per household, so although the data approximates the number of individuals using the number of total exemptions, it may not be accurate. This also means that this data only tracks households/individuals who file taxes in the US.
+
+  Another significant limitation of the approach is that it doesn’t account for international immigration into the counties. Therefore although counties might have negative net migration outflows every year, the total populations of the counties could still be growing, either due to births or immigration. 
+
+  Additionally, our income and housing price index data is not adjusted for inflation, which over-values incomes in later years. If we had more time, we would incorporate an inflation adjustment in the dataset.
+
+  Finally, if we had more time, we would try to include additional features that may better explain population migration, including climate related data such as temperature, drought, sea-level rise, etc. 
+
+  #### Methodology Limitations
+  As described earlier, our modeling choice involves a one-step forecast. Therefore, our population migration projection results in 2030 rely heavily on our predictions in every previous year. Instead of a one-step forecast, future work may involve building models for multi-step forecasts. However, we expect that the predictive power would significantly reduce. 
+
+  Another modeling choice we made was that we focused on the net migration outflow. Future work can also focus on explicitly modeling the outflows and inflows of each origin-destination pair. 
+
   """)
 
 elif section=="Supplemental Information":
