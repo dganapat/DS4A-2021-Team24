@@ -14,19 +14,32 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
     counties = json.load(response)
 import plotly.express as px
 import plotly.figure_factory as pff
+import matplotlib as mpl
 plt.style.use('plotstyles/DGplots.mplstyle')
 
 ##### DATA IMPORTING SECTION #####
 # Import all relevant datasets in this section so they'll be accessible in all sections
 
+def get_color_dict(df, color_var):
+    var1 = df[color_var].drop_duplicates()
+    color_array = plt.get_cmap('viridis')(np.linspace(0, 1, num=df[color_var].nunique(), endpoint=True))
+    return dict(zip(var1, color_array))
+
+def get_high_low_dfs(df,highNet,lowNet):
+    df_highNet = df.loc[df.FIPS.isin(highNet.FIPS.tolist())].copy()
+    df_lowNet = df.loc[df.FIPS.isin(lowNet.FIPS.tolist())].copy()
+    return df_highNet, df_lowNet
+
 @st.cache
 def import_data():
   lowNet = pd.read_csv('Datasets/smallestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
   highNet = pd.read_csv('Datasets/largestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
-  lowNet['FIPS'] = ["%05d" % elem for elem in lowNet['FIPS']]
-  highNet['FIPS'] = ["%05d" % elem for elem in highNet['FIPS']]
-  lowFIPS = lowNet['FIPS'].to_list()
-  highFIPS = highNet['FIPS'].to_list()
+  # lowNet['FIPS'] = ["%05d" % elem for elem in lowNet['FIPS']]
+  # highNet['FIPS'] = ["%05d" % elem for elem in highNet['FIPS']]
+  # lowFIPS = lowNet['FIPS'].to_list()
+  # highFIPS = highNet['FIPS'].to_list()
+  lowFIPS = ["%05d" % elem for elem in lowNet['FIPS']]
+  highFIPS = ["%05d" % elem for elem in highNet['FIPS']]
 
   popmig = pd.read_csv('Datasets/population_migration.csv')
   popmig['FIPS'] = ["%05d" % elem for elem in popmig['FIPS']]
@@ -44,12 +57,14 @@ def import_data():
   migration_net = pd.read_csv('Datasets/migration_net.csv')
 
   disaster_types = pd.read_csv('Datasets/disaster_types.csv')
-  disaster_highNet_all = pd.read_csv('Datasets/disaster_highNet_all.csv')
-  disaster_lowNet_all = pd.read_csv('Datasets/disaster_lowNet_all.csv')
+  disaster_migration = pd.read_csv('Datasets/disaster_migration.csv')
+  color_dict_years = get_color_dict(disaster_migration, 'year')
 
-  return lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_highNet_all,disaster_lowNet_all
+  hpi_migration = pd.read_csv('Datasets/hpi_migration.csv')
 
-lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_highNet_all,disaster_lowNet_all = import_data()
+  return highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration
+
+highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration = import_data()
 ##### END DATA IMPORTING SECTION #####
 
 #### TITE AND HEADER ####
@@ -143,7 +158,7 @@ elif section == "Exploratory Data Analysis":
   ''')
 
   choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Number of Disasters","Housing Price Index","Income","Employment","Population","All Variables"])
-  if ("Population Migration" or "All Variables") == choice:
+  if choice == "Population Migration" or choice == "All Variables":
     st.markdown('''
           ### Population Migration
           ''')
@@ -181,12 +196,29 @@ elif section == "Exploratory Data Analysis":
             </script>
             """, height = 600,)
   
-  if choice == "Number of Disasters" or "All Variables":
+  if choice == "Number of Disasters" or choice == "All Variables":
     st.markdown('''
           ### Number of Disasters
 
           At a very basic level, we want to understand the disasters that have occurred during the time period of population migration that we are studying, from 1993 until 2019. FEMA disaster data encompasses a wide array of disaster types, ranging from tornadoes to droughts. 
           ''')
+    
+    components.html("""
+    <div id="observablehq-eb1119d4">
+      <div class="observablehq-viewof-year_select"></div>
+      <div class="observablehq-chart"></div>
+      <div class="observablehq-update" style="display:none"></div>
+    </div>
+    <script type="module">
+      import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+      import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
+      (new Runtime).module(define, name => {
+        if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
+        if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
+        if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
+      });
+    </script>
+    """, height = 600,)
 
     fig, ax = plt.subplots(figsize= (10,5))
 
@@ -208,20 +240,16 @@ elif section == "Exploratory Data Analysis":
     st.markdown('''
     As a starting point, we want to understand what are some of the disasters that have been most prominent. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
     ''')
-    
+
+    disaster_highNet, disaster_lowNet = get_high_low_dfs(disaster_migration)
     fig, ax = plt.subplots(figsize= (10,6))
-
     width = 0.4
-
     plt.bar(disaster_highNet_all.year - width/2, disaster_highNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.25), edgecolor = 'k')
     plt.bar(disaster_lowNet_all.year + width/2, disaster_lowNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.75), edgecolor = 'k')
-
     ax.set_title('Number of Disasters by Year', pad = 15)
     ax.set_xlabel('Year')
     ax.set_ylabel('Number of Disasters')
-
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
-
     plt.legend(['Highest Outflow','Highest Inflow'], loc='upper right', bbox_to_anchor=(0.42, 0.95),  frameon=False, fontsize = 18)
     st.pyplot(fig)
 
@@ -229,39 +257,104 @@ elif section == "Exploratory Data Analysis":
 
     st.markdown(""" Aggregation of the total number of disasters of all types for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically experienced more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
     """)
-    
-    components.html("""
-        <div id="observablehq-eb1119d4">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
-          });
-        </script>
-        """, height = 600,)
 
-  if choice == "Housing Price Index" or "All Variables":
+    fig, ax = plt.subplots(figsize=(8,6))
+    corr_disasters_all = pearsonr(disaster_migration.num_disasters.tolist(), disaster_migration.net_out.tolist())
+    years = disaster_migration.year.drop_duplicates()
+    for year in years:
+      plt.scatter(disaster_migration.loc[disaster_migration.year == year].num_disasters, disaster_migration.loc[disaster_migration.year == year].net_out, color = color_dict_years[year])
+
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels([str(min(years)), str(max(years))])
+    cb.ax.tick_params(size = 0)
+
+    ax.text(3.5,170000, 'Correlation: ' + "%0.3f" % corr_disasters_all[0])
+    ax.text(3.5,150000, 'p-value: ' + "%0.3f" % corr_disasters_all[1])
+    #ax.text(1200,-60000, 'Correlation: ' + "%0.3f" % corr_disasters_all[0])
+    #ax.text(1200,-90000, 'p-value: ' + "%0.3f" % corr_disasters_all[1])
+
+    ax.set_title('Number of Disasters vs. Net Population Outflow', pad = 15)
+    ax.set_xlabel('Number of Disasters')
+    ax.set_ylabel('Net Population Outflow')
+    plt.tick_params(axis='both', which='major', length = 10, width = 2)
+
+    st.pyplot(fig)
+
+  if choice == "Housing Price Index" or choice == "All Variables":
     st.markdown('''
           ### Housing Price Index
           ''')
-    # Insert Housing Price Index by Year Time Series Plots Here
+    years = hpi_migration.year.drop_duplicates()
+    hpi_highNet, hpi_lowNet = get_high_low_dfs(hpi_migration,highNet,lowNet)
+    hpi_highNet_v0 = hpi_highNet.copy()
+    hpi_highNet = hpi_highNet_v0.loc[hpi_highNet_v0.FIPS != 36061]
+    color_dict_highNet = get_color_dict(hpi_highNet.loc[hpi_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
+    color_dict_lowNet = get_color_dict(hpi_lowNet.loc[hpi_lowNet.year == 2018].sort_values('net_out', ascending = False), 'FIPS')
+    
+    # Housing Price Index by Year Time Series Plots
+    fig, ax = plt.subplots(1,2,figsize= (13,6), gridspec_kw={'width_ratios': [1, 1.25]})
 
-    st.markdown(""" Housing Price Index by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively""")
+    for FIPS in hpi_highNet.FIPS.drop_duplicates():
+        ax[0].plot(hpi_highNet.loc[hpi_highNet.FIPS == FIPS].year, hpi_highNet.loc[hpi_highNet.FIPS == FIPS].hpi, color = color_dict_highNet[FIPS])
+
+    for FIPS in hpi_lowNet.FIPS.drop_duplicates():
+        ax[1].plot(hpi_lowNet.loc[hpi_lowNet.FIPS == FIPS].year, hpi_lowNet.loc[hpi_lowNet.FIPS == FIPS].hpi,  color = color_dict_lowNet[FIPS])
+
+    fig.suptitle('Housing Price Index by Year', y = 1.01)
+    ax[0].set_title('Highest Population Outflow', pad = 15)
+    ax[0].set_xlabel('Year')
+    ax[0].set_ylabel('HPI')
+    ax[1].set_title('Highest Population Inflow', pad = 15)
+    ax[1].set_xlabel('Year')
+    ax[1].set_ylabel('')
+
+    ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
+    ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
+
+    #ax[0].set_ylim([0,2500])
+    #ax[1].set_ylim([0,2500])
+
+    # Color bar indicating most/least outflow/inflow
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels(['Least', 'Most'])
+    cb.ax.tick_params(size = 0)
+
+    st.write(fig)
+
+    st.markdown(""" **Above: Housing Price Index by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**""")
 
     st.markdown("""
     In the figure above, the Housing Price Index is plotted by year for the 20 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively.  Considering exclusively these counties we observe that the counties that experienced the largest outflow are in general the counties in which housing price indices have increased the most dramatically in the wake of the subprime mortgage crisis. Counties that experienced the largest inflow largely recovered from the subprime mortgage crisis but have not recovered prices beyond their pre-crisis level. For context, the three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
     """)
 
-    # Insert HPI vs Net Population Outflow Scatter Plot Here
+    # HPI vs Net Population Outflow Scatter Plot
+    corr_hpi_all = pearsonr(hpi_migration.hpi.tolist(), hpi_migration.net_out.tolist())
+    fig, ax = plt.subplots(figsize= (8,6))
+    color_dict_years = get_color_dict(hpi_migration, 'year')
 
-    st.markdown("""Housing price index by county and by year vs. net population outflow""")
+    for year in hpi_migration.year.drop_duplicates():
+        plt.scatter(hpi_migration.loc[hpi_migration.year == year].hpi, hpi_migration.loc[hpi_migration.year == year].net_out, color = color_dict_years[year])
+
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels([str(min(years)), str(max(years))])
+    cb.ax.tick_params(size = 0)
+
+    #ax.text(1200,170000, 'Correlation: ' + "%0.3f" % corr_hpi_all[0])
+    #ax.text(1200,150000, 'p-value: ' + "%0.3f" % corr_hpi_all[1])
+    ax.text(1200,-60000, 'Correlation: ' + "%0.3f" % corr_hpi_all[0])
+    ax.text(1200,-90000, 'p-value: ' + "%0.3f" % corr_hpi_all[1])
+
+    ax.set_title('HPI vs. Net Population Outflow', pad = 15)
+    ax.set_xlabel('HPI')
+    ax.set_ylabel('Net Population Outflow')
+
+    plt.tick_params(axis='both', which='major', length = 10, width = 2)
+    st.pyplot(fig)
+
+    st.markdown("""**Above: Housing price index by county and by year vs. net population outflow**""")
 
     st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation between increased housing price index and increased net population outflow, as plotted in Figure 7. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas that are becoming more expensive.
     """)
@@ -283,7 +376,7 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
-  if choice == "Income" or "All Variables":
+  if choice == "Income" or choice == "All Variables":
     st.markdown('''
           ### Income
           ''')
@@ -320,7 +413,7 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
-  if choice == "Employment" or "All Variables":
+  if choice == "Employment" or choice == "All Variables":
     st.markdown('''
           ### Employment
           ''')
@@ -350,7 +443,7 @@ elif section == "Exploratory Data Analysis":
         </script>
         """, height = 600,)
 
-  if choice == "Population" or "All Variables":
+  if choice == "Population" or choice == "All Variables":
     st.markdown('''
           ### Population
           ''')
