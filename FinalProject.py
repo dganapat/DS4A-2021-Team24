@@ -43,9 +43,13 @@ def import_data():
 
   migration_net = pd.read_csv('Datasets/migration_net.csv')
 
-  return lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net
+  disaster_types = pd.read_csv('Datasets/disaster_types.csv')
+  disaster_highNet_all = pd.read_csv('Datasets/disaster_highNet_all.csv')
+  disaster_lowNet_all = pd.read_csv('Datasets/disaster_lowNet_all.csv')
 
-lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net = import_data()
+  return lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_highNet_all,disaster_lowNet_all
+
+lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_highNet_all,disaster_lowNet_all = import_data()
 ##### END DATA IMPORTING SECTION #####
 
 #### TITE AND HEADER ####
@@ -133,212 +137,240 @@ elif section == "Datasets":
     ''')
     
 elif section == "Exploratory Data Analysis":
-    
   st.markdown('''
   ### Visualizing Trends for Counties
   To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
   ''')
 
-  # Notes from Chris: Drop EDA into the appendix (change section name)
-  # Features are not that interesting
-  # Do EDA on response variable
-  # Journalistic style writing - most important first
-  # Add Executive summary section at the beginning
-  # Make consistent first person
-  # Executive summary: Scope and results? Main findings - abstract, error, factors that had an effect, no more than ~250 words 
+  choices = st.multiselect(label="EDA Variables to View",options=["Population Migration","Number of Disasters","Housing Price Index","Income","Employment","Populations"],default="Population Migration")
+  if "Population Migration" in choices:
+    st.markdown('''
+          ### Population Migration
+          ''')
+    
+    # Make time series net migration plot
+    
+    # fig, ax = plt.subplots(figsize= (12,6))
+    # for FIPS in migration_net.FIPS.drop_duplicates():
+    #     plt.plot(migration_net.loc[migration_net.FIPS == FIPS].year, migration_net.loc[migration_net.FIPS == FIPS].tot_out, color = plt.get_cmap('viridis')(0.1), alpha = 0.3)
+        
+    # ax.set_title('Total Individuals Leaving Counties by Year', pad = 15)
+    # ax.set_xlabel('Year')
+    # ax.set_ylabel('Total Outflow')
+
+    # ax.tick_params(axis='both', which='major', length = 10, width = 2)
+    # ax.set_xlim([min(migration_net.year),max(migration_net.year)])
+
+    # st.pyplot(fig)
+
+    components.html(
+            """
+            <div id="observablehq-a70836fb">
+              <div class="observablehq-viewof-year_select"></div>
+              <div class="observablehq-chart"></div>
+              <div class="observablehq-update" style="display:none"></div>
+            </div>
+            <script type="module">
+              import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+              import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
+              (new Runtime).module(define, name => {
+                if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
+                if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
+                if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
+              });
+            </script>
+            """, height = 600,)
   
-  st.markdown('''
-        ### Population Migration
-        ''')
-  
-  # Make time series net migration plot
-  fig, ax = plt.subplots(figsize= (12,6))
-  for FIPS in migration_net.FIPS.drop_duplicates():
-      plt.plot(migration_net.loc[migration_net.FIPS == FIPS].year, migration_net.loc[migration_net.FIPS == FIPS].tot_out, color = plt.get_cmap('viridis')(0.1), alpha = 0.3)
-      
-  ax.set_title('Total Individuals Leaving Counties by Year', pad = 15)
-  ax.set_xlabel('Year')
-  ax.set_ylabel('Total Outflow')
+  if st.button("Numer of Disasters EDA"):
+    st.markdown('''
+          ### Number of Disasters
 
-  ax.tick_params(axis='both', which='major', length = 10, width = 2)
-  ax.set_xlim([min(migration_net.year),max(migration_net.year)])
+          At a very basic level, we want to understand the disasters that have occurred during the time period of population migration that we are studying, from 1993 until 2019. FEMA disaster data encompasses a wide array of disaster types, ranging from tornadoes to droughts. 
+          ''')
 
-  st.pyplot(fig)
+    fig, ax = plt.subplots(figsize= (10,5))
 
-  components.html(
-          """
-          <div id="observablehq-a70836fb">
-            <div class="observablehq-viewof-year_select"></div>
-            <div class="observablehq-chart"></div>
-            <div class="observablehq-update" style="display:none"></div>
-          </div>
-          <script type="module">
-            import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-            import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
-            (new Runtime).module(define, name => {
-              if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
-              if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
-              if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
-            });
-          </script>
-          """, height = 600,)
-  
-  st.markdown('''
-        ### Number of Disasters
+    plt.bar(disaster_types.index, disaster_types.num_incidents, color = plt.get_cmap('viridis')(0.1), edgecolor = 'k')
 
-        At a very basic level, we want to understand the disasters that have occurred during the time period of population migration that we are studying, from 1993 until 2019. FEMA disaster data encompasses a wide array of disaster types, ranging from tornadoes to droughts. 
-        ''')
+    inc_types = disaster_types.incidentType
+    ax.set_xticklabels(inc_types, rotation = 90)
+    plt.xticks(np.linspace(0, max(disaster_types.index), num=max(disaster_types.index), endpoint=False))
+    ax.set_xlim([-1,max(disaster_types.index)])
 
-  # Insert Number of Incidents by Disaster Type Plot Here
+    ax.set_title('Number of Incidents by Disaster Type', pad = 15)
+    ax.set_xlabel('Disaster Type')
+    ax.set_ylabel('Number of Disasters')
 
-  st.markdown('''
-  As a starting point, we want to understand what are some of the disasters that have been most prominent. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
-  ''')
-  # Insert Number of Disasters by Year Plot Here
-  st.markdown("""Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019 """)
+    plt.tick_params(axis='both', which='major', length = 10, width = 2)
 
-  st.markdown(""" Aggregation of the total number of disasters of all types for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically experienced more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
-  """)
-  
-  components.html("""
-      <div id="observablehq-eb1119d4">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
+    st.pyplot(fig)
 
-  st.markdown('''
-        ### Housing Price Index
-        ''')
-  # Insert Housing Price Index by Year Time Series Plots Here
+    st.markdown('''
+    As a starting point, we want to understand what are some of the disasters that have been most prominent. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
+    ''')
+    
+    fig, ax = plt.subplots(figsize= (10,6))
 
-  st.markdown(""" Housing Price Index by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively""")
+    width = 0.4
 
-  st.markdown("""
-  In the figure above, the Housing Price Index is plotted by year for the 20 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively.  Considering exclusively these counties we observe that the counties that experienced the largest outflow are in general the counties in which housing price indices have increased the most dramatically in the wake of the subprime mortgage crisis. Counties that experienced the largest inflow largely recovered from the subprime mortgage crisis but have not recovered prices beyond their pre-crisis level. For context, the three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
-  """)
+    plt.bar(disaster_highNet_all.year - width/2, disaster_highNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.25), edgecolor = 'k')
+    plt.bar(disaster_lowNet_all.year + width/2, disaster_lowNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.75), edgecolor = 'k')
 
-  # Insert HPI vs Net Population Outflow Scatter Plot Here
+    ax.set_title('Number of Disasters by Year', pad = 15)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Number of Disasters')
 
-  st.markdown("""Housing price index by county and by year vs. net population outflow""")
+    plt.tick_params(axis='both', which='major', length = 10, width = 2)
 
-  st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation between increased housing price index and increased net population outflow, as plotted in Figure 7. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas that are becoming more expensive.
-  """)
+    plt.legend(['Highest Outflow','Highest Inflow'], loc='upper right', bbox_to_anchor=(0.42, 0.95),  frameon=False, fontsize = 18)
+    st.pyplot(fig)
 
-  components.html("""
-      <div id="observablehq-d9baf6ed">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
+    st.markdown("""**Above: Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019** """)
 
-  st.markdown('''
-        ### Income
-        ''')
+    st.markdown(""" Aggregation of the total number of disasters of all types for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically experienced more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
+    """)
+    
+    components.html("""
+        <div id="observablehq-eb1119d4">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/disasters.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-eb1119d4 .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-eb1119d4 .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-eb1119d4 .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
 
-  # Insert Per Capita Income By Year Time Series Plots Here
+  if st.button("Housing Price Index EDA"):
+    st.markdown('''
+          ### Housing Price Index
+          ''')
+    # Insert Housing Price Index by Year Time Series Plots Here
 
-  st.markdown(""" Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
-  """)
+    st.markdown(""" Housing Price Index by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively""")
 
-  st.markdown("""
-  In the figure above we plot the per capita income for the counties with the highest net outflow and inflow, again color coded by the magnitude of the outflow or inflow. In general, per capita income is significantly higher in counties with high net outflow than in counties with high net inflow. Interestingly, the county in each plot that has the highest outflow or inflow (indicated in yellow) appears roughly in the middle of each set of counties.
-  """)
+    st.markdown("""
+    In the figure above, the Housing Price Index is plotted by year for the 20 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively.  Considering exclusively these counties we observe that the counties that experienced the largest outflow are in general the counties in which housing price indices have increased the most dramatically in the wake of the subprime mortgage crisis. Counties that experienced the largest inflow largely recovered from the subprime mortgage crisis but have not recovered prices beyond their pre-crisis level. For context, the three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
+    """)
 
-  # Insert Per Capita Income vs Net Population Outflow Scatterplot Here
+    # Insert HPI vs Net Population Outflow Scatter Plot Here
 
-  st.markdown("""
-  To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income and found that while there is a small net correlation between per capita income and net population outflow (0.38), it is not a particularly strong relationship. One factor that is not accounted for in our income dataset that could be very relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
-  """)
+    st.markdown("""Housing price index by county and by year vs. net population outflow""")
 
-  components.html("""
-      <div id="observablehq-324b9012">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/income.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-324b9012 .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-324b9012 .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-324b9012 .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
+    st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation between increased housing price index and increased net population outflow, as plotted in Figure 7. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas that are becoming more expensive.
+    """)
 
-  st.markdown('''
-        ### Population
-        ''')
+    components.html("""
+        <div id="observablehq-d9baf6ed">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/hpi.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-d9baf6ed .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-d9baf6ed .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-d9baf6ed .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
 
-  components.html("""
-      <div id="observablehq-ff6b2a54">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
-        });
-      </script>
-      """, height = 600)
+  if st.button("Income EDA"):
+    st.markdown('''
+          ### Income
+          ''')
 
+    # Insert Per Capita Income By Year Time Series Plots Here
 
+    st.markdown(""" Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
+    """)
 
-  st.markdown('''
-        ### Employment
-        ''')
+    st.markdown("""
+    In the figure above we plot the per capita income for the counties with the highest net outflow and inflow, again color coded by the magnitude of the outflow or inflow. In general, per capita income is significantly higher in counties with high net outflow than in counties with high net inflow. Interestingly, the county in each plot that has the highest outflow or inflow (indicated in yellow) appears roughly in the middle of each set of counties.
+    """)
 
-  # Insert Employment Time Series Plots Here
+    # Insert Per Capita Income vs Net Population Outflow Scatterplot Here
 
-  st.markdown("""
-  Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
-  """)
+    st.markdown("""
+    To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income and found that while there is a small net correlation between per capita income and net population outflow (0.38), it is not a particularly strong relationship. One factor that is not accounted for in our income dataset that could be very relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
+    """)
 
-  # Insert Total Jobs vs Net Population Outflow Scatterplot here
+    components.html("""
+        <div id="observablehq-324b9012">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/income.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-324b9012 .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-324b9012 .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-324b9012 .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
 
-  components.html("""
-      <div id="observablehq-7388290f">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/employment.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-7388290f .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-7388290f .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-7388290f .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
+  if st.button("Employment EDA"):
+    st.markdown('''
+          ### Employment
+          ''')
+
+    # Insert Employment Time Series Plots Here
+
+    st.markdown("""
+    Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
+    """)
+
+    # Insert Total Jobs vs Net Population Outflow Scatterplot here
+
+    components.html("""
+        <div id="observablehq-7388290f">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/employment.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-7388290f .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-7388290f .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-7388290f .observablehq-update")();
+          });
+        </script>
+        """, height = 600,)
+
+  if st.button("Population EDA"):
+    st.markdown('''
+          ### Population
+          ''')
+
+    components.html("""
+        <div id="observablehq-ff6b2a54">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
+          });
+        </script>
+        """, height = 600)
 
 
 
