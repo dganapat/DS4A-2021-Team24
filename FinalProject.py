@@ -661,12 +661,36 @@ elif section == "Results":
       </script>
       """, height = 600,)
 
+  st.markdown(""" 
+  ## XGBoost Model Results
+  """)
+  components.html(
+          """
+          <div id="observablehq-6397857c">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/xgboost_diff.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-6397857c .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-6397857c .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-6397857c .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
+  st.markdown("""
+
+  """)
+
   
 
 elif section=="Conclusions & Limitations":
   st.markdown("""
   ### Conclusions
-  
+
   """)
   st.markdown("""
   ### Limitations
