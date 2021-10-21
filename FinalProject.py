@@ -76,7 +76,7 @@ highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaste
 st.sidebar.image('Plots/2030Projection.png')
 st.sidebar.markdown("""
 # Landscape of the New America: How domestic migration will redistribute the US population in 2030
-## Team 24
+## DS4A/W | Team 24
 Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
 """)
 #### Outline Options for Sidebar
@@ -86,7 +86,7 @@ section = st.sidebar.selectbox("Outline",("Executive Summary","Project Descripti
 #### EXECUTIVE SUMMARY SECTION
 if section == "Executive Summary":
   st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
-  ## Team 24 
+  ## DS4A/W | Team 24 
   Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
   # Executive Summary
   
@@ -108,13 +108,35 @@ if section == "Executive Summary":
           });
         </script>
           """, height = 600,)
+  st.markdown(""" ## The Team """)
+  col1,col2,col3,col4 = st.columns([2,2,2,2])
+
+  with col1:
+    st.image('Team Photos/Danah.jpeg')
+    st.caption('Danah')
+    st.image('Team Photos/Gaby.jpeg')
+    st.caption('Gaby')
+  with col2:
+    st.image('Team Photos/Devi.jpeg')
+    st.caption('Devi')
+    st.image('Team Photos/Irene.jpeg')
+    st.caption('Irene')
+  with col3:
+    st.image('Team Photos/Liz.jpeg')
+    st.caption('Liz')
+    st.image('Team Photos/Noemi.jpeg')
+    st.caption('Noemi')
+  with col4:
+    # st.image('Team Photos/Emily.jpeg')
+    st.caption('Emily')
+
 
 #### PROJECT DESCRIPTION SECTION ####
 if section == "Project Description":
   #### TITE AND HEADER ####
   # Title and header
   # st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
-  # ## Team 24 
+  # ## DS4A/W | Team 24 
   # Danah Park | Devi Ganapathi | Elizabeth Peterson | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
   # ''')
     
