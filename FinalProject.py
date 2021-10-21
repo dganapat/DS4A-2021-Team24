@@ -139,7 +139,7 @@ if section == "Executive Summary":
     st.image('Team Photos/Noemi.jpeg')
     st.caption('Noemi')
   with col4:
-    # st.image('Team Photos/Emily.jpeg')
+    st.image('Team Photos/Emily.jpeg')
     st.caption('Emily')
   
   st.markdown("""
