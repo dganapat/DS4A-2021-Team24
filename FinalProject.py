@@ -80,7 +80,7 @@ st.sidebar.markdown("""
 Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
 """)
 #### Outline Options for Sidebar
-section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Conclusions & Limitations","Supplemental Information"))
+section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Conclusions","Supplemental Information"))
 
 
 #### EXECUTIVE SUMMARY SECTION
@@ -775,7 +775,7 @@ elif section == "Results & Discussion":
   #     """, height = 600,)
   st.markdown(""" 
   ## Projections for 2030 - Linear Regression
-  Based on our comparative analysis (described below), both the linear regression and XGBoost model had comparable RMSE and R2 values. However, based on Tables 1 and 2, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2030. 
+  Based on our comparative analysis (described below), both the linear regression and XGBoost model had comparable RMSE and R2 values. However, based on the tables below, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2030. 
   """)
   st.markdown("""
   #### Projected total net outflow by county using linear regression model
@@ -863,7 +863,7 @@ elif section == "Results & Discussion":
   # Insert table with error results and coefficients from linear regression model here
 
   st.markdown("""
-  We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that the relationship is indeed linear. 
+  We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that our model does quite well. 
   """)
 
   # Insert predicted vs actual plot here
@@ -887,6 +887,8 @@ elif section == "Results & Discussion":
   st.pyplot(fig)
 
   st.markdown(""" 
+  ** Above: Average feature Importance for the XGBoost Model **
+
   In addition to the RMSE and R$^2$ values of the model, we also looked at the difference in prediction for each of the different counties. From Figure 12, certain counties in Southern California and Arizona like Pinal, Los Angeles, and San Bernardino are extremely underpredicted by our models. On the other hand, several counties that the model overpredicts include Miami-Dade, Florida, Harris, Texas, and San Diego, California. These counties are the outliers and suggest that there are other factors that are affecting the number of people migrating out of the county we have not accounted for. It is interesting to note that Linear Regression underestimates while XGBoost overestimates, and vice versa. This can be seen in the Florida region.  
 
  **Linear Regression Model: Difference between Prediction and Actual **
@@ -931,21 +933,8 @@ elif section == "Results & Discussion":
           });
         </script>
           """, height = 600,)
-
-
-
-
-  
-
-
-
-elif section=="Conclusions & Limitations":
   st.markdown("""
-  # Conclusions
-
-  """)
-  st.markdown("""
-  ### Limitations
+  ## Limitations and Future Work
   The limitations of our study can be broadly separated into two categories: data limitations and methodology approaches. 
 
   #### Data Limitation
@@ -963,6 +952,19 @@ elif section=="Conclusions & Limitations":
   Another modeling choice we made was that we focused on the net migration outflow. Future work can also focus on explicitly modeling the outflows and inflows of each origin-destination pair. 
 
   """)
+
+
+
+  
+
+
+
+elif section=="Conclusions":
+  st.markdown("""
+  # Conclusions
+
+  """)
+  
 
 elif section=="Supplemental Information":
 
