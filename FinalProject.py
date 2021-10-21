@@ -135,7 +135,7 @@ if section == "Executive Summary":
     st.caption('Irene')
   with col3:
     st.image('Team Photos/Liz.jpeg')
-    st.caption('Liz')
+    st.caption('Elizabeth')
     st.image('Team Photos/Noemi.jpeg')
     st.caption('Noemi')
   with col4:
@@ -773,7 +773,7 @@ elif section =="Methodology":
   ## Projection Method
   Finally, we chose the best performing model to perform our projection predictions of the population migration in 2030. To do this we first had to approximate future projections of each of the input variables from 2020-2030. 
 
-  We used future values of total population based on the methodology described in Hauer et al., 2016 and Robinson et al. 2019, which is publicly available here. The population numbers are estimated based on a linear combination of housing units and population per housing unit in each block group from 1940-2010. The numbers are then aggregated to obtain a per county value. 
+  We used future values of total population based on the methodology described in [Hauer et al., 2016](https://mathewhauer.github.io/papers/2016-NCLIMHauer.pdf) and [Robinson et al. 2019](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0227436), which is publicly available [here](https://github.com/calebrob6/migration-slr). The population numbers are estimated based on a linear combination of housing units and population per housing unit in each block group from 1940-2010. The numbers are then aggregated to obtain a per county value. 
 
 To project the total number of disasters per county per year into future years, we fit the aggregate number of disasters per county to a Poisson distribution. We calculated random samples of potential distributions of future disasters per year and averaged them over 100 samples in order to estimate the number of disasters per year but still provide a degree of variability per year.
 
