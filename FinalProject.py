@@ -767,49 +767,7 @@ elif section == "Results":
   #     """, height = 600,)
 
 
-  st.markdown(""" 
-  #### Linear Regression Model: Difference between Prediction and Actual 
-  """)
-  components.html(
-          """
-          <div id="observablehq-152f569d">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/linreg_diff.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-152f569d .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-152f569d .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-152f569d .observablehq-update")();
-          });
-        </script>
-          """, height = 600,)
-  st.markdown(""" """)
-
-
-  st.markdown(""" 
-  #### XGBoost Model: Difference between Prediction and Actual 
-  """)
-  components.html(
-          """
-          <div id="observablehq-6397857c">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/xgboost_diff.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-6397857c .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-6397857c .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-6397857c .observablehq-update")();
-          });
-        </script>
-          """, height = 600,)
+  
 
   st.markdown("""
   ## Comparative Results
@@ -870,7 +828,54 @@ elif section == "Results":
   st.pyplot(fig)
 
   st.markdown(""" 
-  ## Projection Results - Linear Regression
+  In addition to the RMSE and R$^2$ values of the model, we also looked at the difference in prediction for each of the different counties. From Figure 12, certain counties in Southern California and Arizona like Pinal, Los Angeles, and San Bernardino are extremely underpredicted by our models. On the other hand, several counties that the model overpredicts include Miami-Dade, Florida, Harris, Texas, and San Diego, California. These counties are the outliers and suggest that there are other factors that are affecting the number of people migrating out of the county we have not accounted for. It is interesting to note that Linear Regression underestimates while XGBoost overestimates, and vice versa. This can be seen in the Florida region.  
+
+  #### Linear Regression Model: Difference between Prediction and Actual 
+  """)
+  components.html(
+          """
+          <div id="observablehq-152f569d">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/linreg_diff.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-152f569d .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-152f569d .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-152f569d .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
+  st.markdown(""" """)
+
+
+  st.markdown(""" 
+  #### XGBoost Model: Difference between Prediction and Actual 
+  """)
+  components.html(
+          """
+          <div id="observablehq-6397857c">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/xgboost_diff.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-6397857c .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-6397857c .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-6397857c .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
+
+  st.markdown(""" 
+  ## Projections for 2030 - Linear Regression
+  Based on our comparative analysis, both the linear regression and XGBoost model had comparable RMSE and R2 values. However, based on Tables 1 and 2, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2030. 
   """)
   st.markdown("""
   #### Projected total net outflow by county using linear regression model
@@ -892,12 +897,13 @@ elif section == "Results":
           });
         </script>
           """, height = 600,)
-  
+  st.markdown("""
+  In the figure above, we show the projected distribution of net population migration in 2030. Unfortunately, there are some counties in which we had missing values, and thus we cannot project into the future. However, these counties are sparsely populated counties with populations in the thousands where we don’t expect much change to occur. It can be seen that in general, most counties (shaded in green) will receive an influx of people. On the other hand, only several counties have a large outflow of people. Coincidently, these are also counties that are the most populous, such as those in Arizona, California, and Florida. In the case of Maricopa, AZ this is particularly interesting, because as of 2018 Maricopa, AZ had the highest rate of net inflow of all counties in the US. The implication is that there may be a critical threshold of rapid population growth at which point trends reverse and individuals begin moving out of a county in higher numbers - a boom and bust phenomenon.
+  """)
+
   st.markdown("""
   #### Projected net outflow by county normalized by total population using linear regression model
   """)  
-
-
   components.html(
         """
       <div id="observablehq-a40b4a45">
@@ -915,6 +921,8 @@ elif section == "Results":
         });
       </script>
         """, height = 600,)
+  st.markdown("""
+  Given that the population migration projections heavily depend on the total population numbers of the county itself, we also calculated the normalized projections, which are the number of migrants divided by the population of the county itself. This can be seen in the figure above. Interestingly, we see that in the West and western edge of the Midwest areas the population influx caused by the migration is significant compared to the population of the counties themselves. This is important as infrastructure in those counties and states might not be prepared to handle a large population influx. """)
 
 
   
