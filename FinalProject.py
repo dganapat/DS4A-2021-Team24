@@ -73,10 +73,10 @@ highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaste
 
 
 #### Sidebar Header
-st.sidebar.image('Plots/2030Projection.png')
+st.sidebar.image('Plots/america.png')
 st.sidebar.markdown("""
 # Landscape of the New America: How domestic migration will redistribute the US population in 2030
-## DS4A/W | Team 24
+### DS4A Women 2021 - Team 24
 Danah Park | Devi Ganapathi | 
 
 Elizabeth Peterson |  Emily Wang | 
