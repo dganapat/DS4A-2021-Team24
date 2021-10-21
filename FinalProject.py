@@ -859,12 +859,12 @@ elif section=="Supplemental Information":
   ''')
 
   #### AQI Heat Map ####
-  year = st.slider(label='Year',min_value = 1993, max_value = 2020)
-  aqi_map = aqis[aqis['year']==year]
+  # year = st.slider(label='Year',min_value = 1993, max_value = 2020)
+  # aqi_map = aqis[aqis['year']==year]
   
-  fig = px.choropleth(aqi_map,geojson=counties, locations="FIPS",color='Median AQI',hover_name="County",color_continuous_scale="Viridis",range_color=(0,250),scope="usa",labels={'Median AQI':'Median AQI'})
+  # fig = px.choropleth(aqi_map,geojson=counties, locations="FIPS",color='Median AQI',hover_name="County",color_continuous_scale="Viridis",range_color=(0,250),scope="usa",labels={'Median AQI':'Median AQI'})
   
-  st.write(fig)
+  # st.write(fig)
 
   st.markdown("""
   ### FMR
