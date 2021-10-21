@@ -91,7 +91,7 @@ section = st.sidebar.selectbox("Outline",("Executive Summary","Project Descripti
 
 #### EXECUTIVE SUMMARY SECTION
 if section == "Executive Summary":
-  st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
+  st.markdown(''' # Landscape of the New America: How domestic migration will redistribute the US population in 2030 
   ## DS4A/W | Team 24 
   Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
   # Executive Summary
