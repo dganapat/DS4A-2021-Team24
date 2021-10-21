@@ -1007,7 +1007,7 @@ elif section=="Supplemental Information":
 
   st.markdown(''' 
   ### AQI 
-  We downloaded the AQI dataset from the United States Environmental Protection Agency (aqs.epa.gov). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis. Exploratory data analysis was performed on this dataset (below), but unfortunately too many counties were missing, so AQI was not included as a descriptor in the final model.
+  We downloaded the AQI dataset from the United States [Environmental Protection Agency](https://aqs.epa.gov/aqsweb/airdata/download_files.html#Annual). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis. Exploratory data analysis was performed on this dataset (below), but unfortunately too many counties were missing, so AQI was not included as a descriptor in the final model.
   ''')
 
   #### START AQI TIME PLOTS ####
@@ -1085,7 +1085,7 @@ elif section=="Supplemental Information":
 
   st.markdown("""
   ### FMR
-  We downloaded Fair Market Rent (FMR) data from the Department of Housing and Urban Development (HUD) website via their Office of Policy Development and Research (PD&R). This dataset includes the 40th percentile rental rates by county and by year for Studio, 1, 2, 3, and 4 Bedroom units from 2004-2021. 
+  We downloaded Fair Market Rent (FMR) data from the Department of Housing and Urban Development [(HUD)](https://www.huduser.gov/portal/datasets/fmr.html) website via their Office of Policy Development and Research (PD&R). This dataset includes the 40th percentile rental rates by county and by year for Studio, 1, 2, 3, and 4 Bedroom units from 2004-2021. 
   """)
   # FMR Scatter Plot
   corr_fmr_0 = pearsonr(fmr_migration.fmr_0.tolist(), fmr_migration.net_out.tolist())
