@@ -30,14 +30,17 @@ def get_high_low_dfs(df,highNet,lowNet):
     df_lowNet = df.loc[df.FIPS.isin(lowNet.FIPS.tolist())].copy()
     return df_highNet, df_lowNet
 
+def get_high_low_10_dfs(df,highNet,lowNet):
+  highNet_10 = highNet.sort_values('Net Outflow', ascending = False).head(10)
+  lowNet_10 = lowNet.sort_values('Net Outflow', ascending = True).head(10)
+  df_highNet = df.loc[df.FIPS.isin(highNet_10.FIPS.tolist())].copy()
+  df_lowNet = df.loc[df.FIPS.isin(lowNet_10.FIPS.tolist())].copy()
+  return df_highNet, df_lowNet
+
 @st.cache(suppress_st_warning=True)
 def import_data():
   lowNet = pd.read_csv('Datasets/smallestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
   highNet = pd.read_csv('Datasets/largestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
-  # lowNet['FIPS'] = ["%05d" % elem for elem in lowNet['FIPS']]
-  # highNet['FIPS'] = ["%05d" % elem for elem in highNet['FIPS']]
-  # lowFIPS = lowNet['FIPS'].to_list()
-  # highFIPS = highNet['FIPS'].to_list()
   lowFIPS = ["%05d" % elem for elem in lowNet['FIPS']]
   highFIPS = ["%05d" % elem for elem in highNet['FIPS']]
 
@@ -45,10 +48,6 @@ def import_data():
   popmig['FIPS'] = ["%05d" % elem for elem in popmig['FIPS']]
   popmig['dest_FIPS'] = ["%05d" % elem for elem in popmig['dest_FIPS']]
 
-  aqis = pd.read_csv('Datasets/AQI_by_County.csv')
-  aqis['FIPS'] = ["%05d" % elem for elem in aqis['FIPS']]
-
-  all_aqi_data = pd.read_csv('Datasets/all_aqi_migration_data.csv')
   county_net_out = pd.read_csv('Datasets/county_net_out.csv')
 
   hpis = pd.read_csv('Datasets/HPI.csv')
@@ -64,10 +63,12 @@ def import_data():
   income_migration = pd.read_csv('Datasets/income_migration.csv')
   employment_migration = pd.read_csv('Datasets/employment_migration.csv')
   population_migration = pd.read_csv('Datasets/population_migration_eda.csv')
+  fmr_migration = pd.read_csv('Datasets/fmr_migration.csv')
+  aqi_migration = pd.read_csv('Datasets/aqi_migration.csv')
 
-  return highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration
+  return highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration
 
-highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration = import_data()
+highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration = import_data()
 ##### END DATA IMPORTING SECTION #####
 
 
@@ -335,29 +336,29 @@ elif section == "Exploratory Data Analysis":
     st.markdown(""" Aggregation of the total number of disasters of all types for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically experienced more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
     """)
 
-    # Disaster Correlation Plot - Might Delete Later
-    fig, ax = plt.subplots(figsize=(8,6))
-    corr_disasters_all = pearsonr(disaster_migration.num_disasters.tolist(), disaster_migration.net_out.tolist())
-    years = disaster_migration.year.drop_duplicates()
-    for year in years:
-      plt.scatter(disaster_migration.loc[disaster_migration.year == year].num_disasters, disaster_migration.loc[disaster_migration.year == year].net_out, color = color_dict_years[year])
+    # Disaster Correlation Plot - Currently deleted
+    # fig, ax = plt.subplots(figsize=(8,6))
+    # corr_disasters_all = pearsonr(disaster_migration.num_disasters.tolist(), disaster_migration.net_out.tolist())
+    # years = disaster_migration.year.drop_duplicates()
+    # for year in years:
+    #   plt.scatter(disaster_migration.loc[disaster_migration.year == year].num_disasters, disaster_migration.loc[disaster_migration.year == year].net_out, color = color_dict_years[year])
 
-    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
-    cb.set_ticks([0, 1])
-    cb.set_ticklabels([str(min(years)), str(max(years))])
-    cb.ax.tick_params(size = 0)
+    # cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    # cb.set_ticks([0, 1])
+    # cb.set_ticklabels([str(min(years)), str(max(years))])
+    # cb.ax.tick_params(size = 0)
 
-    ax.text(3.5,170000, 'Correlation: ' + "%0.3f" % corr_disasters_all[0])
-    ax.text(3.5,150000, 'p-value: ' + "%0.3f" % corr_disasters_all[1])
-    #ax.text(1200,-60000, 'Correlation: ' + "%0.3f" % corr_disasters_all[0])
-    #ax.text(1200,-90000, 'p-value: ' + "%0.3f" % corr_disasters_all[1])
+    # ax.text(3.5,170000, 'Correlation: ' + "%0.3f" % corr_disasters_all[0])
+    # ax.text(3.5,150000, 'p-value: ' + "%0.3f" % corr_disasters_all[1])
+    # #ax.text(1200,-60000, 'Correlation: ' + "%0.3f" % corr_disasters_all[0])
+    # #ax.text(1200,-90000, 'p-value: ' + "%0.3f" % corr_disasters_all[1])
 
-    ax.set_title('Number of Disasters vs. Net Population Outflow', pad = 15)
-    ax.set_xlabel('Number of Disasters')
-    ax.set_ylabel('Net Population Outflow')
-    plt.tick_params(axis='both', which='major', length = 10, width = 2)
+    # ax.set_title('Number of Disasters vs. Net Population Outflow', pad = 15)
+    # ax.set_xlabel('Number of Disasters')
+    # ax.set_ylabel('Net Population Outflow')
+    # plt.tick_params(axis='both', which='major', length = 10, width = 2)
 
-    st.pyplot(fig)
+    # st.pyplot(fig)
 
   # Housing Price Index EDA
   if choice == "Housing Price Index" or choice == "All Variables":
@@ -793,40 +794,41 @@ elif section=="Supplemental Information":
   ''')
 
   #### START AQI TIME PLOTS ####
-  # Counties with lowest net migration outflow
-  start_year,end_year = st.select_slider(label='Year Range to Plot',options=np.arange(1993,2020,1),value=(1993,2019))
-  colors = cm.viridis(np.linspace(0,1,len(lowFIPS)))
-  fig,ax = plt.subplots(figsize=(10,6))
-  i = 0
-  for fips in lowFIPS:
-    x = aqis[aqis['FIPS']==fips]
-    x = x[x['year'].isin(np.arange(start_year,end_year,1))]['year']
-    y = aqis[aqis['FIPS']==fips]
-    y = y[y['year'].isin(np.arange(start_year,end_year,1))]['Median AQI']
-    plt.plot(x,y,color=colors[i])
-    i += 1
-  plt.xlabel('Year')
-  plt.ylabel('Median AQI')
-  plt.title('Counties with Highest Net Inflows')
-    
-  st.pyplot(fig)
+  aqi_highNet, aqi_lowNet = get_high_low_10_dfs(aqi_migration,highNet,lowNet)
+  fig, ax = plt.subplots(1,2,figsize= (15,6), gridspec_kw={'width_ratios': [1, 1.25]})
 
-  # Counties with highest net migration outflow
-  # start_year,end_year = st.select_slider(label='Year Range to Plot',options=np.arange(1993,2020,1),value=(1993,2019))
-  colors = cm.viridis(np.linspace(0,1,len(lowFIPS)))
-  fig,ax = plt.subplots(figsize=(10,6))
-  i = 0
-  for fips in highFIPS:
-    x = aqis[aqis['FIPS']==fips]
-    x = x[x['year'].isin(np.arange(start_year,end_year,1))]['year']
-    y = aqis[aqis['FIPS']==fips]
-    y = y[y['year'].isin(np.arange(start_year,end_year,1))]['Median AQI']
-    plt.plot(x,y,color=colors[i])
-    i += 1
-  plt.xlabel('Year')
-  plt.ylabel('Median AQI')
-  plt.title('Counties with Highest Net Outflows')
-  
+  color_dict_highNet = get_color_dict(aqi_highNet.loc[aqi_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
+  color_dict_lowNet = get_color_dict(aqi_lowNet.loc[aqi_lowNet.year == 2018].sort_values('net_out', ascending = False), 'FIPS')
+
+  for FIPS in aqi_highNet.FIPS.drop_duplicates():
+      ax[0].plot(aqi_highNet.loc[aqi_highNet.FIPS == FIPS].year, aqi_highNet.loc[aqi_highNet.FIPS == FIPS]['Median AQI'], color = color_dict_highNet[FIPS])
+
+  for FIPS in aqi_lowNet.FIPS.drop_duplicates():
+      ax[1].plot(aqi_lowNet.loc[aqi_lowNet.FIPS == FIPS].year, aqi_lowNet.loc[aqi_lowNet.FIPS == FIPS]['Median AQI'],  color = color_dict_lowNet[FIPS])
+
+  fig.suptitle('Median AQI by Year', y = 1.01)
+  ax[0].set_title('Highest Population Outflow', pad = 15)
+  ax[0].set_xlabel('Year')
+  ax[0].set_ylabel('Median AQI')
+  ax[1].set_title('Highest Population Inflow', pad = 15)
+  ax[1].set_xlabel('Year')
+  ax[1].set_ylabel('')
+
+  ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
+  ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
+
+  ax[0].set_xticks([1995,2000,2005,2010,2015])
+  ax[1].set_xticks([1995,2000,2005,2010,2015])
+
+  ax[0].set_xlim([min(aqi_highNet.year), max(aqi_highNet.year)])
+  ax[1].set_xlim([min(aqi_lowNet.year), max(aqi_lowNet.year)])
+
+  # Color bar indicating most/least outflow/inflow
+  cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+  cb.set_ticks([0, 1])
+  cb.set_ticklabels(['Least', 'Most'])
+  cb.ax.tick_params(size = 0)
+
   st.pyplot(fig)
 
   #### END AQI TIME PLOTS ####
@@ -834,19 +836,24 @@ elif section=="Supplemental Information":
   st.markdown(''' Each line plotted in this graph represents an individual county. In general, the AQI appears to decrease over time, which is consistent with policy being enacted and technology being improved to reduce emissions. ''')
 
   # Make AQI Correlation Plot
-  corr = pearsonr(all_aqi_data['AQI'],all_aqi_data['Net Migration Outflow'])
-  fig,ax = plt.subplots(1,1,figsize=(7,6))
-  plt.scatter(all_aqi_data['AQI'],all_aqi_data['Net Migration Outflow'],c=all_aqi_data['year'])  
-  plt.xlabel('Median AQI')
-  plt.ylabel('Net Migration Outflow')
-  plt.colorbar()
-  # Customize where the annotation appears by changing the scaling values below
+  corr_aqi_all = pearsonr(aqi_migration['Median AQI'].tolist(), aqi_migration.net_out.tolist())
+  fig, ax = plt.subplots(figsize= (8,6))
+  color_dict_years = get_color_dict(migration_net, 'year')
+  for year in migration_net.year.drop_duplicates():
+      plt.scatter(aqi_migration.loc[aqi_migration.year == year]['Median AQI'], aqi_migration.loc[aqi_migration.year == year].net_out, color = color_dict_years[year])
 
-  plt.text(x=0.37*np.max(all_aqi_data['AQI']),y=np.min(all_aqi_data['Net Migration Outflow'])-0*(np.max(all_aqi_data['Net Migration Outflow'])-np.min(all_aqi_data['Net Migration Outflow'])),s='Correlation: ' + "%0.3f" % corr[0])
-
-  plt.text(x=0.5*np.max(all_aqi_data['AQI']),y=np.min(all_aqi_data['Net Migration Outflow'])+0.1*(np.max(all_aqi_data['Net Migration Outflow'])-np.min(all_aqi_data['Net Migration Outflow'])),s='p-value: ' + "%0.3f" % corr[1])
-
+  cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+  cb.set_ticks([0, 1])
+  cb.set_ticklabels([str(min(aqi_migration.year)), str(max(aqi_migration.year))])
+  cb.ax.tick_params(size = 0)
+  ax.text(100,-75000, 'Correlation: ' + "%0.3f" % corr_aqi_all[0])
+  ax.text(100,-100000, 'p-value: ' + "%0.3f" % corr_aqi_all[1])
+  ax.set_title('Median AQI vs. Net Population Outflow', pad = 15)
+  ax.set_xlabel('Median AQI')
+  ax.set_ylabel('Net Population Outflow')
+  plt.tick_params(axis='both', which='major', length = 10, width = 2)
   st.pyplot(fig)
+
   st.markdown('''
   This is an aggregate correlation plot of all the counties in the dataset. For each year available for each county, the AQI at that year vs the net migration outflow (total outflow from - total inflow to the county) is plotted as a datapoint. The colorbar shows the year that datapoint was taken at. There is a slight correlation in the direction we would expect, with higher AQIs (worse air quality) leading to higher migration outflows. However, this trend is not very strong.
   ''')
@@ -859,4 +866,90 @@ elif section=="Supplemental Information":
   
   st.write(fig)
 
+  st.markdown("""
+  ### FMR
+  We downloaded Fair Market Rent (FMR) data from the Department of Housing and Urban Development (HUD) website via their Office of Policy Development and Research (PD&R). This dataset includes the 40th percentile rental rates by county and by year for Studio, 1, 2, 3, and 4 Bedroom units from 2004-2021. 
+  """)
+  # FMR Scatter Plot
+  corr_fmr_0 = pearsonr(fmr_migration.fmr_0.tolist(), fmr_migration.net_out.tolist())
+  corr_fmr_1 = pearsonr(fmr_migration.fmr_1.tolist(), fmr_migration.net_out.tolist())
+  corr_fmr_2 = pearsonr(fmr_migration.fmr_2.tolist(), fmr_migration.net_out.tolist())
+  corr_fmr_3 = pearsonr(fmr_migration.fmr_3.tolist(), fmr_migration.net_out.tolist())
+  corr_fmr_4 = pearsonr(fmr_migration.fmr_4.tolist(), fmr_migration.net_out.tolist())
+  fig, ax = plt.subplots(2,3, figsize = (28,18))
 
+  color_dict = get_color_dict(fmr_migration, 'year')
+
+  for year in fmr_migration.year.drop_duplicates():
+      ax[0,0].scatter(fmr_migration.loc[fmr_migration.year == year].fmr_0, fmr_migration.loc[fmr_migration.year == year].net_out, color = color_dict[year])
+
+  for year in fmr_migration.year.drop_duplicates():
+      ax[0,1].scatter(fmr_migration.loc[fmr_migration.year == year].fmr_1, fmr_migration.loc[fmr_migration.year == year].net_out, color = color_dict[year])
+
+  for year in fmr_migration.year.drop_duplicates():
+      ax[0,2].scatter(fmr_migration.loc[fmr_migration.year == year].fmr_2, fmr_migration.loc[fmr_migration.year == year].net_out, color = color_dict[year])
+
+  for year in fmr_migration.year.drop_duplicates():
+      ax[1,0].scatter(fmr_migration.loc[fmr_migration.year == year].fmr_3, fmr_migration.loc[fmr_migration.year == year].net_out, color = color_dict[year])
+
+  for year in fmr_migration.year.drop_duplicates():
+      ax[1,1].scatter(fmr_migration.loc[fmr_migration.year == year].fmr_4, fmr_migration.loc[fmr_migration.year == year].net_out, color = color_dict[year])
+
+  ax[1,0].set_position([0.24,0.125, 0.228, 0.343])
+  ax[1,1].set_position([0.55,0.125, 0.228, 0.343])
+  ax[1,2].set_visible(False)
+      
+  fig.suptitle('Fair Market Rent vs. Net Outflow', fontsize =  25)
+
+  ax[0,0].set_title('Studio', pad = 15)
+  #ax[0,0].set_xlabel('FMR', fontsize=30, labelpad = 15)
+  ax[0,0].set_ylabel('Net Outflow', labelpad = 15)
+  ax[0,0].tick_params(axis='both', which='major', width = 2, length = 10)
+
+  ax[0,1].set_title('1 Bedroom', pad = 15)
+  #ax[0,1].set_xlabel('FMR', labelpad = 15)
+  #ax[0,1].set_ylabel('Net Outflow', labelpad = 15)
+  ax[0,1].tick_params(axis='both', which='major', width = 2, length = 10)
+
+  ax[0,2].set_title('2 Bedroom', pad = 15)
+  #ax[0,2].set_xlabel('FMR', labelpad = 15)
+  #ax[0,2].set_ylabel('Net Outflow', labelpad = 15)
+  ax[0,2].tick_params(axis='both', which='major', width = 2, length = 10)
+
+  ax[1,0].set_title('3 Bedroom', pad = 15)
+  ax[1,0].set_xlabel('FMR', labelpad = 15)
+  ax[1,0].set_ylabel('Net Outflow', labelpad = 15)
+  ax[1,0].tick_params(axis='both', which='major', width = 2, length = 10)
+
+  ax[1,1].set_title('4 Bedroom', pad = 15)
+  ax[1,1].set_xlabel('FMR', labelpad = 15)
+  #ax[1,1].set_ylabel('Net Outflow', fontweight = 'bold', labelpad = 15)
+  ax[1,1].tick_params(axis='both', which='major', width = 2, length = 10)
+
+  #ax[0,0].tick_params(axis='both', which='major', labelsize=20)
+  
+  ax[0,0].text(1200,-70000, 'Correlation: ' + "%0.3f" % corr_fmr_0[0])
+  ax[0,0].text(1200,-90000, 'p-value: ' + "%0.3f" % corr_fmr_0[1])
+
+  ax[0,1].text(1500,-70000, 'Correlation: ' + "%0.3f" % corr_fmr_1[0])
+  ax[0,1].text(1500,-90000, 'p-value: ' + "%0.3f" % corr_fmr_1[1])
+
+  ax[0,2].text(1800,-70000, 'Correlation: ' + "%0.3f" % corr_fmr_2[0])
+  ax[0,2].text(1800,-90000, 'p-value: ' + "%0.3f" % corr_fmr_2[1])
+
+  ax[1,0].text(2200,-70000, 'Correlation: ' + "%0.3f" % corr_fmr_3[0])
+  ax[1,0].text(2200,-90000, 'p-value: ' + "%0.3f" % corr_fmr_3[1])
+
+  ax[1,1].text(2600,-70000, 'Correlation: ' + "%0.3f" % corr_fmr_4[0])
+  ax[1,1].text(2600,-90000, 'p-value: ' + "%0.3f" % corr_fmr_4[1])
+      
+  cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+  cb.set_ticks([0, 1])
+  cb.set_ticklabels([str(min(fmr_migration.year)), str(max(fmr_migration.year))])
+  cb.ax.tick_params(size = 0)
+
+  st.pyplot(fig)
+
+  st.markdown("""
+  FMR rates did actually indicate a small positive correlation between rental rates and net migration outflow, between 0.14 and 0.18 depending on the size of the unit. This is comparable to the correlation between Housing Price Index and net outflow (0.117) shown in Figure 7. However, the FMR data only dates back to 2004 making it a less desirable feature to include in our analysis. We decided to neglect FMR in our model as the reasons for the positive correlation are most likely the same as the reasons for the positive correlation seen in the HPI data, namely cost of living, which is already incorporated in our model.
+  """)
