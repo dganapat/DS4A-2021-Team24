@@ -135,6 +135,12 @@ if section == "Executive Summary":
   with col4:
     # st.image('Team Photos/Emily.jpeg')
     st.caption('Emily')
+  
+  st.markdown("""
+  ### DS4A Women’s Summit Fall 2021
+  [Program Information](https://www.correlation-one.com/data-science-for-all-women)""")
+  st.image('Team Photos/DS4A.png')
+
 
 
 #### PROJECT DESCRIPTION SECTION ####
