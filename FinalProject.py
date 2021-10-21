@@ -80,7 +80,7 @@ st.sidebar.markdown("""
 Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
 """)
 #### Outline Options for Sidebar
-section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results","Conclusions & Limitations","Supplemental Information"))
+section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Conclusions & Limitations","Supplemental Information"))
 
 
 #### EXECUTIVE SUMMARY SECTION
@@ -199,10 +199,10 @@ elif section == "Exploratory Data Analysis":
   st.markdown('''
   # Exploratory Data Analysis
   ### Visualizing Trends for Counties
-  To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
+  To visualize the trends in the data over time, we performed exploratory data analysis on the net migration outflow of each county in the US and several potential drivers of migration, including natural disasters, housing price index (HPI), income per capita, and employment rates. Net migration outflow is defined as the difference between the total number of individuals who moved out of a county and the total number of individuals who moved into a county. We further considered two subsets of these counties - the 10 counties that had the highest net outflow in 2018 and the 10 counties that had the lowest net outflow (highest net inflow) in 2018. We selected 2018 as our reference year to avoid any effects related to COVID-19. The year range over which we performed our analysis was 1993-2019 as this is the range of years for which county by county population migration was available.
   ''')
 
-  choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Population","Number of Disasters","Housing Price Index","Income","Employment","All Variables"])
+  choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Total Population","Number of Disasters","Housing Price Index","Income","Employment","All Variables"])
 
   # Population Migration EDA
   if choice == "Population Migration" or choice == "All Variables":
@@ -226,7 +226,9 @@ elif section == "Exploratory Data Analysis":
     """, height = 600)
     st.caption("Net population migration from 1993-2019. Note: hover over a line to see which county it is!")
 
-    st.markdown(""" A positive number indicates that more people move out of the county, whereas a negative number indicates that more people move into the county. From the plot below, we can see that in general, many counties have constant net migration near 0, which means that as many people are moving out, as they are moving in. However, some counties have consistently more people moving out of the county (for example, Los Angeles, CA), while others have consistently more people moving in (for example, Maricopa, AZ). Some counties experience anomalous increases in net outflow or net inflow, such as Cook, IL and Travis, TX.
+    st.markdown(""" In the figure above, the net population outflow per year is plotted for each county, where each line represents the net outflow of each county. Positive values indicate that more individuals moved out of a county and negative values indicate that more individuals moved into a county. Most counties do not appear to experience a net outflow or inflow of more than a few thousand individuals per year.  We can see that in general, many counties have constant net migration near 0, which means that as many people are moving out as they are moving in.
+
+    Los Angeles, CA, with the exception of a few years in the early 2000s, consistently experienced the highest net migration outflow. This could be a reflection of Los Angeles, CA having one of the largest populations of counties in the US. The population of Los Angeles, CA was approximately 10 million individuals in 2018. Maricopa, AZ had the highest net inflow in 2018 and generally had one of the highest net inflows except for a few years around 2010. The population of Maricopa, AZ in 2018 was about 4 million individuals. This suggests that total population is likely a relevant factor in determining the magnitude of net migration, but that additional features must account for the directionality. The heat map below shows the net outflow of population by county for each year from 1993 - 2019.
     """)
 
     components.html(
@@ -248,11 +250,11 @@ elif section == "Exploratory Data Analysis":
             """, height = 600,)
   st.caption("Note: Click the play button to see how the population migration changes over time! You can also hover over a county to see more information.")
   
-  if choice == "Population" or choice == "All Variables":
+  if choice == "Total Population" or choice == "All Variables":
     # Population EDA
     st.markdown("""
-    ### Population
-    A heat map of total population is shown below to visualize how population changes by county in time.
+    ### Total Population
+    The heat map below shows the total population by county for each year from 1993 - 2019.
     """)
 
     components.html("""
@@ -303,7 +305,7 @@ elif section == "Exploratory Data Analysis":
     st.markdown('''
           ### Number of Disasters
 
-          At a very basic level, we want to understand the disasters that have occurred during the time period of population migration that we are studying, from 1993 until 2019. FEMA disaster data encompasses a wide array of disaster types, ranging from tornadoes to droughts. 
+          At a very basic level, we want to understand the disasters that have occurred during the time period of population migration that we are studying, from 1993 until 2019. FEMA disaster data encompasses a wide array of disaster types, ranging from tornadoes to droughts. The heat map below shows the number of disasters by county for each year from 1993 - 2019. 
           ''')
     
     # Disasters Heat Map
@@ -343,7 +345,7 @@ elif section == "Exploratory Data Analysis":
     st.pyplot(fig)
 
     st.markdown('''
-    As a starting point, we want to understand what are some of the disasters that have been most prominent. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
+    Many different types of natural disasters occur in the US, ranging from tornadoes to droughts. However, some are more common than others. In Figure 4 the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
     ''')
 
     # Number of Disasters by Year Bar Plot
@@ -363,7 +365,7 @@ elif section == "Exploratory Data Analysis":
 
     st.markdown("""**Above: Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019** """)
 
-    st.markdown(""" Aggregation of the total number of disasters of all types for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically experienced more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
+    st.markdown(""" Aggregation of the total number of disasters of all types for the 10 counties with the highest net outflow and the 10 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically tended to experience more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
     """)
 
     # Disaster Correlation Plot - Currently deleted
@@ -394,6 +396,7 @@ elif section == "Exploratory Data Analysis":
   if choice == "Housing Price Index" or choice == "All Variables":
     st.markdown('''
           ### Housing Price Index
+          The heat map below shows the housing price index by county for each year from 1993 - 2019.
           ''')
     # Housing Price Index Heat Map
     components.html("""
@@ -416,7 +419,7 @@ elif section == "Exploratory Data Analysis":
     
     # Data cleaning
     years = hpi_migration.year.drop_duplicates()
-    hpi_highNet, hpi_lowNet = get_high_low_dfs(hpi_migration,highNet,lowNet)
+    hpi_highNet, hpi_lowNet = get_high_low_10_dfs(hpi_migration,highNet,lowNet)
     hpi_highNet_v0 = hpi_highNet.copy()
     hpi_highNet = hpi_highNet_v0.loc[hpi_highNet_v0.FIPS != 36061]
     color_dict_highNet = get_color_dict(hpi_highNet.loc[hpi_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
@@ -450,10 +453,10 @@ elif section == "Exploratory Data Analysis":
 
     st.write(fig)
 
-    st.markdown(""" **Above: Housing Price Index by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**""")
+    st.markdown(""" **Above: Housing Price Index by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**""")
 
     st.markdown("""
-    In the figure above, the Housing Price Index is plotted by year for the 20 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively.  Considering exclusively these counties we observe that the counties that experienced the largest outflow are in general the counties in which housing price indices have increased the most dramatically in the wake of the subprime mortgage crisis. Counties that experienced the largest inflow largely recovered from the subprime mortgage crisis but have not recovered prices beyond their pre-crisis level. For context, the three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
+    In the figure above, the Housing Price Index (HPI) is plotted by year for the 10 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively. The subprime mortgage crisis of 2008 clearly had a strong influence on housing prices, although in general housing prices rebounded in both groups. The three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
     """)
 
     # HPI vs Net Population Outflow Scatter Plot
@@ -478,15 +481,16 @@ elif section == "Exploratory Data Analysis":
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
     st.pyplot(fig)
 
-    st.markdown("""**Above: Housing price index by county and by year vs. net population outflow**""")
+    st.markdown("""**Above: Correlation between housing price index and net population outflow **""")
 
-    st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation between increased housing price index and increased net population outflow, as plotted in Figure 7. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas that are becoming more expensive.
+    st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation (0.117) between increased housing price index and increased net population outflow, as plotted in the figure above. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas as they become more expensive.
     """)
 
   # Income EDA
   if choice == "Income" or choice == "All Variables":
     st.markdown('''
           ### Income
+          The heat map below shows the per capita personal income by county for each year from 1993 - 2019.
           ''')
     # Income Heat Map
     components.html("""
@@ -508,7 +512,7 @@ elif section == "Exploratory Data Analysis":
     st.caption("Note: Click the play button to see how the per capita income changes over time! You can also hover over a county to see more information.")
 
     # Per Capita Income By Year Time Series Plots 
-    income_highNet, income_lowNet = get_high_low_dfs(income_migration,highNet,lowNet)
+    income_highNet, income_lowNet = get_high_low_10_dfs(income_migration,highNet,lowNet)
     color_dict_highNet = get_color_dict(income_highNet.loc[income_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
     color_dict_lowNet = get_color_dict(income_lowNet.loc[income_lowNet.year == 2018].sort_values('net_out', ascending = False), 'FIPS')
 
@@ -539,7 +543,7 @@ elif section == "Exploratory Data Analysis":
     """)
 
     st.markdown("""
-    In the figure above we plot the per capita income for the counties with the highest net outflow and inflow, again color coded by the magnitude of the outflow or inflow. In general, per capita income is significantly higher in counties with high net outflow than in counties with high net inflow. Interestingly, the county in each plot that has the highest outflow or inflow (indicated in yellow) appears roughly in the middle of each set of counties.
+    In the figure above we plot the per capita income for the 10 counties with the highest net outflow and inflow, again color coded by the magnitude of the outflow or inflow. With the exception of a few cases, the per capita income in both sets of counties is comparable. Interestingly, the county in each plot that has the highest outflow or inflow (indicated in yellow) appears roughly in the middle of each set of counties. 
     """)
 
     # Per Capita Income vs Net Population Outflow Scatterplot
@@ -563,13 +567,16 @@ elif section == "Exploratory Data Analysis":
     st.pyplot(fig)
 
     st.markdown("""
-    To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income and found that while there is a small net correlation between per capita income and net population outflow (0.38), it is not a particularly strong relationship. One factor that is not accounted for in our income dataset that could be very relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
+    **Above: Correlation between per capita personal income and net population outflow**
+
+    To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income. We found that the correlation between per capita income and net population outflow (0.038), is very weak. One factor that is not accounted for in our income dataset that could be relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
     """)
 
   # Employment EDA
   if choice == "Employment" or choice == "All Variables":
     st.markdown('''
           ### Employment
+          The heat map below shows the employment numbers by county for each year from 1993 - 2019.
           ''')
     # Employment Heat Map
     components.html("""
@@ -619,7 +626,7 @@ elif section == "Exploratory Data Analysis":
     st.pyplot(fig)
 
     st.markdown("""**Above:
-    Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**
+    Employment numbers by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**
     """)
     st.markdown("""In the figure above we plot the total number of full time and part time jobs in each of the counties with the highest net inflow and outflow. In both cases, the counties with the highest total number of jobs have the highest population migration, whether out or in. 
     """)
@@ -650,7 +657,7 @@ elif section == "Exploratory Data Analysis":
 
     st.markdown("""**Above: Total number of jobs by county and by year vs. net population outflow**
     """)
-    st.markdown("""In contrast to the housing price index and income data, the correlation between total number of jobs and net population outflow is relatively strong, 0.491, as we display in Figure 11. This could be related to counties with large numbers of jobs also being more densely populated and having higher cost of living. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue combinations of these factors further in our statistical modeling.
+    st.markdown("""The correlation between total number of jobs (full-time and part-time) and net population outflow is the strongest of the factors considered (0.491) as we display in Figure 9. This correlation is similar to the calculated correlation between total population and net population outflow. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue all of these factors further in our statistical modeling.
     """)
 
      
@@ -660,7 +667,7 @@ elif section =="Methodology":
   ## Time Series and Machine Learning Models
   In this project, we experimented with three different approaches to model the net population migration: a pure time-series ARIMA model, linear regression, and XGBoost. We used all three models to predict a **one-step forecast** of the net population migration (i.e. predict the value for the next year). 
 
-  - **ARIMA**: ARIMA is a model that is commonly used for analyzing and forecasting time series data. This model only takes historical time series data as an input, to predict the future values. The ARIMA model has three parameters that include the number of lagged terms, the order of moving average, and the number of differencing required to make the time series stationary. This model is our baseline results. 
+  - **ARIMA**: ARIMA is a model that is commonly used for analyzing and forecasting time series data. This model only takes historical time series data as an input, to predict the future values. The ARIMA model has three parameters that include the number of lagged terms, the order of moving average, and the number of differencing required to make the time series stationary. This is our baseline model.  
   - **Linear Regression**: Linear regression is a classic model used to predict continuous values. Using this model, we transformed our time series prediction problem into a regression problem by incorporating many other features that we hypothesize can help predict the values of the net migration better. The main assumption is that our predictors and the response variable have a linear relationship. 
   - **XGBoost**: Finally, we also experimented with the XGBoost model, a type of ensemble machine learning model. Because the algorithm leverages decision trees to make predictions, XGBoost is able to capture more non-linear relationships. 
 
@@ -668,7 +675,7 @@ elif section =="Methodology":
   To determine the number of lagged values to include as a feature, we calculated the partial autocorrelation values for each county. Then, we took the lagged value that was most important across the counties. An example of the partial autocorrelation plot for a specific county (in this case Carroll County, MD)  is shown in the figure below. 
     """)
 
-  fips = st.number_input(label='Enter FIPS Code',value=13237)
+  fips = st.number_input(label='Enter FIPS Code',value=24013)
   # Need to center the plot
   col1,col2, col3 = st.columns([3,6,3])
   with col1:
@@ -682,6 +689,7 @@ elif section =="Methodology":
       temp = io.BytesIO()
       fig.savefig(temp,format="png")
       st.image(temp,width=400)  
+      fig.savefig('Plots/Autocorrelation.png',bbox_inches='tight')
     except:
       st.write('**Not enough data for this county**')
   with col3:
@@ -692,10 +700,11 @@ elif section =="Methodology":
 
   In addition, we performed feature selection by leveraging p-values obtained from the results of linear regression. We first trained the linear regression using all six features and chose features that had a statistically significant p-value (around 0.05). These features are included in our final regression model. 
 
-  For XGBoost, we performed a similar feature selection method as linear regression. However, because XGBoost can directly calculate feature importance, we selected features that had high feature importance in our final XGBoost model.
+  For XGBoost, we performed a similar feature selection method as linear regression. However, because XGBoost can directly calculate feature importance, we selected features that had high feature importance in our final XGBoost model. 
+
 
   ### Data Structure
-  For the linear regression and XGBoost model, we transformed our problem into a supervised regression problem. The response variable is the net migration number at a given year. On the other hand, the features we incorporated were features with a one-year lag. For example, for the net migration value at 2010, we used feature values from 2009. An example of the data structure can be seen in the Figure below, where “num_ind” is our response variable. Note that the first row has NaN values because we don’t have information from the year 1992. This row is later dropped.    
+  For the linear regression and XGBoost model, we transformed our problem into a supervised regression problem. The response variable is the net migration number at a given year. On the other hand, the features we incorporated were features with a one-year lag. For example, for the net migration value at 2010, we used feature values from 2009. An example of the data structure can be seen in the figure below, where “num_ind” is our response variable. Note that the first row has NaN values because we don’t have information from the year 1992. This row is later dropped.      
   ''')
 
   data_struct_df = pd.read_csv('Datasets/all_features_dataframe.csv',index_col="Unnamed: 0")
@@ -706,7 +715,7 @@ elif section =="Methodology":
   We used several evaluation metrics to evaluate our model. For feature selection, we used the p-values to determine whether or not to include the feature into our final model. For general model evaluation, we used **RMSE and R2 values**. These values are calculated for each year and each county. We also aggregated the error metrics to obtain an average score for the models. 
 
   ## Training and Validation Method
-  Given the time series nature of our problem, we employed a walk-forward validation with expanding window technique for our training and validation method (Figure X). This was done using the following steps:
+  Given the time series nature of our problem, we employed a **walk-forward validation with expanding window** technique for our training and validation method (see below). This was done using the following steps:
 
   1. We decided on test years between 2010-2019.
 
@@ -721,31 +730,32 @@ elif section =="Methodology":
   6. Repeat steps 1-5 for each test year. 
   ''')
 
-  st.image('Plots/walkforward.png', width = 500, caption = 'Illustrative example of walk-forward validation with an expanding window. (https://alphascientist.com/walk_forward_model_building.html)')
+  st.image('Plots/walkforward.png', width = 500)
+  st.caption("Illustrative example of walk-forward validation with an expanding window. [Source](https://alphascientist.com/walk_forward_model_building.html)")
   st.markdown("""
   
 
   For the ARIMA model, this method was performed for each county (i.e. we trained 3051 counties x 10 years = 30510 models). However, for the linear regression and XGBoost models, we did not explicitly train a model separately for each county. Instead, we used the data points from all counties and trained it for a single model every year (i.e we trained only 10 models). 
 
   ## Projection Method
-  We chose the best performing model to perform our projection predictions of the population migration in 2030. 
+  Finally, we chose the best performing model to perform our projection predictions of the population migration in 2030. To do this we first had to approximate future projections of each of the input variables from 2020-2030. 
 
-  In order to predict population migration in future years, we made approximate future projections of each of the input variables from 2020-2030. 
+  We used future values of total population based on the methodology described in Hauer et al., 2016 and Robinson et al. 2019, which is publicly available here. The population numbers are estimated based on a linear combination of housing units and population per housing unit in each block group from 1940-2010. The numbers are then aggregated to obtain a per county value. 
 
-  Future values of total population were calculated using a linear fit to historic population values.  
+To project the total number of disasters per county per year into future years, we fit the aggregate number of disasters per county to a Poisson distribution. We calculated random samples of potential distributions of future disasters per year and averaged them over 100 samples in order to estimate the number of disasters per year but still provide a degree of variability per year.
 
-  To project the total number of disasters per county per year into future years, we fit the aggregate number of disasters per county to a Poisson distribution. We calculated random samples of potential distributions of future disasters per year and averaged them over 100 samples in order to estimate the number of disasters per year but still provide a degree of variability per year.
+In order to project housing price index values into future years for incorporation into the model, we first converted the historic HPI values per county to a logarithmic scale. The subprime mortgage crisis of 2008 caused extreme levels of fluctuations in the HPI trends, but when plotted logarithmically the trend appears to be approximately linear for each county, with minor deviations due to the subprime mortgage crisis. We applied a linear fit to the logarithmic HPI values for each county. We then exponentiated this to generate future HPI values. We expected that more significant fluctuations will occur in housing markets in the next 30 years that are not accounted for in this fit, however based on the historic data it is likely that these crises will only cause temporary deviations from the overall exponential trend.
 
-  In order to project housing price index values into future years for incorporation into the model, we first converted the historic HPI values per county to a logarithmic scale. The subprime mortgage crisis of 2008 caused extreme levels of fluctuations in the HPI trends, but when plotted logarithmically the trend appears to be approximately linear for each county, with minor deviations due to the subprime mortgage crisis. We applied a linear fit to the logarithmic HPI values for each county. We then exponentiated this to generate future HPI values. We expected that more significant fluctuations will occur in housing markets in the next 30 years that are not accounted for in this fit, however based on the historic data it is likely that these crises will only cause temporary deviations from the overall exponential trend.
+We projected personal income per capita using an exponential fit for each county, which is reasonable due to the income data not being adjusted for inflation.
 
-  We projected personal income per capita using an exponential fit for each county, which is reasonable due to the income data not being adjusted for inflation.
+To project total employment numbers (full-time plus part-time jobs) into future years for incorporation into the statistical model, we applied a linear fit to the historic number of jobs per county per year. 
 
-  To project total employment numbers (full-time plus part-time jobs) into future years for incorporation into the statistical model, we applied a linear fit to the historic number of jobs per county per year. 
-
-  Our migration prediction models only predict a one-step forecast, thus the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030.  
+Once we obtained the projections of our individual feature variables, we used it as input into our migration projection model. Because our migration prediction models only predict a one-step forecast, thus the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030.  
   """)
-elif section == "Results":
-  st.markdown(""" # Results """)
+elif section == "Results & Discussion":
+  st.markdown(""" # Results and Discussion
+  In this section we discuss the results of our three models and use the linear regression model, our best performing model, to do the population migration projections for 2030. We also discuss limitations of our approach and future work.
+   """)
   # components.html(
   #     """
   #     <div id="observablehq-a70836fb">
@@ -839,7 +849,7 @@ elif section == "Results":
   
   For ARIMA and linear regression, we noticed that the R2 was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
 
-  The ARIMA model, which is our baseline model, only uses historical net migration data per county to predict future values. We used parameters (1,0,0) for the ARIMA model. From Table 2, it can be seen that the R2 values of the ARIMA model are very close to 0. This might be caused by several factors:
+  The ARIMA model, which is our baseline model, only uses historical net migration data per county to predict future values. We used parameters (1,0,0) for the ARIMA model. From the second, it can be seen that the R2 values of the ARIMA model are very close to 0. This might be caused by several factors:
   - The ARIMA model only has a very limited number of datapoints to train on. For each county, the ARIMA model only has 17 data points (one for each year from 1993-2010) to train from.
   - ARIMA model uses the whole time series data to predict future values. However, including values from 10 years ago, for example, may not be useful and may even cause the performance to degrade over time. 
   - Additional features are needed to predict future net migration values.  
