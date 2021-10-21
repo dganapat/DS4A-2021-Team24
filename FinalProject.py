@@ -987,7 +987,10 @@ elif section=="Conclusions":
   
 
 elif section=="Supplemental Information":
-
+  st.markdown("""
+  # Supplemental Information
+  During our EDA phase, we experimented with several other variables of interest. However, given that these variables have a lot of missing data, we were unable to use it for our analysis. 
+  """)
   st.markdown(''' 
   ### AQI 
   We downloaded the AQI dataset from the United States [Environmental Protection Agency](https://aqs.epa.gov/aqsweb/airdata/download_files.html#Annual). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis. Exploratory data analysis was performed on this dataset (below), but unfortunately too many counties were missing, so AQI was not included as a descriptor in the final model.
