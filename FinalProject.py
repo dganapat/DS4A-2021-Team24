@@ -156,7 +156,7 @@ if section == "Project Description":
     # Project Description
     
     ### Problem Overview
-    As the United States grows in population, migration patterns in our future population will influence our country’s socioeconomic communities and the impact of climate change. Our research goal is to model how the US social landscape and redistribution of populations will look in the next 10 years using population estimates, population migration, climate variables such as natural disasters, and social demographic variables such as housing, economic and income data. 
+    As the United States grows in population, migration patterns in our future population will influence our country’s socioeconomic communities, determine plans for future infrastructure, and examine how many people will be impacted by the effects of climate change. Our research goal is to model how the US social landscape and redistribution of populations will look in the next 10 years using population estimates, population migration, climate variables such as natural disasters, and social demographic variables being housing, economic and income data. 
     
     ### Specific Issue
     
@@ -723,7 +723,6 @@ elif section =="Methodology":
       fig.savefig(temp,format="png")
       st.image(temp,width=400)  
       st.caption("Autocorrelation plot for selected county")
-      fig.savefig('Plots/Autocorrelation.png',bbox_inches='tight')
     except:
       st.write('**Not enough data for this county**')
   with col3:
