@@ -270,7 +270,7 @@ elif section == "Exploratory Data Analysis":
               });
             </script>
             """, height = 600,)
-  st.caption("Note: Click the play button to see how the population migration changes over time! You can also hover over a county to see more information.")
+    st.caption("Note: Click the play button to see how the population migration changes over time! You can also hover over a county to see more information.")
   
   if choice == "Total Population" or choice == "All Variables":
     # Population EDA
@@ -317,7 +317,7 @@ elif section == "Exploratory Data Analysis":
     ax.set_ylabel('Net Population Outflow')
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
     st.pyplot(fig)
-
+    st.caption("Correlation between total population and net population outflow")
     st.markdown("""
     We calculated the correlation between the total population of a county and the net population outflow including all counties and all years. In Figure 3 we show that there is a moderate positive correlation (0.493) between total population and net population outflow. This is very reasonable given that intuitively we would expect counties with more people to lose more people and counties with fewer people to lose fewer people. Further, counties with high populations tend to be urban centers that have higher cost of living, as is addressed in further analysis.
     """)
@@ -365,6 +365,7 @@ elif section == "Exploratory Data Analysis":
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
 
     st.pyplot(fig)
+    st.caption("Total number of disasters by type that have occurred in the US between 1993-2019")
 
     st.markdown('''
     Many different types of natural disasters occur in the US, ranging from tornadoes to droughts. However, some are more common than others. In Figure 4 the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
@@ -385,7 +386,7 @@ elif section == "Exploratory Data Analysis":
     plt.legend(['Highest Outflow','Highest Inflow'], loc='upper right', bbox_to_anchor=(0.42, 0.95),  frameon=False, fontsize = 18)
     st.pyplot(fig)
 
-    st.markdown("""**Above: Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019** """)
+    st.caption("""Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019""")
 
     st.markdown(""" Aggregation of the total number of disasters of all types for the 10 counties with the highest net outflow and the 10 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically tended to experience more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
     """)
@@ -475,7 +476,7 @@ elif section == "Exploratory Data Analysis":
 
     st.write(fig)
 
-    st.markdown(""" **Above: Housing Price Index by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**""")
+    st.caption(""" Housing Price Index by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively""")
 
     st.markdown("""
     In the figure above, the Housing Price Index (HPI) is plotted by year for the 10 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively. The subprime mortgage crisis of 2008 clearly had a strong influence on housing prices, although in general housing prices rebounded in both groups. The three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
@@ -503,7 +504,7 @@ elif section == "Exploratory Data Analysis":
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
     st.pyplot(fig)
 
-    st.markdown("""**Above: Correlation between housing price index and net population outflow **""")
+    st.caption("""Correlation between housing price index and net population outflow """)
 
     st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation (0.117) between increased housing price index and increased net population outflow, as plotted in the figure above. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas as they become more expensive.
     """)
@@ -561,7 +562,7 @@ elif section == "Exploratory Data Analysis":
     cb.ax.tick_params(size = 0)
     st.pyplot(fig)
 
-    st.markdown("""**Above: Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**
+    st.caption("""Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
     """)
 
     st.markdown("""
@@ -587,10 +588,9 @@ elif section == "Exploratory Data Analysis":
     ax.set_ylabel('Net Population Outflow')
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
     st.pyplot(fig)
+    st.caption("Correlation between per capita personal income and net population outflow")
 
     st.markdown("""
-    **Above: Correlation between per capita personal income and net population outflow**
-
     To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income. We found that the correlation between per capita income and net population outflow (0.038), is very weak. One factor that is not accounted for in our income dataset that could be relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
     """)
 
@@ -647,8 +647,7 @@ elif section == "Exploratory Data Analysis":
     cb.ax.tick_params(size = 0)
     st.pyplot(fig)
 
-    st.markdown("""**Above:
-    Employment numbers by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively**
+    st.caption("""Employment numbers by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
     """)
     st.markdown("""In the figure above we plot the total number of full time and part time jobs in each of the counties with the highest net inflow and outflow. In both cases, the counties with the highest total number of jobs have the highest population migration, whether out or in. 
     """)
@@ -677,7 +676,7 @@ elif section == "Exploratory Data Analysis":
 
     st.pyplot(fig)
 
-    st.markdown("""**Above: Total number of jobs by county and by year vs. net population outflow**
+    st.caption("""Total number of jobs by county and by year vs. net population outflow
     """)
     st.markdown("""The correlation between total number of jobs (full-time and part-time) and net population outflow is the strongest of the factors considered (0.491) as we display in Figure 9. This correlation is similar to the calculated correlation between total population and net population outflow. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue all of these factors further in our statistical modeling.
     """)
@@ -711,6 +710,7 @@ elif section =="Methodology":
       temp = io.BytesIO()
       fig.savefig(temp,format="png")
       st.image(temp,width=400)  
+      st.caption("Autocorrelation plot for selected county")
       fig.savefig('Plots/Autocorrelation.png',bbox_inches='tight')
     except:
       st.write('**Not enough data for this county**')
@@ -846,9 +846,6 @@ elif section == "Results & Discussion":
   st.markdown("""
   Given that the population migration projections heavily depend on the total population numbers of the county itself, we also calculated the normalized projections, which are the number of migrants divided by the population of the county itself. This can be seen in the figure above. Interestingly, we see that in the West and western edge of the Midwest areas the population influx caused by the migration is significant compared to the population of the counties themselves. This is important as infrastructure in those counties and states might not be prepared to handle a large population influx. """)
 
-
-  
-
   st.markdown("""
   ## Comparative Results
   Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in Tables 1 and 2. 
@@ -860,14 +857,15 @@ elif section == "Results & Discussion":
 
   st.dataframe(results_table_1.style.format("{:.2f}"))
 
-  st.markdown("""**Above: RMSE results for the best models using three approaches**""")
+  st.caption("""RMSE results for the best models using three approaches""")
   results_table_2 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
   results_table_2['ARIMA'] = [-0.285,-1.481,-0.297,0.405,0.519,-2.204,0.758,0.767,0.920,0.930,0.003]
   results_table_2['Linear Regression'] = [0.793,0.603,0.487,0.817,0.682,-1.384,0.704,0.740,0.890,0.961,0.529]
   results_table_2['XGBoost'] = [0.571,0.451,0.440,0.718,0.570,-0.278,0.712,0.706,0.676,0.904,0.547]
   
   st.dataframe(results_table_2.style.format("{:.2f}"))
-  st.markdown("""**Above: R$^2$ results for the best models using three approaches**
+  st.caption("R$^2$ results for the best models using three approaches")
+  st.markdown("""
   
   For ARIMA and linear regression, we noticed that the R2 was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
 
@@ -908,12 +906,10 @@ elif section == "Results & Discussion":
   plt.tick_params(axis='both', which='major', length = 10, width = 2)
   st.pyplot(fig)
 
-  st.markdown(""" 
-  ** Above: Average feature Importance for the XGBoost Model **
+  st.caption("Average feature Importance for the XGBoost Model")
 
+  st.markdown("""
   In addition to the RMSE and R$^2$ values of the model, we also looked at the difference in prediction for each of the different counties. From Figure 12, certain counties in Southern California and Arizona like Pinal, Los Angeles, and San Bernardino are extremely underpredicted by our models. On the other hand, several counties that the model overpredicts include Miami-Dade, Florida, Harris, Texas, and San Diego, California. These counties are the outliers and suggest that there are other factors that are affecting the number of people migrating out of the county we have not accounted for. It is interesting to note that Linear Regression underestimates while XGBoost overestimates, and vice versa. This can be seen in the Florida region.  
-
- **Linear Regression Model: Difference between Prediction and Actual **
   """)
   components.html(
           """
@@ -932,12 +928,8 @@ elif section == "Results & Discussion":
           });
         </script>
           """, height = 600,)
-  st.markdown(""" """)
+  st.caption("""Linear Regression Model: Difference between Prediction and Actual""")
 
-
-  st.markdown(""" 
-  ** XGBoost Model: Difference between Prediction and Actual **
-  """)
   components.html(
           """
           <div id="observablehq-6397857c">
@@ -955,6 +947,8 @@ elif section == "Results & Discussion":
           });
         </script>
           """, height = 600,)
+  st.caption("""XGBoost Model: Difference between Prediction and Actual""")
+  
   st.markdown("""
   ## Limitations and Future Work
   The limitations of our study can be broadly separated into two categories: data limitations and methodology approaches. 
@@ -983,7 +977,16 @@ elif section == "Results & Discussion":
 
 elif section=="Conclusions":
   st.markdown("""
-  # Conclusions
+  # Conclusions and Impact
+  In conclusion, we developed a linear regression model to predict the net changes in population by county in the US due to intercounty domestic migration between 2019 and 2030. We used an ARIMA model as our baseline model for comparison to forecast the net population outflow for each county, given only historical time data. The features that we considered in developing our models were total population, frequency of natural disasters, housing price index, per capita income, number of jobs, and prior net migration outflow data. In order to use our features to predict net population outflow in future years, we applied simple curve fitting to project future values of each feature. For our main models, we used (1) a linear regression model to predict the net migration outflow for a county in the future, and (2) and XGBoost Model with similar features. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model, but that the two models are comparable. 
+
+  Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the fraction of the population that net outflow corresponded to in highly populated counties was actually minimal. Counties in the West and western parts of the Midwest are predicted to have the highest net population inflow compared to their total population. 
+
+  The data used in our analysis did not include data from 2020 and hence does not include a consideration of the impact of COVID-19 on population migration. However, our results are consistent with the trends observed in the past year with respect to population migration as a result of the increasing prevalence of jobs that allow employees to work from home. If anything, we expect the rise of remote work positions to amplify the trends that our models have predicted.
+
+  Our results are significant for numerous stakeholders. Businesses that require in-person work and are planning to expand to new locations should consider smaller Western counties that are expected to see large population growth. Real estate developers will benefit from focusing on building new housing units in these less densely populated counties as well. Elected officials in rural Western counties will need to prepare for potential changes in voting patterns in their regions. Further analysis of which specific counties the newcomers to these counties are expected to migrate out of will be very important in forecasting future election results.
+
+  In summary, the landscape of the US population in 2030 is expected to be characterized by (1) net outflow of individuals from densely populated counties (without large changes in the total population of these counties) and (2)  significant migration into smaller counties, especially in the West and parts of the Midwest, where businesses, developers, and other stakeholders should focus their efforts towards building infrastructure and jobs.
 
   """)
   
