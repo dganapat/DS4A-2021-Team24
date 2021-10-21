@@ -92,8 +92,7 @@ section = st.sidebar.selectbox("Outline",("Executive Summary","Project Descripti
 #### EXECUTIVE SUMMARY SECTION
 if section == "Executive Summary":
   st.markdown(''' # Landscape of the New America: How domestic migration will redistribute the US population in 2030 
-  ## Executive Summary
-  
+  ## Executive Summary 
   ''')  
   components.html(
           """
@@ -112,6 +111,15 @@ if section == "Executive Summary":
           });
         </script>
           """, height = 600,)
+  st.markdown("""
+    As the United States grows in population, migration patterns in our future population will influence our country’s socioeconomic communities. Using variables such as population estimates, population migration, climate variables such as natural disasters, and social demographic variables being housing, economic and income data, we modeled how the US social landscape and redistribution of populations will look in 2030. 
+
+    We experimented with three models: an ARIMA model, linear regression, and XGboost model. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model with an R2 value of 0.52 and 0.54 respectively, but that the two models are comparable. 
+
+    Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the fraction of the population that net outflow corresponded to in highly populated counties was actually minimal. 
+
+    The landscape of the US population in 2030 is expected to be characterized by (1) net outflow of individuals from densely populated counties (without large changes in the total population of these counties) and (2) significant migration into smaller counties, especially in the West and parts of the Midwest, where businesses, developers, and other stakeholders should focus their efforts towards building infrastructure and jobs.
+  """)
   st.markdown(""" ## The Team """)
   col1,col2,col3,col4 = st.columns([2,2,2,2])
 
