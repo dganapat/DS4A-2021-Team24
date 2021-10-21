@@ -846,10 +846,34 @@ elif section == "Results":
   # Insert table with error results and coefficients from linear regression model here
 
   st.markdown("""
-  One of the main assumptions of linear regression is that the relationship of interest is linear. In order to test for linearity, we plotted the expected values vs predicted values obtained from the linear regression model (Figure X) and found that the relationship is indeed linear. 
+  We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that the relationship is indeed linear. 
   """)
+
+  # Insert predicted vs actual plot here
+
+  st.markdown("""
+  Finally, we experimented with the XGBoost model. Even though linear models were good enough to predict the net migration numbers, we still wanted to see if the XGBoost model is able to capture any non-linear relationships that may not have been captured by our linear regression model. In our initial XGBoost model, we included all features and calculated the average feature importance for each feature, shown in the figure below. The net migration value was, unsurprisingly, the most important feature, followed by population number and the number of disasters. Using this result, we then trained various XGBoost models based on a subset of the features. The best result was obtained by using only two features: net migration and total population. The RMSE and R2 of this model is shown in Tables 1 and 2. 
+  """)
+  features = ['Net Migration (Lag 1)', 'Population', 'Number of Disasters', 'Per Capita Income', 'Employment', 'HPI']
+  f_score = [0.748288, 0.115359, 0.080625, 0.024867, 0.017184, 0.013677]
+
+  fig, ax = plt.subplots(figsize= (8,6))
+
+  plt.barh(np.arange(len(features)), width = f_score, height = 0.5, color = plt.get_cmap('viridis')(0.1), tick_label = features)
+  ax.set_ylim([5.5,-0.5])
+
+  ax.set_title('F Scores for XGBoost Features', pad = 15)
+  ax.set_xlabel('F Score')
+  ax.set_ylabel('Features')
+
+  plt.tick_params(axis='both', which='major', length = 10, width = 2)
+  st.pyplot(fig)
+
   st.markdown(""" 
   ## Projection Results - Linear Regression
+  """)
+  st.markdown("""
+  #### Projected total net outflow by county using linear regression model
   """)
   components.html(
           """
@@ -870,8 +894,9 @@ elif section == "Results":
           """, height = 600,)
   
   st.markdown("""
-  **Above: Projected total net outflow by county using linear regression model **
-  """)
+  #### Projected net outflow by county normalized by total population using linear regression model
+  """)  
+
 
   components.html(
         """
@@ -890,9 +915,7 @@ elif section == "Results":
         });
       </script>
         """, height = 600,)
-  st.markdown("""
-  **Above: Projected net outflow by county normalized by total population using linear regression model **
-  """)
+
 
   
 
