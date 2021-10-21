@@ -92,9 +92,7 @@ section = st.sidebar.selectbox("Outline",("Executive Summary","Project Descripti
 #### EXECUTIVE SUMMARY SECTION
 if section == "Executive Summary":
   st.markdown(''' # Landscape of the New America: How domestic migration will redistribute the US population in 2030 
-  ## DS4A/W | Team 24 
-  Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
-  # Executive Summary
+  ## Executive Summary
   
   ''')  
   components.html(
@@ -137,7 +135,7 @@ if section == "Executive Summary":
     st.caption('Emily')
   
   st.markdown("""
-  ### DS4A Women’s Summit Fall 2021
+  ## DS4A Women’s Summit Fall 2021
   [Program Information](https://www.correlation-one.com/data-science-for-all-women)""")
   st.image('Team Photos/DS4A.png')
 
@@ -988,6 +986,24 @@ elif section=="Supplemental Information":
   We downloaded the AQI dataset from the United States [Environmental Protection Agency](https://aqs.epa.gov/aqsweb/airdata/download_files.html#Annual). The AQI datasets are available by county by year, with a separate file for each year. All available datasets were downloaded and concatenated using pandas. This process was straightforward because all years had the same reported metrics. The data was then grouped by the five digit Federal Information Processing Standard (FIPS) code, which is a unique identifier for each county in the US. From this dataset, the median AQI was used to perform further analysis. Exploratory data analysis was performed on this dataset (below), but unfortunately too many counties were missing, so AQI was not included as a descriptor in the final model.
   ''')
 
+  # AQI heatmap
+  components.html("""
+  <div id="observablehq-2da52d27">
+    <div class="observablehq-viewof-year_select"></div>
+    <div class="observablehq-chart"></div>
+    <div class="observablehq-update" style="display:none"></div>
+  </div>
+  <script type="module">
+    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+    import define from "https://api.observablehq.com/@ialsjbn/aqi.js?v=3";
+    (new Runtime).module(define, name => {
+      if (name === "viewof year_select") return Inspector.into("#observablehq-2da52d27 .observablehq-viewof-year_select")();
+      if (name === "chart") return Inspector.into("#observablehq-2da52d27 .observablehq-chart")();
+      if (name === "update") return Inspector.into("#observablehq-2da52d27 .observablehq-update")();
+    });
+  </script>
+    """, height = 600)
+
   #### START AQI TIME PLOTS ####
   aqi_highNet, aqi_lowNet = get_high_low_10_dfs(aqi_migration,highNet,lowNet)
   fig, ax = plt.subplots(1,2,figsize= (15,6), gridspec_kw={'width_ratios': [1, 1.25]})
@@ -1043,7 +1059,7 @@ elif section=="Supplemental Information":
   cb.ax.tick_params(size = 0)
   ax.text(100,-75000, 'Correlation: ' + "%0.3f" % corr_aqi_all[0])
   ax.text(100,-100000, 'p-value: ' + "%0.3f" % corr_aqi_all[1])
-  ax.set_title('Median AQI vs. Net Population Outflow', pad = 15)
+  ax.set_title('Median AQI vs. Net Population Outflow', pad = 10)
   ax.set_xlabel('Median AQI')
   ax.set_ylabel('Net Population Outflow')
   plt.tick_params(axis='both', which='major', length = 10, width = 2)
