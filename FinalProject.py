@@ -30,7 +30,7 @@ def get_high_low_dfs(df,highNet,lowNet):
     df_lowNet = df.loc[df.FIPS.isin(lowNet.FIPS.tolist())].copy()
     return df_highNet, df_lowNet
 
-@st.cache
+@st.cache(suppress_st_warning=True)
 def import_data():
   lowNet = pd.read_csv('Datasets/smallestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
   highNet = pd.read_csv('Datasets/largestNetOutflows.csv').rename(columns={'Unnamed: 0':'FIPS'})
@@ -63,25 +63,42 @@ def import_data():
   hpi_migration = pd.read_csv('Datasets/hpi_migration.csv')
   income_migration = pd.read_csv('Datasets/income_migration.csv')
   employment_migration = pd.read_csv('Datasets/employment_migration.csv')
+  population_migration = pd.read_csv('Datasets/population_migration_eda.csv')
 
-  return highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration
+  return highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration
 
-highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration = import_data()
+highNet,lowNet,lowFIPS,highFIPS,popmig,aqis,all_aqi_data,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration = import_data()
 ##### END DATA IMPORTING SECTION #####
 
-#### TITE AND HEADER ####
-# Title and header
-st.markdown(''' # Landscape of the New America: How the US population will be redistributed in 2050 ''')
-st.markdown(''' ## Team 24 ''')
-st.markdown('''Danah Park | Devi Ganapathi | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana | Liz Peterson | Noemi Valdez ''')
 
+#### Sidebar Header
+st.sidebar.markdown("""
+# Landscape of the New America: How domestic migration will redistribute the US population in 2030
+## Team 24
+Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
+""")
 #### Outline Options for Sidebar
 section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions & Limitations","Supplemental Information"))
 
+#### EXECUTIVE SUMMARY SECTION
+if section == "Executive Summary":
+  st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
+  ## Team 24 
+  Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
+  # Executive Summary
+  ''')  
+
 #### PROJECT DESCRIPTION SECTION ####
 if section == "Project Description":
-    st.markdown(''' 
-    ## Project Description
+  #### TITE AND HEADER ####
+  # Title and header
+  st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
+  ## Team 24 
+  Danah Park | Devi Ganapathi | Elizabeth Peterson | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
+  ''')
+    
+  st.markdown(''' 
+    # Project Description
     
     ### Problem Overview
     
@@ -107,35 +124,35 @@ if section == "Project Description":
 
 #### DATASETS SECTION ####
 elif section == "Datasets":
+  st.markdown(""" # Datasets """)
+  # Make table with all data sources - cached
+  @st.cache()
+  def make_dataset_table():
+      datasets = [dict(Variable='Population Migration', Source="IRS", URL="https://www.irs.gov/statistics/soi-tax-stats-migration-data", Details="Migration data (inflows and outflows) by county, estimated annually (1991-2019)"),
+      dict(Variable='Population', Source="US Census", URL="https://www2.census.gov/programs-surveys/popest/datasets/", Details="Population data by county, broken down by age, race and gender, estimated annually (1970-2020)"),
+      dict(Variable='Birth Data', Source="CDC", URL="https://wonder.cdc.gov/Natality.html", Details="Births occurring within the US to US residents, with county of residence. Derived from birth certificates issued in (1995-2019)"),
+      dict(Variable='Natural Disasters', Source="FEMA", URL="https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2", Details="Natural disasters by date, type of incident, programs declared, and county going back to 1950s"),
+      dict(Variable='Employment', Source="BEA", URL="https://apps.bea.gov/iTable/iTable.cfm?reqid=70&step=1&acrdn=6" , Details="Employment (total number of full time and part time jobs) by County from 1969-2019"),
+      dict(Variable='Income', Source="BEA", URL="https://apps.bea.gov/iTable/iTable.cfm?reqid=70&step=1&acrdn=6" , Details="Personal Income and Population by County from 1969-2019"),
+      dict(Variable='HPI', Source="FHFA", URL="https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_AT_BDL_county.xlsx" ,Details="Housing Price Index by County from 1986 to 2020, with both 1990 and 2000 base"),
+      dict(Variable='FMR', Source="HUD", URL="https://www.huduser.gov/portal/dataset/fmr-api.html" , Details="Fair Market Rent (40th Percentile) by County from 2000-2022")]
 
-    # Make table with all data sources - cached
-    @st.cache()
-    def make_dataset_table():
-        datasets = [dict(Variable='Population Migration', Source="IRS", URL="https://www.irs.gov/statistics/soi-tax-stats-migration-data", Details="Migration data (inflows and outflows) by county, estimated annually (1991-2019)"),
-        dict(Variable='Population', Source="US Census", URL="https://www2.census.gov/programs-surveys/popest/datasets/", Details="Population data by county, broken down by age, race and gender, estimated annually (1970-2020)"),
-        dict(Variable='Birth Data', Source="CDC", URL="https://wonder.cdc.gov/Natality.html", Details="Births occurring within the US to US residents, with county of residence. Derived from birth certificates issued in (1995-2019)"),
-        dict(Variable='Natural Disasters', Source="FEMA", URL="https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2", Details="Natural disasters by date, type of incident, programs declared, and county going back to 1950s"),
-        dict(Variable='Employment', Source="BEA", URL="https://apps.bea.gov/iTable/iTable.cfm?reqid=70&step=1&acrdn=6" , Details="Employment (total number of full time and part time jobs) by County from 1969-2019"),
-        dict(Variable='Income', Source="BEA", URL="https://apps.bea.gov/iTable/iTable.cfm?reqid=70&step=1&acrdn=6" , Details="Personal Income and Population by County from 1969-2019"),
-        dict(Variable='HPI', Source="FHFA", URL="https://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_AT_BDL_county.xlsx" ,Details="Housing Price Index by County from 1986 to 2020, with both 1990 and 2000 base"),
-        dict(Variable='FMR', Source="HUD", URL="https://www.huduser.gov/portal/dataset/fmr-api.html" , Details="Fair Market Rent (40th Percentile) by County from 2000-2022")]
+      dataset_table = pd.DataFrame(datasets)
 
-        dataset_table = pd.DataFrame(datasets)
+      def make_clickable(url, name):
+          return '<a href="{}" rel="noopener noreferrer" target="_blank">{}</a>'.format(url,name)
 
-        def make_clickable(url, name):
-            return '<a href="{}" rel="noopener noreferrer" target="_blank">{}</a>'.format(url,name)
+      dataset_table['Source'] = dataset_table.apply(lambda x: make_clickable(x['URL'], x['Source']), axis=1)
 
-        dataset_table['Source'] = dataset_table.apply(lambda x: make_clickable(x['URL'], x['Source']), axis=1)
+      dataset_table = dataset_table[['Variable','Source','Details']]
 
-        dataset_table = dataset_table[['Variable','Source','Details']]
+      return dataset_table
 
-        return dataset_table
+  # Run the function to make the dataset table and display it
+  dataset_table = make_dataset_table()
+  st.write(dataset_table.to_html(escape=False,index=False),unsafe_allow_html=True)
 
-    # Run the function to make the dataset table and display it
-    dataset_table = make_dataset_table()
-    st.write(dataset_table.to_html(escape=False,index=False),unsafe_allow_html=True)
-
-    st.markdown('''  &nbsp;  
+  st.markdown('''  &nbsp;  
   ### Population Migration
   We obtained the population migration dataset from the [IRS](https://www.irs.gov/statistics/soi-tax-stats-migration-data). The Outflow dataset contains information of the estimated number of individuals that moved from county A to county B. The dataset was available on a yearly basis from 1991-2019. However, because 1991 and 1992 had very different formats, we decided to use data from 1993-2019. We combined the yearly datasets into one CSV file for use in our model. The columns include the origin state and county, the destination state and county, the number of individuals that moved from origin to destination, and the aggregated gross income of all the individuals. 
 
@@ -158,31 +175,31 @@ elif section == "Datasets":
 #### EDA SECTION #### 
 elif section == "Exploratory Data Analysis":
   st.markdown('''
+  # Exploratory Data Analysis
   ### Visualizing Trends for Counties
   To visualize the trends in the data over time, we chose two subsets of counties to look at. The first subset is the group of counties with the highest net outflows in population, as observed in 2018 (to avoid COVID-19 related effects). The second subset is the group of counties with the lowest net outflows in population (highest net inflows), also as observed in 2018. 
   ''')
 
-  choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Number of Disasters","Housing Price Index","Income","Employment","All Variables"])
+  choice = st.selectbox(label="EDA Variables to View",options=["Population Migration","Population","Number of Disasters","Housing Price Index","Income","Employment","All Variables"])
 
   # Population Migration EDA
   if choice == "Population Migration" or choice == "All Variables":
     st.markdown('''
           ### Population Migration
           ''')
-    
-    # Make time series net migration plot
-    fig, ax = plt.subplots(figsize= (12,6))
-    for FIPS in migration_net.FIPS.drop_duplicates():
-        plt.plot(migration_net.loc[migration_net.FIPS == FIPS].year, migration_net.loc[migration_net.FIPS == FIPS].tot_out, color = plt.get_cmap('viridis')(0.1), alpha = 0.3)
-        
-    ax.set_title('Total Individuals Leaving Counties by Year', pad = 15)
-    ax.set_xlabel('Year')
-    ax.set_ylabel('Total Outflow')
 
-    ax.tick_params(axis='both', which='major', length = 10, width = 2)
-    ax.set_xlim([min(migration_net.year),max(migration_net.year)])
-
-    st.pyplot(fig)
+    components.html("""
+        <div id="observablehq-e27ece4f">
+      <div class="observablehq-chart"></div>
+    </div>
+    <script type="module">
+      import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+      import define from "https://api.observablehq.com/@ialsjbn/net_migration.js?v=3";
+      (new Runtime).module(define, name => {
+        if (name === "chart") return Inspector.into("#observablehq-e27ece4f .observablehq-chart")();
+      });
+    </script>
+    """, height = 600)
 
     st.markdown("""We subtracted the total county outflows and inflows to obtain the net outflow number, plotted in the figure above. A positive number indicates that more people move out of the county, whereas a negative number indicates that more people move into the county. From the plot below, we can see that in general, many counties have constant net migration near 0, which means that as many people are moving out, as they are moving in. However, some counties have consistently more people moving out of the county (for example, Los Angeles, CA), while others have consistently more people moving in (for example, Maricopa, AZ). Some counties experience anomalous increases in net outflow or net inflow, such as Cook, IL and Travis, TX.
     """)
@@ -205,6 +222,52 @@ elif section == "Exploratory Data Analysis":
             </script>
             """, height = 600,)
   
+  elif choice == "Population":
+    # Population EDA
+    st.markdown("""
+    ### Population
+    A heat map of total population is shown below to visualize how population changes by county in time.
+    """)
+
+    components.html("""
+        <div id="observablehq-ff6b2a54">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
+          });
+        </script>
+        """, height = 600)
+    # Make correlation plot for population
+    corr_population_all = pearsonr(population_migration.total.tolist(), population_migration.net_out.tolist())
+    fig, ax = plt.subplots(figsize=(8,6))
+    color_dict_years = get_color_dict(population_migration, 'year')
+    years = population_migration.year.drop_duplicates()
+    for year in years:
+        plt.scatter(population_migration.loc[population_migration.year == year].total, population_migration.loc[population_migration.year == year].net_out, color = color_dict_years[year])
+    cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
+    cb.set_ticks([0, 1])
+    cb.set_ticklabels([str(min(years)), str(max(years))])
+    cb.ax.tick_params(size = 0)
+    ax.text(0.5e7,-70000, 'Correlation: ' + "%0.3f" % corr_population_all[0])
+    ax.text(0.5e7,-95000, 'p-value: ' + "%0.3f" % corr_population_all[1])
+    ax.set_title('Total Population vs. Net Population Outflow', pad = 15)
+    ax.set_xlabel('Total Population')
+    ax.set_ylabel('Net Population Outflow')
+    plt.tick_params(axis='both', which='major', length = 10, width = 2)
+    st.pyplot(fig)
+
+    st.markdown("""
+    We calculated the correlation between the total population of a county and the net population outflow including all counties and all years. In Figure 3 we show that there is a moderate positive correlation (0.493) between total population and net population outflow. This is very reasonable given that intuitively we would expect counties with more people to lose more people and counties with fewer people to lose fewer people. Further, counties with high populations tend to be urban centers that have higher cost of living, as is addressed in further analysis.
+    """)
+
   # Disasters EDA
   if choice == "Number of Disasters" or choice == "All Variables":
     st.markdown('''
@@ -562,6 +625,7 @@ elif section == "Exploratory Data Analysis":
      
 elif section =="Model Building":
   st.markdown("""
+  # Model Building
   ## Methodology
   ### Time Series and Machine Learning Models
   In this project, we experimented with three different approaches to model the net population migration: a pure time-series ARIMA model, linear regression, and XGBoost. We used all three models to predict a **one-step forecast** of the net population migration (i.e. predict the value for the next year). 
@@ -574,15 +638,24 @@ elif section =="Model Building":
   To determine the number of lagged values to include as a feature, we calculated the partial autocorrelation values for each county. Then, we took the lagged value that was most important across the counties. An example of the partial autocorrelation plot for a specific county (in this case Carroll County, MD)  is shown in the figure below. 
     """)
 
-  # Make autocorrelation Plot
   fips = st.number_input(label='Enter FIPS Code',value=13237)
-  series = county_net_out.loc[county_net_out['fips'] == fips, 'num_ind']
-  # st.write(series)
-  try:
-    fig = sm.graphics.tsa.plot_pacf(series.values.squeeze(),lags=10)
-    st.pyplot(fig)  
-  except:
-    st.write('**Not enough data for this county**')
+  # Need to center the plot
+  col1,col2, col3 = st.columns([3,6,3])
+  with col1:
+    st.write("")
+  with col2:
+    # Make autocorrelation Plot
+    series = county_net_out.loc[county_net_out['fips'] == fips, 'num_ind']
+    # st.write(series)
+    try:   
+      fig = sm.graphics.tsa.plot_pacf(series.values.squeeze(),lags=10)
+      temp = io.BytesIO()
+      fig.savefig(temp,format="png")
+      st.image(temp,width=400)  
+    except:
+      st.write('**Not enough data for this county**')
+  with col3:
+    st.write("")
 
   st.markdown('''
   From the autocorrelation plot above, we see that the first lagged value is the most important to predicting the net migration of a specific year. Though the 8th and 13th values also had larger values, we decided to not include those as we do not expect any seasonality occurring in our data. As a result, we only included the first lagged values in all our models. 
@@ -642,24 +715,24 @@ elif section =="Model Building":
   Our migration prediction models only predict a one-step forecast, thus the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030.  
   """)
 elif section == "Results":
-
-  components.html(
-      """
-      <div id="observablehq-a70836fb">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
-        });
-      </script>
-      """, height = 600,)
+  st.markdown(""" # Results """)
+  # components.html(
+  #     """
+  #     <div id="observablehq-a70836fb">
+  #       <div class="observablehq-viewof-year_select"></div>
+  #       <div class="observablehq-chart"></div>
+  #       <div class="observablehq-update" style="display:none"></div>
+  #     </div>
+  #     <script type="module">
+  #       import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+  #       import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
+  #       (new Runtime).module(define, name => {
+  #         if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
+  #         if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
+  #         if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
+  #       });
+  #     </script>
+  #     """, height = 600,)
 
   st.markdown(""" 
   ## XGBoost Model Results
@@ -689,7 +762,7 @@ elif section == "Results":
 
 elif section=="Conclusions & Limitations":
   st.markdown("""
-  ### Conclusions
+  # Conclusions
 
   """)
   st.markdown("""
@@ -713,29 +786,6 @@ elif section=="Conclusions & Limitations":
   """)
 
 elif section=="Supplemental Information":
-  
-  st.markdown("""
-  ### Population
-
-  We originally planned to use the population data we found online as part of our model. However, we instead chose to use the population data that was available in a model we followed closely (with projections into the future), so we didn't end up using the population data we found online. However, a heat map is shown below to visualize how population changes by county in time.
-  """)
-
-  components.html("""
-      <div id="observablehq-ff6b2a54">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/population.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-ff6b2a54 .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-ff6b2a54 .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-ff6b2a54 .observablehq-update")();
-        });
-      </script>
-      """, height = 600)
 
   st.markdown(''' 
   ### AQI 
