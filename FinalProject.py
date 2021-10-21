@@ -752,15 +752,7 @@ elif section == "Results":
   #       });
   #     </script>
   #     """, height = 600,)
-
-  results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
-  results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
-  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
-  results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
-
-  st.dataframe(results_table_1.style.format("{:.2f}"))
-
-  st.markdown(""" 
+    st.markdown(""" 
   ## XGBoost Model Results
   """)
   components.html(
@@ -780,11 +772,43 @@ elif section == "Results":
           });
         </script>
           """, height = 600,)
-  st.markdown("""
 
+
+  results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
+  results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
+  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
+  results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
+
+  st.dataframe(results_table_1.style.format("{:.2f}"))
+  st.markdown("""**Above: RMSE results for the best models using three approaches**""")
+  results_table_2 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
+  results_table_2['ARIMA'] = [-0.285,-1.481,-0.297,0.405,0.519,-2.204,0.758,0.767,0.920,0.930,0.003]
+  results_table_2['Linear Regression'] = [0.793,0.603,0.487,0.817,0.682,-1.384,0.704,0.740,0.890,0.961,0.529]
+  results_table_2['XGBoost'] = [0.571,0.451,0.440,0.718,0.570,-0.278,0.712,0.706,0.676,0.904,0.547]
+  
+  st.dataframe(results_table_2.style.format("{:.2f}"))
+  st.markdown("""**Above: R$^2$ results for the best models using three approaches**
+  
+  For ARIMA and linear regression, we noticed that the R2 was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
+
+  The ARIMA model, which is our baseline model, only uses historical net migration data per county to predict future values. We used parameters (1,0,0) for the ARIMA model. From Table 2, it can be seen that the R2 values of the ARIMA model are very close to 0. This might be caused by several factors:
+  - The ARIMA model only has a very limited number of datapoints to train on. For each county, the ARIMA model only has 17 data points (one for each year from 1993-2010) to train from.
+  - ARIMA model uses the whole time series data to predict future values. However, including values from 10 years ago, for example, may not be useful and may even cause the performance to degrade over time. 
+  - Additional features are needed to predict future net migration values.  
+
+  Given the poor performance on the ARIMA model, we experimented with the linear regression and XGBoost model. 
+
+  The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R squared actually improved. We chose to drop employment from the final model of our linear regression model. 
   """)
 
+  # Insert table with error results and coefficients from linear regression model here
+
+  st.markdown("""
+  One of the main assumptions of linear regression is that the relationship of interest is linear. In order to test for linearity, we plotted the expected values vs predicted values obtained from the linear regression model (Figure X) and found that the relationship is indeed linear. 
+  """)
   
+
+
 
 elif section=="Conclusions & Limitations":
   st.markdown("""
