@@ -77,7 +77,13 @@ st.sidebar.image('Plots/2030Projection.png')
 st.sidebar.markdown("""
 # Landscape of the New America: How domestic migration will redistribute the US population in 2030
 ## DS4A/W | Team 24
-Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
+Danah Park | Devi Ganapathi | 
+
+Elizabeth Peterson |  Emily Wang | 
+
+Gabrielle Cardoza | Irene Alisjahbana  | 
+
+Noemi Valdez
 """)
 #### Outline Options for Sidebar
 section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Conclusions","Supplemental Information"))
