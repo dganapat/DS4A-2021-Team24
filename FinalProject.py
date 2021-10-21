@@ -768,7 +768,7 @@ elif section == "Results":
 
 
   st.markdown(""" 
-  ### Linear Regression Model Results
+  #### Linear Regression Model: Difference between Prediction and Actual 
   """)
   components.html(
           """
@@ -791,7 +791,7 @@ elif section == "Results":
 
 
   st.markdown(""" 
-  ### XGBoost Model Results
+  #### XGBoost Model: Difference between Prediction and Actual 
   """)
   components.html(
           """
