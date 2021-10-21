@@ -747,10 +747,7 @@ elif section =="Methodology":
   Our migration prediction models only predict a one-step forecast, thus the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030.  
   """)
 elif section == "Results":
-  st.markdown(""" # Results 
-  ## Comparative Results
-  Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in Tables 1 and 2. 
-  """)
+  st.markdown(""" # Results """)
   # components.html(
   #     """
   #     <div id="observablehq-a70836fb">
@@ -768,15 +765,7 @@ elif section == "Results":
   #       });
   #     </script>
   #     """, height = 600,)
-  st.markdown(""" 
-  ## XGBoost Model Results """)
 
-  results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
-  results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
-  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
-  results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
-
-  st.dataframe(results_table_1.style.format("{:.2f}"))
 
   st.markdown(""" 
   ### Linear Regression Model Results
@@ -822,13 +811,17 @@ elif section == "Results":
         </script>
           """, height = 600,)
 
-
+  st.markdown("""
+  ## Comparative Results
+  Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in Tables 1 and 2. 
+  """)
   results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
   results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
   results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
   results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
 
   st.dataframe(results_table_1.style.format("{:.2f}"))
+
   st.markdown("""**Above: RMSE results for the best models using three approaches**""")
   results_table_2 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
   results_table_2['ARIMA'] = [-0.285,-1.481,-0.297,0.405,0.519,-2.204,0.758,0.767,0.920,0.930,0.003]
@@ -856,7 +849,7 @@ elif section == "Results":
   One of the main assumptions of linear regression is that the relationship of interest is linear. In order to test for linearity, we plotted the expected values vs predicted values obtained from the linear regression model (Figure X) and found that the relationship is indeed linear. 
   """)
   st.markdown(""" 
-  ## Projection Results
+  ## Projection Results - Linear Regression
   """)
   components.html(
           """
@@ -877,7 +870,7 @@ elif section == "Results":
           """, height = 600,)
   
   st.markdown("""
-
+  **Above: Projected total net outflow by county using linear regression model **
   """)
 
   components.html(
@@ -897,6 +890,9 @@ elif section == "Results":
         });
       </script>
         """, height = 600,)
+  st.markdown("""
+  **Above: Projected net outflow by county normalized by total population using linear regression model **
+  """)
 
   
 
