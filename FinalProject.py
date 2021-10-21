@@ -73,6 +73,7 @@ highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaste
 
 
 #### Sidebar Header
+st.sidebar.image('Plots/2030Projection.png')
 st.sidebar.markdown("""
 # Landscape of the New America: How domestic migration will redistribute the US population in 2030
 ## Team 24
@@ -80,6 +81,7 @@ Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardo
 """)
 #### Outline Options for Sidebar
 section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results","Conclusions & Limitations","Supplemental Information"))
+
 
 #### EXECUTIVE SUMMARY SECTION
 if section == "Executive Summary":
@@ -765,117 +767,9 @@ elif section == "Results":
   #       });
   #     </script>
   #     """, height = 600,)
-
-
-  
-
-  st.markdown("""
-  ## Comparative Results
-  Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in Tables 1 and 2. 
-  """)
-  results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
-  results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
-  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
-  results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
-
-  st.dataframe(results_table_1.style.format("{:.2f}"))
-
-  st.markdown("""**Above: RMSE results for the best models using three approaches**""")
-  results_table_2 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
-  results_table_2['ARIMA'] = [-0.285,-1.481,-0.297,0.405,0.519,-2.204,0.758,0.767,0.920,0.930,0.003]
-  results_table_2['Linear Regression'] = [0.793,0.603,0.487,0.817,0.682,-1.384,0.704,0.740,0.890,0.961,0.529]
-  results_table_2['XGBoost'] = [0.571,0.451,0.440,0.718,0.570,-0.278,0.712,0.706,0.676,0.904,0.547]
-  
-  st.dataframe(results_table_2.style.format("{:.2f}"))
-  st.markdown("""**Above: R$^2$ results for the best models using three approaches**
-  
-  For ARIMA and linear regression, we noticed that the R2 was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
-
-  The ARIMA model, which is our baseline model, only uses historical net migration data per county to predict future values. We used parameters (1,0,0) for the ARIMA model. From Table 2, it can be seen that the R2 values of the ARIMA model are very close to 0. This might be caused by several factors:
-  - The ARIMA model only has a very limited number of datapoints to train on. For each county, the ARIMA model only has 17 data points (one for each year from 1993-2010) to train from.
-  - ARIMA model uses the whole time series data to predict future values. However, including values from 10 years ago, for example, may not be useful and may even cause the performance to degrade over time. 
-  - Additional features are needed to predict future net migration values.  
-
-  Given the poor performance on the ARIMA model, we experimented with the linear regression and XGBoost model. 
-
-  The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R squared actually improved. We chose to drop employment from the final model of our linear regression model. 
-  """)
-
-  # Insert table with error results and coefficients from linear regression model here
-
-  st.markdown("""
-  We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that the relationship is indeed linear. 
-  """)
-
-  # Insert predicted vs actual plot here
-
-  st.markdown("""
-  Finally, we experimented with the XGBoost model. Even though linear models were good enough to predict the net migration numbers, we still wanted to see if the XGBoost model is able to capture any non-linear relationships that may not have been captured by our linear regression model. In our initial XGBoost model, we included all features and calculated the average feature importance for each feature, shown in the figure below. The net migration value was, unsurprisingly, the most important feature, followed by population number and the number of disasters. Using this result, we then trained various XGBoost models based on a subset of the features. The best result was obtained by using only two features: net migration and total population. The RMSE and R2 of this model is shown in Tables 1 and 2. 
-  """)
-  features = ['Net Migration (Lag 1)', 'Population', 'Number of Disasters', 'Per Capita Income', 'Employment', 'HPI']
-  f_score = [0.748288, 0.115359, 0.080625, 0.024867, 0.017184, 0.013677]
-
-  fig, ax = plt.subplots(figsize= (8,6))
-
-  plt.barh(np.arange(len(features)), width = f_score, height = 0.5, color = plt.get_cmap('viridis')(0.1), tick_label = features)
-  ax.set_ylim([5.5,-0.5])
-
-  ax.set_title('F Scores for XGBoost Features', pad = 15)
-  ax.set_xlabel('F Score')
-  ax.set_ylabel('Features')
-
-  plt.tick_params(axis='both', which='major', length = 10, width = 2)
-  st.pyplot(fig)
-
-  st.markdown(""" 
-  In addition to the RMSE and R$^2$ values of the model, we also looked at the difference in prediction for each of the different counties. From Figure 12, certain counties in Southern California and Arizona like Pinal, Los Angeles, and San Bernardino are extremely underpredicted by our models. On the other hand, several counties that the model overpredicts include Miami-Dade, Florida, Harris, Texas, and San Diego, California. These counties are the outliers and suggest that there are other factors that are affecting the number of people migrating out of the county we have not accounted for. It is interesting to note that Linear Regression underestimates while XGBoost overestimates, and vice versa. This can be seen in the Florida region.  
-
-  #### Linear Regression Model: Difference between Prediction and Actual 
-  """)
-  components.html(
-          """
-          <div id="observablehq-152f569d">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/linreg_diff.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-152f569d .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-152f569d .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-152f569d .observablehq-update")();
-          });
-        </script>
-          """, height = 600,)
-  st.markdown(""" """)
-
-
-  st.markdown(""" 
-  #### XGBoost Model: Difference between Prediction and Actual 
-  """)
-  components.html(
-          """
-          <div id="observablehq-6397857c">
-          <div class="observablehq-viewof-year_select"></div>
-          <div class="observablehq-chart"></div>
-          <div class="observablehq-update" style="display:none"></div>
-        </div>
-        <script type="module">
-          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-          import define from "https://api.observablehq.com/@ialsjbn/xgboost_diff.js?v=3";
-          (new Runtime).module(define, name => {
-            if (name === "viewof year_select") return Inspector.into("#observablehq-6397857c .observablehq-viewof-year_select")();
-            if (name === "chart") return Inspector.into("#observablehq-6397857c .observablehq-chart")();
-            if (name === "update") return Inspector.into("#observablehq-6397857c .observablehq-update")();
-          });
-        </script>
-          """, height = 600,)
-
   st.markdown(""" 
   ## Projections for 2030 - Linear Regression
-  Based on our comparative analysis, both the linear regression and XGBoost model had comparable RMSE and R2 values. However, based on Tables 1 and 2, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2030. 
+  Based on our comparative analysis (described below), both the linear regression and XGBoost model had comparable RMSE and R2 values. However, based on Tables 1 and 2, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2030. 
   """)
   st.markdown("""
   #### Projected total net outflow by county using linear regression model
@@ -923,6 +817,116 @@ elif section == "Results":
         """, height = 600,)
   st.markdown("""
   Given that the population migration projections heavily depend on the total population numbers of the county itself, we also calculated the normalized projections, which are the number of migrants divided by the population of the county itself. This can be seen in the figure above. Interestingly, we see that in the West and western edge of the Midwest areas the population influx caused by the migration is significant compared to the population of the counties themselves. This is important as infrastructure in those counties and states might not be prepared to handle a large population influx. """)
+
+
+  
+
+  st.markdown("""
+  ## Comparative Results
+  Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in Tables 1 and 2. 
+  """)
+  results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
+  results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
+  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
+  results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
+
+  st.dataframe(results_table_1.style.format("{:.2f}"))
+
+  st.markdown("""**Above: RMSE results for the best models using three approaches**""")
+  results_table_2 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
+  results_table_2['ARIMA'] = [-0.285,-1.481,-0.297,0.405,0.519,-2.204,0.758,0.767,0.920,0.930,0.003]
+  results_table_2['Linear Regression'] = [0.793,0.603,0.487,0.817,0.682,-1.384,0.704,0.740,0.890,0.961,0.529]
+  results_table_2['XGBoost'] = [0.571,0.451,0.440,0.718,0.570,-0.278,0.712,0.706,0.676,0.904,0.547]
+  
+  st.dataframe(results_table_2.style.format("{:.2f}"))
+  st.markdown("""**Above: R$^2$ results for the best models using three approaches**
+  
+  For ARIMA and linear regression, we noticed that the R2 was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
+
+  The ARIMA model, which is our baseline model, only uses historical net migration data per county to predict future values. We used parameters (1,0,0) for the ARIMA model. From Table 2, it can be seen that the R2 values of the ARIMA model are very close to 0. This might be caused by several factors:
+  - The ARIMA model only has a very limited number of datapoints to train on. For each county, the ARIMA model only has 17 data points (one for each year from 1993-2010) to train from.
+  - ARIMA model uses the whole time series data to predict future values. However, including values from 10 years ago, for example, may not be useful and may even cause the performance to degrade over time. 
+  - Additional features are needed to predict future net migration values.  
+
+  
+  Given the poor performance on the ARIMA model, we experimented with the linear regression and XGBoost model. 
+
+  The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R squared actually improved. We chose to drop employment from the final model of our linear regression model. 
+  """)
+
+  # Insert table with error results and coefficients from linear regression model here
+
+  st.markdown("""
+  We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that the relationship is indeed linear. 
+  """)
+
+  # Insert predicted vs actual plot here
+
+  st.markdown("""
+  Finally, we experimented with the XGBoost model. Even though linear models were good enough to predict the net migration numbers, we still wanted to see if the XGBoost model is able to capture any non-linear relationships that may not have been captured by our linear regression model. In our initial XGBoost model, we included all features and calculated the average feature importance for each feature, shown in the figure below. The net migration value was, unsurprisingly, the most important feature, followed by population number and the number of disasters. Using this result, we then trained various XGBoost models based on a subset of the features. The best result was obtained by using only two features: net migration and total population. The RMSE and R2 of this model is shown in Tables 1 and 2. 
+  """)
+  features = ['Net Migration (Lag 1)', 'Population', 'Number of Disasters', 'Per Capita Income', 'Employment', 'HPI']
+  f_score = [0.748288, 0.115359, 0.080625, 0.024867, 0.017184, 0.013677]
+
+  fig, ax = plt.subplots(figsize= (8,6))
+
+  plt.barh(np.arange(len(features)), width = f_score, height = 0.5, color = plt.get_cmap('viridis')(0.1), tick_label = features)
+  ax.set_ylim([5.5,-0.5])
+
+  ax.set_title('F Scores for XGBoost Features', pad = 15)
+  ax.set_xlabel('F Score')
+  ax.set_ylabel('Features')
+
+  plt.tick_params(axis='both', which='major', length = 10, width = 2)
+  st.pyplot(fig)
+
+  st.markdown(""" 
+  In addition to the RMSE and R$^2$ values of the model, we also looked at the difference in prediction for each of the different counties. From Figure 12, certain counties in Southern California and Arizona like Pinal, Los Angeles, and San Bernardino are extremely underpredicted by our models. On the other hand, several counties that the model overpredicts include Miami-Dade, Florida, Harris, Texas, and San Diego, California. These counties are the outliers and suggest that there are other factors that are affecting the number of people migrating out of the county we have not accounted for. It is interesting to note that Linear Regression underestimates while XGBoost overestimates, and vice versa. This can be seen in the Florida region.  
+
+ **Linear Regression Model: Difference between Prediction and Actual **
+  """)
+  components.html(
+          """
+          <div id="observablehq-152f569d">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/linreg_diff.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-152f569d .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-152f569d .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-152f569d .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
+  st.markdown(""" """)
+
+
+  st.markdown(""" 
+  ** XGBoost Model: Difference between Prediction and Actual **
+  """)
+  components.html(
+          """
+          <div id="observablehq-6397857c">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/xgboost_diff.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-6397857c .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-6397857c .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-6397857c .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
+
+
 
 
   
