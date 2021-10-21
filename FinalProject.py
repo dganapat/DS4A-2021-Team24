@@ -87,7 +87,25 @@ if section == "Executive Summary":
   ## Team 24 
   Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
   # Executive Summary
+  
   ''')  
+  components.html(
+        """
+        <div id="observablehq-6397857c">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/xgboost_diff.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-6397857c .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-6397857c .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-6397857c .observablehq-update")();
+        });
+      </script>
+        """, height = 600,)
 
 #### PROJECT DESCRIPTION SECTION ####
 if section == "Project Description":
@@ -620,9 +638,6 @@ elif section == "Exploratory Data Analysis":
     st.markdown("""In contrast to the housing price index and income data, the correlation between total number of jobs and net population outflow is relatively strong, 0.491, as we display in Figure 11. This could be related to counties with large numbers of jobs also being more densely populated and having higher cost of living. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue combinations of these factors further in our statistical modeling.
     """)
 
-
-
-
      
 elif section =="Model Building":
   st.markdown("""
@@ -716,7 +731,10 @@ elif section =="Model Building":
   Our migration prediction models only predict a one-step forecast, thus the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030.  
   """)
 elif section == "Results":
-  st.markdown(""" # Results """)
+  st.markdown(""" # Results 
+  ## Comparative Results
+  Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in Tables 1 and 2. 
+  """)
   # components.html(
   #     """
   #     <div id="observablehq-a70836fb">
@@ -734,6 +752,13 @@ elif section == "Results":
   #       });
   #     </script>
   #     """, height = 600,)
+
+  results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
+  results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
+  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
+  results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
+
+  st.dataframe(results_table_1.style.format("{:.2f}"))
 
   st.markdown(""" 
   ## XGBoost Model Results
