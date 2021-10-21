@@ -145,12 +145,6 @@ if section == "Executive Summary":
 
 #### PROJECT DESCRIPTION SECTION ####
 if section == "Project Description":
-  #### TITE AND HEADER ####
-  # Title and header
-  # st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
-  # ## DS4A/W | Team 24 
-  # Danah Park | Devi Ganapathi | Elizabeth Peterson | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
-  # ''')
     
   st.markdown(''' 
     # Project Description
@@ -790,23 +784,7 @@ elif section == "Results & Discussion":
   st.markdown(""" # Results and Discussion
   In this section we discuss the results of our three models and use the linear regression model, our best performing model, to do the population migration projections for 2030. We also discuss limitations of our approach and future work.
    """)
-  # components.html(
-  #     """
-  #     <div id="observablehq-a70836fb">
-  #       <div class="observablehq-viewof-year_select"></div>
-  #       <div class="observablehq-chart"></div>
-  #       <div class="observablehq-update" style="display:none"></div>
-  #     </div>
-  #     <script type="module">
-  #       import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-  #       import define from "https://api.observablehq.com/@ialsjbn/map_2019.js?v=3";
-  #       (new Runtime).module(define, name => {
-  #         if (name === "viewof year_select") return Inspector.into("#observablehq-a70836fb .observablehq-viewof-year_select")();
-  #         if (name === "chart") return Inspector.into("#observablehq-a70836fb .observablehq-chart")();
-  #         if (name === "update") return Inspector.into("#observablehq-a70836fb .observablehq-update")();
-  #       });
-  #     </script>
-  #     """, height = 600,)
+
   st.markdown(""" 
   ## Projections for 2030 - Linear Regression
   Based on our comparative analysis (described below), both the linear regression and XGBoost model had comparable RMSE and R2 values. However, based on the tables below, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2030. 
