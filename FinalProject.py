@@ -79,7 +79,7 @@ st.sidebar.markdown("""
 Danah Park | Devi Ganapathi | Elizabeth Peterson |  Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
 """)
 #### Outline Options for Sidebar
-section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Model Building","Results","Conclusions & Limitations","Supplemental Information"))
+section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results","Conclusions & Limitations","Supplemental Information"))
 
 #### EXECUTIVE SUMMARY SECTION
 if section == "Executive Summary":
@@ -90,31 +90,31 @@ if section == "Executive Summary":
   
   ''')  
   components.html(
-        """
-        <div id="observablehq-6397857c">
-        <div class="observablehq-viewof-year_select"></div>
-        <div class="observablehq-chart"></div>
-        <div class="observablehq-update" style="display:none"></div>
-      </div>
-      <script type="module">
-        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-        import define from "https://api.observablehq.com/@ialsjbn/xgboost_diff.js?v=3";
-        (new Runtime).module(define, name => {
-          if (name === "viewof year_select") return Inspector.into("#observablehq-6397857c .observablehq-viewof-year_select")();
-          if (name === "chart") return Inspector.into("#observablehq-6397857c .observablehq-chart")();
-          if (name === "update") return Inspector.into("#observablehq-6397857c .observablehq-update")();
-        });
-      </script>
-        """, height = 600,)
+          """
+        <div id="observablehq-756613fe">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/popmig_proj.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-756613fe .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-756613fe .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-756613fe .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
 
 #### PROJECT DESCRIPTION SECTION ####
 if section == "Project Description":
   #### TITE AND HEADER ####
   # Title and header
-  st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
-  ## Team 24 
-  Danah Park | Devi Ganapathi | Elizabeth Peterson | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
-  ''')
+  # st.markdown(''' # Landscape of the New America: How How domestic migration will redistribute the US population in 2030 
+  # ## Team 24 
+  # Danah Park | Devi Ganapathi | Elizabeth Peterson | Emily Wang | Gabrielle Cardoza | Irene Alisjahbana  | Noemi Valdez
+  # ''')
     
   st.markdown(''' 
     # Project Description
@@ -168,6 +168,11 @@ elif section == "Datasets":
       return dataset_table
 
   # Run the function to make the dataset table and display it
+  st.markdown('''
+    We leveraged several publicly available datasets for our project:
+    ''')
+
+
   dataset_table = make_dataset_table()
   st.write(dataset_table.to_html(escape=False,index=False),unsafe_allow_html=True)
 
@@ -207,6 +212,8 @@ elif section == "Exploratory Data Analysis":
           ### Population Migration
           ''')
 
+    st.markdown("""We subtracted the total county outflows and inflows to obtain the net outflow number, plotted in the figure below:""")
+
     components.html("""
         <div id="observablehq-e27ece4f">
       <div class="observablehq-chart"></div>
@@ -219,8 +226,9 @@ elif section == "Exploratory Data Analysis":
       });
     </script>
     """, height = 600)
+    st.caption("Net population migration from 1993-2019. Note: hover over a line to see which county it is!")
 
-    st.markdown("""We subtracted the total county outflows and inflows to obtain the net outflow number, plotted in the figure above. A positive number indicates that more people move out of the county, whereas a negative number indicates that more people move into the county. From the plot below, we can see that in general, many counties have constant net migration near 0, which means that as many people are moving out, as they are moving in. However, some counties have consistently more people moving out of the county (for example, Los Angeles, CA), while others have consistently more people moving in (for example, Maricopa, AZ). Some counties experience anomalous increases in net outflow or net inflow, such as Cook, IL and Travis, TX.
+    st.markdown(""" A positive number indicates that more people move out of the county, whereas a negative number indicates that more people move into the county. From the plot below, we can see that in general, many counties have constant net migration near 0, which means that as many people are moving out, as they are moving in. However, some counties have consistently more people moving out of the county (for example, Los Angeles, CA), while others have consistently more people moving in (for example, Maricopa, AZ). Some counties experience anomalous increases in net outflow or net inflow, such as Cook, IL and Travis, TX.
     """)
 
     components.html(
@@ -240,6 +248,7 @@ elif section == "Exploratory Data Analysis":
               });
             </script>
             """, height = 600,)
+  st.caption("Note: Click the play button to see how the population migration changes over time! You can also hover over a county to see more information.")
   
   if choice == "Population" or choice == "All Variables":
     # Population EDA
@@ -264,6 +273,10 @@ elif section == "Exploratory Data Analysis":
           });
         </script>
         """, height = 600)
+
+    st.caption("Note: Click the play button to see how the population numbers changes over time! You can also hover over a county to see more information.")
+
+
     # Make correlation plot for population
     corr_population_all = pearsonr(population_migration.total.tolist(), population_migration.net_out.tolist())
     fig, ax = plt.subplots(figsize=(8,6))
@@ -312,6 +325,7 @@ elif section == "Exploratory Data Analysis":
       });
     </script>
     """, height = 600,)
+    st.caption("Note: Click the play button to see where disasters are happening over time! You can also hover over a county to see more information.")
 
     # Number of Incidents by Disaster Type Bar Plot
     fig, ax = plt.subplots(figsize= (10,5))
@@ -400,6 +414,7 @@ elif section == "Exploratory Data Analysis":
           });
         </script>
         """, height = 600,)
+    st.caption("Note: Click the play button to see how the HPI changes over time! You can also hover over a county to see more information.")
     
     # Data cleaning
     years = hpi_migration.year.drop_duplicates()
@@ -492,6 +507,7 @@ elif section == "Exploratory Data Analysis":
           });
         </script>
         """, height = 600,)
+    st.caption("Note: Click the play button to see how the per capita income changes over time! You can also hover over a county to see more information.")
 
     # Per Capita Income By Year Time Series Plots 
     income_highNet, income_lowNet = get_high_low_dfs(income_migration,highNet,lowNet)
@@ -574,6 +590,7 @@ elif section == "Exploratory Data Analysis":
           });
         </script>
         """, height = 600,)
+    st.caption("Note: Click the play button to see how the employment numbers changes over time! You can also hover over a county to see more information.")
 
     # Employment Time Series Plots
     employment_highNet, employment_lowNet = get_high_low_dfs(employment_migration,highNet,lowNet)
@@ -639,18 +656,17 @@ elif section == "Exploratory Data Analysis":
     """)
 
      
-elif section =="Model Building":
+elif section =="Methodology":
   st.markdown("""
-  # Model Building
-  ## Methodology
-  ### Time Series and Machine Learning Models
+  # Methodology
+  ## Time Series and Machine Learning Models
   In this project, we experimented with three different approaches to model the net population migration: a pure time-series ARIMA model, linear regression, and XGBoost. We used all three models to predict a **one-step forecast** of the net population migration (i.e. predict the value for the next year). 
 
   - **ARIMA**: ARIMA is a model that is commonly used for analyzing and forecasting time series data. This model only takes historical time series data as an input, to predict the future values. The ARIMA model has three parameters that include the number of lagged terms, the order of moving average, and the number of differencing required to make the time series stationary. This model is our baseline results. 
   - **Linear Regression**: Linear regression is a classic model used to predict continuous values. Using this model, we transformed our time series prediction problem into a regression problem by incorporating many other features that we hypothesize can help predict the values of the net migration better. The main assumption is that our predictors and the response variable have a linear relationship. 
   - **XGBoost**: Finally, we also experimented with the XGBoost model, a type of ensemble machine learning model. Because the algorithm leverages decision trees to make predictions, XGBoost is able to capture more non-linear relationships. 
 
-  ### Feature Selection
+  ## Feature Selection
   To determine the number of lagged values to include as a feature, we calculated the partial autocorrelation values for each county. Then, we took the lagged value that was most important across the counties. An example of the partial autocorrelation plot for a specific county (in this case Carroll County, MD)  is shown in the figure below. 
     """)
 
@@ -688,10 +704,10 @@ elif section =="Model Building":
   st.dataframe(data_struct_df)
 
   st.markdown('''
-  ### Evaluation Metrics
+  ## Evaluation Metrics
   We used several evaluation metrics to evaluate our model. For feature selection, we used the p-values to determine whether or not to include the feature into our final model. For general model evaluation, we used **RMSE and R2 values**. These values are calculated for each year and each county. We also aggregated the error metrics to obtain an average score for the models. 
 
-  ### Training and Validation Method
+  ## Training and Validation Method
   Given the time series nature of our problem, we employed a walk-forward validation with expanding window technique for our training and validation method (Figure X). This was done using the following steps:
 
   1. We decided on test years between 2010-2019.
@@ -707,13 +723,13 @@ elif section =="Model Building":
   6. Repeat steps 1-5 for each test year. 
   ''')
 
-  st.image('Plots/walkforward.png')
+  st.image('Plots/walkforward.png', width = 500, caption = 'Illustrative example of walk-forward validation with an expanding window. (https://alphascientist.com/walk_forward_model_building.html)')
   st.markdown("""
-  Illustrative example of walk-forward validation with an expanding window. [Source](https://alphascientist.com/walk_forward_model_building.html)
+  
 
   For the ARIMA model, this method was performed for each county (i.e. we trained 3051 counties x 10 years = 30510 models). However, for the linear regression and XGBoost models, we did not explicitly train a model separately for each county. Instead, we used the data points from all counties and trained it for a single model every year (i.e we trained only 10 models). 
 
-  ### Projection Method
+  ## Projection Method
   We chose the best performing model to perform our projection predictions of the population migration in 2030. 
 
   In order to predict population migration in future years, we made approximate future projections of each of the input variables from 2020-2030. 
@@ -753,7 +769,40 @@ elif section == "Results":
   #     </script>
   #     """, height = 600,)
     st.markdown(""" 
-  ## XGBoost Model Results
+  ## XGBoost Model Results """)
+
+  results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
+  results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
+  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
+  results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
+
+  st.dataframe(results_table_1.style.format("{:.2f}"))
+
+  st.markdown(""" 
+  ### Linear Regression Model Results
+  """)
+  components.html(
+          """
+          <div id="observablehq-152f569d">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/linreg_diff.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-152f569d .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-152f569d .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-152f569d .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
+  st.markdown("""
+
+
+  st.markdown(""" 
+  ### XGBoost Model Results
   """)
   components.html(
           """
@@ -806,6 +855,49 @@ elif section == "Results":
   st.markdown("""
   One of the main assumptions of linear regression is that the relationship of interest is linear. In order to test for linearity, we plotted the expected values vs predicted values obtained from the linear regression model (Figure X) and found that the relationship is indeed linear. 
   """)
+  st.markdown(""" 
+  ## Projection Results
+  """)
+  components.html(
+          """
+        <div id="observablehq-756613fe">
+          <div class="observablehq-viewof-year_select"></div>
+          <div class="observablehq-chart"></div>
+          <div class="observablehq-update" style="display:none"></div>
+        </div>
+        <script type="module">
+          import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+          import define from "https://api.observablehq.com/@ialsjbn/popmig_proj.js?v=3";
+          (new Runtime).module(define, name => {
+            if (name === "viewof year_select") return Inspector.into("#observablehq-756613fe .observablehq-viewof-year_select")();
+            if (name === "chart") return Inspector.into("#observablehq-756613fe .observablehq-chart")();
+            if (name === "update") return Inspector.into("#observablehq-756613fe .observablehq-update")();
+          });
+        </script>
+          """, height = 600,)
+  
+  st.markdown("""
+
+  """)
+
+  components.html(
+        """
+      <div id="observablehq-a40b4a45">
+        <div class="observablehq-viewof-year_select"></div>
+        <div class="observablehq-chart"></div>
+        <div class="observablehq-update" style="display:none"></div>
+      </div>
+      <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@ialsjbn/popmig_norm_proj.js?v=3";
+        (new Runtime).module(define, name => {
+          if (name === "viewof year_select") return Inspector.into("#observablehq-a40b4a45 .observablehq-viewof-year_select")();
+          if (name === "chart") return Inspector.into("#observablehq-a40b4a45 .observablehq-chart")();
+          if (name === "update") return Inspector.into("#observablehq-a40b4a45 .observablehq-update")();
+        });
+      </script>
+        """, height = 600,)
+
   
 
 
