@@ -222,7 +222,7 @@ elif section == "Exploratory Data Analysis":
             </script>
             """, height = 600,)
   
-  elif choice == "Population" or choice == "All Variables":
+  if choice == "Population" or choice == "All Variables":
     # Population EDA
     st.markdown("""
     ### Population
