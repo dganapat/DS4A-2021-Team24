@@ -845,23 +845,26 @@ elif section == "Results & Discussion":
 
   st.markdown("""
   ## Comparative Results
-  Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in Tables 1 and 2. 
+  Results for the RMSE and R$^2$ values of all three models we experimented with can be seen in the tables below. 
   """)
+  col1, col2 = st.columns([1,1])
   results_table_1 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
   results_table_1['ARIMA'] = [1974.68,2194.96,1898.44,1625.18,1896.39,2677.59,1309.38,2002.05,833.01,734.07,1714.58]
-  results_table_1['Linear Regression'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
+  results_table_1['Lin. Reg.'] = [849.41,942.45,1260.88,967.98,1650.11,2478.72,1555.87,2231.31,1037.78,585.99,1356.05]
   results_table_1['XGBoost'] = [1142.07,1034.42,1249.18,1120.35,1796.54,1693.65,1429.09,2254.00,1678.95,864.00,1426.22]
-
-  st.dataframe(results_table_1.style.format("{:.2f}"))
-
-  st.caption("""RMSE results for the best models using three approaches""")
+  
+  with col1:
+    st.dataframe(results_table_1.style.format("{:.2f}"))
+    st.caption("""RMSE results for the best models using three approaches""")
+  
   results_table_2 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
   results_table_2['ARIMA'] = [-0.285,-1.481,-0.297,0.405,0.519,-2.204,0.758,0.767,0.920,0.930,0.003]
-  results_table_2['Linear Regression'] = [0.793,0.603,0.487,0.817,0.682,-1.384,0.704,0.740,0.890,0.961,0.529]
+  results_table_2['Lin. Reg.'] = [0.793,0.603,0.487,0.817,0.682,-1.384,0.704,0.740,0.890,0.961,0.529]
   results_table_2['XGBoost'] = [0.571,0.451,0.440,0.718,0.570,-0.278,0.712,0.706,0.676,0.904,0.547]
-  
-  st.dataframe(results_table_2.style.format("{:.2f}"))
-  st.caption("R$^2$ results for the best models using three approaches")
+  with col2:
+    st.dataframe(results_table_2.style.format("{:.2f}"))
+    st.caption("R$^2$ results for the best models using three approaches")
+
   st.markdown("""
   
   For ARIMA and linear regression, we noticed that the R2 was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
@@ -891,8 +894,8 @@ elif section == "Results & Discussion":
     y_pred = y_vals['y_pred']
     ax.scatter(y_test, y_pred,color=cm.viridis(0.1), edgecolors=(0, 0, 0),alpha=0.8)
     ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
-    ax.set_xlabel('Measured')
-    ax.set_ylabel('Predicted')
+    ax.set_xlabel('Actual Net Migration Outflow')
+    ax.set_ylabel('Predicted Net Migration Outflow')
     st.pyplot(fig)
 
   st.markdown("""
