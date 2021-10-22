@@ -78,7 +78,16 @@ highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaste
 st.sidebar.image('Plots/america.png')
 st.sidebar.markdown("""
 # Landscape of the New America: How domestic migration will redistribute the US population in 2030
-### DS4A Women 2021 - Team 24
+""")
+#### Outline Options for Sidebar
+section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Limitations & Future Work","Conclusions","Supplemental Information"))
+
+st.sidebar.markdown("""
+
+
+
+  
+  ### DS4A Women 2021 - Team 24
 Danah Park | Devi Ganapathi | 
 
 Elizabeth Peterson |  Emily Wang | 
@@ -87,15 +96,19 @@ Gabrielle Cardoza | Irene Alisjahbana  |
 
 Noemi Valdez
 """)
-#### Outline Options for Sidebar
-section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Limitations & Future Work","Conclusions","Supplemental Information"))
-
 
 #### EXECUTIVE SUMMARY SECTION
 if section == "Executive Summary":
   st.markdown(''' # Landscape of the New America: How domestic migration will redistribute the US population in 2030 
   ## Executive Summary 
   ''')  
+
+  st.markdown("""
+    Below is our projections of the number of people that will move out of a county in the next ten years. 
+    Negative values mean more people are moving **into** a county. 
+    Press the play button to see how the numbers change. Hover over a county to see more information. 
+    """)
+
   components.html(
           """
         <div id="observablehq-756613fe">
@@ -113,6 +126,7 @@ if section == "Executive Summary":
           });
         </script>
           """, height = 600,)
+
   st.markdown("""
     As the United States grows in population, migration patterns in our future population will influence our country’s socioeconomic communities. Using variables such as population estimates, population migration, climate variables such as natural disasters, and social demographic variables like housing, economic and income data, we modeled how the US social landscape and redistribution of populations will look in 2030. 
 
