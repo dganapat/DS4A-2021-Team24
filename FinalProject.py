@@ -86,7 +86,7 @@ Gabrielle Cardoza | Irene Alisjahbana  |
 Noemi Valdez
 """)
 #### Outline Options for Sidebar
-section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Conclusions","Supplemental Information"))
+section = st.sidebar.selectbox("Outline",("Executive Summary","Project Description","Datasets","Exploratory Data Analysis","Methodology","Results & Discussion","Limitations & Future Work","Conclusions","Supplemental Information"))
 
 
 #### EXECUTIVE SUMMARY SECTION
@@ -156,7 +156,7 @@ if section == "Project Description":
     # Project Description
     
     ### Problem Overview
-    As the United States grows in population, future migration patterns will influence our country’s socioeconomic communities, dictate plans for future infrastructure, and determine how many people will be impacted by the effects of climate change. Our research goal is to model how the US social landscape and redistribution of populations will look in the next 10 years using population estimates, population migration, climate variables such as natural disasters, and social demographic variables being housing, economic and income data. 
+    As the United States grows in population, future migration patterns will influence our country’s socioeconomic communities, dictate plans for infrastructure, and determine how many people will be impacted by the effects of climate change. Our research goal is to model how the US social landscape and redistribution of populations will look in the next 10 years using population estimates, population migration, climate variables such as natural disasters, and social demographic variables being housing, economic and income data. 
     
     ### Specific Issue
     
@@ -943,25 +943,35 @@ elif section == "Results & Discussion":
         </script>
           """, height = 600,)
   st.caption("""XGBoost Model: Difference between Prediction and Actual""")
-  
-  st.markdown("""
-  ## Limitations and Future Work
-  The limitations of our study can be broadly separated into two categories: data limitations and methodology approaches. 
 
-  #### Data Limitation
+elif section == "Limitations & Future Work":
+  st.markdown("""
+  # Limitations and Future Work
+  The limitations of our study can be broadly separated into two categories: data limitations and methodology approaches. We also propose directions for future work that mitigate our limitations and go beyond the current scope of this project.
+
+  #### Data Limitations
   In regards to our data, one main limitation of this approach is that it uses tax return data to calculate the net migration outflow for each county. Tax returns are usually only filed per household, so although the data approximates the number of individuals using the number of total exemptions, it may not be accurate. This also means that this data only tracks households/individuals who file taxes in the US.
 
   Another significant limitation of the approach is that it doesn’t account for international immigration into the counties. Therefore although counties might have negative net migration outflows every year, the total populations of the counties could still be growing, either due to births or immigration. 
 
   Additionally, our income and housing price index data is not adjusted for inflation, which over-values incomes in later years. If we had more time, we would incorporate an inflation adjustment in the dataset.
 
-  Finally, if we had more time, we would try to include additional features that may better explain population migration, including climate related data such as temperature, drought, sea-level rise, etc. 
+  Moreover, there were other variables of interest we would have liked to look into such as property taxes, but we didn’t have more granular data sets that collected property taxes of each individual county which made it difficult to predict how they would impact inflow/outflow.
+ 
 
   #### Methodology Limitations
-  As described earlier, our modeling choice involves a one-step forecast. Therefore, our population migration projection results in 2030 rely heavily on our predictions in every previous year. Instead of a one-step forecast, future work may involve building models for multi-step forecasts. However, we expect that the predictive power would significantly reduce. 
+  In this study, we developed our model to be a one-step forecast. Therefore, predictions of a specific year highly depend on the predictions of previous years. The farther away we attempt to project, the more inaccurate our results. 
 
-  Another modeling choice we made was that we focused on the net migration outflow. Future work can also focus on explicitly modeling the outflows and inflows of each origin-destination pair. 
+  In addition, we focused on the net migration outflow instead of individual origin-destination pairs. As such, we lose granular information regarding the makeup of people that are moving to specific counties.  
 
+  #### Future Work
+  There are several next steps to improve the results of our study. 
+
+  First, we can include more features to help predict our outcome variables. For example, using other sporadic data such as the policy change, or granular data such as temperature, drought, sea-level rise, or voting propensity to see if they impact the population migration in certain regions. 
+
+  Instead of a one-step forecast, future work may involve building models for multi-step forecasts. However, we expect that the predictive power would significantly reduce. Further, we can leverage more complex methods such as RNN for predicting future values of population migration. 
+
+  Finally, we can include more specificity in our predicted variable. Future work can focus on explicitly modeling the outflows and inflows of each origin-destination pair. We can also subdivide migration by specific demographic groups. By modeling each individual origin-destination pair and including demographic groups, more granular information and outcomes such as redistribution of different demographics may be understood.
   """)
 
 
