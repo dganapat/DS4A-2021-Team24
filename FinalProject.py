@@ -150,17 +150,17 @@ if section == "Executive Summary":
     st.caption('Gaby')
   with col2:
     st.image('Team Photos/Devi.jpeg')
-    st.caption('Devi: web application, EDA, visualization')
+    st.caption('Devi: Web Application, EDA, Visualization')
     st.image('Team Photos/Irene.jpeg')
-    st.caption('Irene: modeling, analysis, interactive visualization')
+    st.caption('Irene: Modeling, Analysis, Interactive Visualization')
   with col3:
     st.image('Team Photos/Liz.jpeg')
-    st.caption('Elizabeth: EDA, future feature projection, visualization')
+    st.caption('Elizabeth: EDA, Future Feature Projection, Visualization')
     st.image('Team Photos/Noemi.jpeg')
     st.caption('Noemi')
   with col4:
     st.image('Team Photos/Emily.jpeg')
-    st.caption('Emily')
+    st.caption('Emily: EDA, Modeling, Analysis')
   
   st.markdown("""
   ## DS4A Women’s Summit Fall 2021
