@@ -157,7 +157,7 @@ if section == "Executive Summary":
     st.image('Team Photos/Liz.jpeg')
     st.caption('Elizabeth: EDA, Future Feature Projection, Visualization')
     st.image('Team Photos/Noemi.jpeg')
-    st.caption('Noemi')
+    st.caption('Noemi: EDA, analysis')
   with col4:
     st.image('Team Photos/Emily.jpeg')
     st.caption('Emily: EDA, Modeling, Analysis')
