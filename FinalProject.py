@@ -65,10 +65,12 @@ def import_data():
   population_migration = pd.read_csv('Datasets/population_migration_eda.csv')
   fmr_migration = pd.read_csv('Datasets/fmr_migration.csv')
   aqi_migration = pd.read_csv('Datasets/aqi_migration.csv')
+  data_combine_all = pd.read_csv('Datasets/data_combine_all.csv')
+  y_vals = pd.read_csv('Datasets/y_vals.csv')
 
-  return highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration
+  return highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration,data_combine_all,y_vals
 
-highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration = import_data()
+highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration,data_combine_all,y_vals = import_data()
 ##### END DATA IMPORTING SECTION #####
 
 
@@ -130,12 +132,12 @@ if section == "Executive Summary":
     st.caption('Gaby')
   with col2:
     st.image('Team Photos/Devi.jpeg')
-    st.caption('Devi')
+    st.caption('Devi: web application, EDA, visualization')
     st.image('Team Photos/Irene.jpeg')
-    st.caption('Irene')
+    st.caption('Irene: modeling, analysis, interactive visualization')
   with col3:
     st.image('Team Photos/Liz.jpeg')
-    st.caption('Elizabeth')
+    st.caption('Elizabeth: EDA, future feature projection, visualization')
     st.image('Team Photos/Noemi.jpeg')
     st.caption('Noemi')
   with col4:
@@ -880,8 +882,18 @@ elif section == "Results & Discussion":
   st.markdown("""
   We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that our model does quite well. 
   """)
-
-  # Insert predicted vs actual plot here
+  col1,col2,col3=st.columns([1,4,1])
+  with col1,col3:
+    st.write("")
+  with col2:
+    fig,ax = plt.subplots()
+    y_test = y_vals['y_test']
+    y_pred = y_vals['y_pred']
+    ax.scatter(y_test, y_pred,color=cm.viridis(0.1), edgecolors=(0, 0, 0),alpha=0.8)
+    ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
+    ax.set_xlabel('Measured')
+    ax.set_ylabel('Predicted')
+    st.pyplot(fig)
 
   st.markdown("""
   Finally, we experimented with the XGBoost model. Even though linear models were good enough to predict the net migration numbers, we still wanted to see if the XGBoost model is able to capture any non-linear relationships that may not have been captured by our linear regression model. In our initial XGBoost model, we included all features and calculated the average feature importance for each feature, shown in the figure below. The net migration value was, unsurprisingly, the most important feature, followed by population number and the number of disasters. Using this result, we then trained various XGBoost models based on a subset of the features. The best result was obtained by using only two features: net migration and total population. The RMSE and R2 of this model is shown in Tables 1 and 2. 
@@ -891,7 +903,7 @@ elif section == "Results & Discussion":
 
   fig, ax = plt.subplots(figsize= (8,6))
 
-  plt.barh(np.arange(len(features)), width = f_score, height = 0.5, color = plt.get_cmap('viridis')(0.1), tick_label = features)
+  plt.barh(np.arange(len(features)), width = f_score, height = 0.5, color = cm.viridis(0.1), tick_label = features)
   ax.set_ylim([5.5,-0.5])
 
   ax.set_title('F Scores for XGBoost Features', pad = 15)
