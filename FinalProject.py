@@ -880,7 +880,9 @@ elif section == "Results & Discussion":
   The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R squared actually improved. We chose to drop employment from the final model of our linear regression model. 
   """)
 
-  # Insert table with error results and coefficients from linear regression model here
+  coeffs = pd.read_csv('Datasets/coef_linreg.csv',index_col='Year').drop(columns=['Unnamed: 0'])
+  st.dataframe(coeffs)
+  st.caption('Linear Regression model coefficients for each projected year')
 
   st.markdown("""
   We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that our model does quite well. 
