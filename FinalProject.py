@@ -86,7 +86,7 @@ st.sidebar.markdown("""
 
 
 
-  
+
   ### DS4A Women 2021 - Team 24
 Danah Park | Devi Ganapathi | 
 
@@ -107,6 +107,8 @@ if section == "Executive Summary":
     Below is our projections of the number of people that will move out of a county in the next ten years. 
     Negative values mean more people are moving **into** a county. 
     Press the play button to see how the numbers change. Hover over a county to see more information. 
+
+    To learn more about how we obtained the projections, check out the navigation bar on the left!
     """)
 
   components.html(
