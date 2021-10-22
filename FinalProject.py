@@ -47,6 +47,8 @@ def import_data():
   popmig = pd.read_csv('Datasets/population_migration.csv')
   popmig['FIPS'] = ["%05d" % elem for elem in popmig['FIPS']]
   popmig['dest_FIPS'] = ["%05d" % elem for elem in popmig['dest_FIPS']]
+  fips = pd.read_csv('Datasets/FIPS_by_County.csv')
+  fips['County-State'] = [county + ", " + state for county,state in zip(fips['Name'],fips['State'])]
 
   county_net_out = pd.read_csv('Datasets/county_net_out.csv')
 
@@ -68,9 +70,9 @@ def import_data():
   data_combine_all = pd.read_csv('Datasets/data_combine_all.csv')
   y_vals = pd.read_csv('Datasets/y_vals.csv')
 
-  return highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration,data_combine_all,y_vals
+  return highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration,data_combine_all,y_vals,fips
 
-highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration,data_combine_all,y_vals = import_data()
+highNet,lowNet,lowFIPS,highFIPS,popmig,county_net_out,hpis,migration_net,disaster_types,disaster_migration,color_dict_years,hpi_migration,income_migration,employment_migration,population_migration,fmr_migration,aqi_migration,data_combine_all,y_vals,fips = import_data()
 ##### END DATA IMPORTING SECTION #####
 
 
@@ -116,11 +118,11 @@ if section == "Executive Summary":
   st.markdown("""
     As the United States grows in population, migration patterns in our future population will influence our country’s socioeconomic communities. Using variables such as population estimates, population migration, climate variables such as natural disasters, and social demographic variables like housing, economic and income data, we modeled how the US social landscape and redistribution of populations will look in 2030. 
 
-    We experimented with three models: an ARIMA model, linear regression, and XGboost model. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model with an R$^2$ value of 0.52 and 0.54 respectively, but that the two models were comparable. 
+  We experimented with three models: an ARIMA model, linear regression, and XGboost model. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model with an R2 value of 0.52 and 0.54 respectively, but that the two models were comparable. 
 
-    Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the fraction of the population that net outflow corresponded to in highly populated counties was actually minimal. 
+  Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the net migration was actually a small percentage of the total population in highly populated counties. 
 
-    The landscape of the US population in 2030 is expected to be characterized by (1) net outflow of individuals from densely populated counties (without large changes in the total population of these counties) and (2) significant migration into smaller counties, especially in the West and parts of the Midwest, where businesses, developers, and other stakeholders should focus their efforts towards building infrastructure and jobs.
+  The landscape of the US population in 2030 is expected to be characterized by (1) net outflow of individuals from densely populated counties (without large changes in the total population of these counties) and (2) significant migration into smaller counties, especially in the West and parts of the Midwest, where businesses, developers, and other stakeholders should focus their efforts towards building infrastructure and jobs.
   """)
   st.markdown(""" ## The Team """)
   col1,col2,col3,col4 = st.columns([2,2,2,2])
@@ -162,7 +164,7 @@ if section == "Project Description":
     
     ### Specific Issue
     
-    We will examine the extent of population migration caused by our social demographic variables using current population datasets projected out to 2030.
+    We will model future population migration using our social demographic variables projected out to 2030 as input features. 
     
     ### Problem Importance
     
@@ -170,11 +172,11 @@ if section == "Project Description":
     
     #### Potential Audiences: 
     
-    - Government influencers: Having the ability to forecast how the population will look in certain states demographically could heavily impact voting outcomes, redistricting & the type of candidates that might succeed. Demographics in a state for example play a big role if a purple state swings to red or blue. 
+    - Government influencers: Having the ability to forecast how the population will look in certain states demographically and to what degree they will be affected by variables of climate change could heavily impact social & city infrastructure decisions.  
     - Climate Research: Using our model to look more deeply at where populations are growing in juxtaposition with where climate change factors such as air quality, water supply, rising temperatures are being greatly impacted has the ability to possibly predict how many people could be affected by climate crises in the future. This is also relevant to planned funding allocations for agencies like FEMA.
-    - Real estate: Being aware of where population hubs will be growing could help inform future housing supply, housing cost and even possibly if certain areas seen as rural right now will transition to more urban in the near future.
-    - Education: As our population in the US now tends to have children at an older age, some questions educators would want to know are:  Which areas will need more schools or teachers? Which areas will have less children and might not need extra funding? 
-    - Business: Finding out where & how demographics have shifted in the US, will help marketers scope out audiences, refine product targeting & plan out advertising buys in the future. In parallel, being able to see where the younger populations will inhabit will also help companies make choices on where to open offices to boost hiring. 
+    - Real estate: Being aware of where population hubs will be growing could help inform future housing supply, housing costs and possibly the transition from rural to urban areas.
+    - Education: As population density shifts in the US, some questions educators may want to know are:  Which areas will need more schools or teachers? Which areas will have less children and might not need extra funding? 
+    - Business: Finding out where & how demographics will shift in the US will help marketers scope out audiences, refine product targeting & plan out advertising buys in the future. In parallel, being able to see where the younger populations will inhabit will also help companies make choices on where to open offices to boost hiring. 
 
     ''')
 
@@ -213,12 +215,12 @@ elif section == "Datasets":
 
   st.markdown('''  &nbsp;  
   ### Population Migration
-  We obtained the population migration dataset from the [IRS](https://www.irs.gov/statistics/soi-tax-stats-migration-data). The Outflow dataset contains information of the estimated number of individuals that moved from county A to county B. The dataset was available on a yearly basis from 1991-2019. However, because 1991 and 1992 had very different formats, we decided to use data from 1993-2019. We combined the yearly datasets into one CSV file for use in our model. The columns include the origin state and county, the destination state and county, the number of individuals that moved from origin to destination, and the aggregated gross income of all the individuals. 
+  We obtained the population migration dataset from the [IRS](https://www.irs.gov/statistics/soi-tax-stats-migration-data). The outflow dataset contains information of the estimated number of individuals that moved from county A to county B. The dataset was available on a yearly basis from 1991-2019. However, because 1991 and 1992 had very different formats, we decided to use data from 1993-2019. We combined the yearly datasets into one CSV file for use in our model. The columns include the origin state and county, the destination state and county, the number of individuals that moved from origin to destination, and the aggregated gross income of all the individuals. 
 
   In our project, we decided to focus on **net outflow migration of each county**, instead of each origin-destination pair. This was calculated by summing the number of individuals that had an origin county of interest. 
 
   ### Population
-  We downloaded the total population dataset from the [US Census](https://www2.census.gov/programs-surveys/popest/datasets/). The data was available per year per county, with years grouped in 10 year increments. Demographic data was also available in these datasets, but the demographic categories were not consistent decade to decade. The datasets were also structured differently decade to decade so combining the datasets was challenging. We used the totals of the populations summed over all demographics to get the total population of each county per year. 
+  We downloaded the total population dataset from the [US Census](https://www2.census.gov/programs-surveys/popest/datasets/). The data was available per year per county, with years grouped in 10 year increments. Demographic data was also available in these datasets, but the demographic categories were not consistent decade to decade. The datasets were also structured differently decade to decade so combining the datasets was challenging. We used the totals of the populations summed over all demographics to get the total population of each county per year.  
   
   ### Disasters 
   We downloaded the Disasters Dataset from the [U.S. Department of Homeland Security FEMA website](https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2). This data set states the specific states and counties in which disasters have occured (whether natural or man-made). The data goes back to 1953 and captures up to the year 2021. One of the key variables we looked at was “incidentType” to understand what type of emergency had been declared and how many types that specific disaster had occurred. This can allow us to dive deeper into analyzing what areas might be the most affected by a specific type of disaster and focus on what population migration looks like in that region.
@@ -248,25 +250,6 @@ elif section == "Exploratory Data Analysis":
 
     st.markdown("""We subtracted the total county outflows and inflows to obtain the net outflow number, plotted in the figure below:""")
 
-    components.html("""
-        <div id="observablehq-e27ece4f">
-      <div class="observablehq-chart"></div>
-    </div>
-    <script type="module">
-      import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-      import define from "https://api.observablehq.com/@ialsjbn/net_migration.js?v=3";
-      (new Runtime).module(define, name => {
-        if (name === "chart") return Inspector.into("#observablehq-e27ece4f .observablehq-chart")();
-      });
-    </script>
-    """, height = 600)
-    st.caption("Net population migration from 1993-2019. Note: hover over a line to see which county it is!")
-
-    st.markdown(""" In the figure above, the net population outflow per year is plotted for each county, where each line represents the net outflow of each county. Positive values indicate that more individuals moved out of a county and negative values indicate that more individuals moved into a county. Most counties do not appear to experience a net outflow or inflow of more than a few thousand individuals per year.  We can see that in general, many counties have constant net migration near 0, which means that as many people are moving out as they are moving in.
-
-    Los Angeles, CA, with the exception of a few years in the early 2000s, consistently experienced the highest net migration outflow. This could be a reflection of Los Angeles, CA having one of the largest populations of counties in the US. The population of Los Angeles, CA was approximately 10 million individuals in 2018. Maricopa, AZ had the highest net inflow in 2018 and generally had one of the highest net inflows except for a few years around 2010. The population of Maricopa, AZ in 2018 was about 4 million individuals. This suggests that total population is likely a relevant factor in determining the magnitude of net migration, but that additional features must account for the directionality. The heat map below shows the net outflow of population by county for each year from 1993 - 2019.
-    """)
-
     components.html(
             """
             <div id="observablehq-a70836fb">
@@ -285,6 +268,59 @@ elif section == "Exploratory Data Analysis":
             </script>
             """, height = 600,)
     st.caption("Note: Click the play button to see how the population migration changes over time! You can also hover over a county to see more information.")
+
+    components.html("""
+        <div id="observablehq-e27ece4f">
+      <div class="observablehq-chart"></div>
+    </div>
+    <script type="module">
+      import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+      import define from "https://api.observablehq.com/@ialsjbn/net_migration.js?v=3";
+      (new Runtime).module(define, name => {
+        if (name === "chart") return Inspector.into("#observablehq-e27ece4f .observablehq-chart")();
+      });
+    </script>
+    """, height = 600)
+    st.caption("Net population migration from 1993-2019. Note: hover over a line to see which county it is!")
+
+    st.markdown(""" In the figure above, the net population outflow per year is plotted for each county, where each line represents the net outflow of each county. Positive values indicate that more individuals moved out of a county and negative values indicate that more individuals moved into a county. The opacity of the lines reflects the density of overlapping lines. Most counties do not appear to experience a net outflow or inflow of more than a few thousand individuals per year. We can see that in general, many counties have constant net migration near 0, which means that as many people are moving out as they are moving in. """)
+
+    # Make top 10 bottom 10 time series plot for net migration outflow
+    migration_highNet10, migration_lowNet10 = get_high_low_10_dfs(migration_net,highNet,lowNet)
+    migration_high_low_10 = pd.concat([migration_highNet10, migration_lowNet10], axis = 0)
+    migration_high_low_10 = migration_high_low_10.merge(fips[['FIPS','County-State']], on =['FIPS'])
+
+    # Reorder migration high/low by 2018 net_out values 
+    ordered_10= migration_high_low_10.loc[migration_high_low_10.year == 2018].sort_values('net_out', ascending = False).reset_index().drop(columns = 'index').reset_index()[['FIPS','index']]
+    ordered_10.rename(columns = {'index':'rank_2018'}, inplace = True)
+
+    migration_high_low_10 = migration_high_low_10.merge(ordered_10, on = ['FIPS'])
+    migration_high_low_10 = migration_high_low_10.sort_values(['rank_2018','year'], ascending = True)
+    fig, ax = plt.subplots(figsize= (9,6))
+    colors = get_color_dict(migration_high_low_10, 'FIPS')
+
+    for FIPS in migration_high_low_10.FIPS.drop_duplicates():
+        plt.plot(migration_high_low_10.loc[migration_high_low_10.FIPS == FIPS].year
+                , migration_high_low_10.loc[migration_high_low_10.FIPS == FIPS].net_out
+                , color = colors[FIPS]
+                )
+        
+    ax.set_title('Net Outflow for Counties with Highest Net Outflow or Inflow', pad = 15)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Net Outflow')
+
+    ax.tick_params(axis='both', which='major', length = 10, width = 2)
+    ax.set_xlim([min(migration_net.year),max(migration_net.year)])
+
+    plt.legend(migration_high_low_10.loc[migration_high_low_10.year == 2018].sort_values('net_out', ascending = False)['County-State']
+              , ncol = 2, loc='upper left', bbox_to_anchor=(1.03, 0.95),  frameon=False, fontsize = 18)
+    st.pyplot(fig)
+
+    st.markdown("""
+    We plot the net population outflow for the 10 counties with the largest net outflow and net inflow in the figure above. The 10 darkest and lightest lines are for the counties with the highest net outflow and highest net inflow respectively. Los Angeles, CA, with the exception of a few years in the early 2000s, consistently experienced the highest net migration outflow. This could be a reflection of Los Angeles, CA having one of the largest populations of counties in the US. The population of Los Angeles, CA was approximately 10 million individuals in 2018. Maricopa, AZ had the highest net inflow in 2018 and generally had one of the highest net inflows except for a few years around 2010. The population of Maricopa, AZ in 2018 was about 4 million individuals. This suggests that total population is likely a relevant factor in determining the *magnitude* of net migration, but that additional features must account for the directionality.
+
+    """)
+
   
   if choice == "Total Population" or choice == "All Variables":
     # Population EDA
@@ -333,7 +369,7 @@ elif section == "Exploratory Data Analysis":
     st.pyplot(fig)
     st.caption("Correlation between total population and net population outflow")
     st.markdown("""
-    We calculated the correlation between the total population of a county and the net population outflow including all counties and all years. In Figure 3 we show that there is a moderate positive correlation (0.493) between total population and net population outflow. This is very reasonable given that intuitively we would expect counties with more people to lose more people and counties with fewer people to lose fewer people. Further, counties with high populations tend to be urban centers that have higher cost of living, as is addressed in further analysis.
+    We calculated the correlation between the total population of a county and the net population outflow including all counties and all years. In the figure above we show that there is a positive correlation (0.493) between total population and net population outflow. This is very reasonable given that intuitively we would expect counties with more people to lose more people and counties with fewer people to lose fewer people. Further, counties with high populations tend to be urban centers that have higher cost of living, as is addressed in further analysis.
     """)
 
   # Disasters EDA
@@ -382,7 +418,7 @@ elif section == "Exploratory Data Analysis":
     st.caption("Total number of disasters by type that have occurred in the US between 1993-2019")
 
     st.markdown('''
-    Many different types of natural disasters occur in the US, ranging from tornadoes to droughts. However, some are more common than others. In Figure 4 the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
+    Many different types of natural disasters occur in the US, ranging from tornadoes to droughts. However, some are more common than others. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
     ''')
 
     # Number of Disasters by Year Bar Plot
@@ -402,7 +438,7 @@ elif section == "Exploratory Data Analysis":
 
     st.caption("""Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019""")
 
-    st.markdown(""" Aggregation of the total number of disasters of all types for the 10 counties with the highest net outflow and the 10 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In Figure 5 we see that the counties with the highest net inflow of individuals actually have historically tended to experience more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
+    st.markdown(""" Aggregation of the total number of disasters of all types for the 10 counties with the highest net outflow and the 10 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In the figure above we see that the counties with the highest net inflow of individuals actually have historically tended to experience more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
     """)
 
     # Disaster Correlation Plot - Currently deleted
@@ -692,10 +728,10 @@ elif section == "Exploratory Data Analysis":
 
     st.caption("""Total number of jobs by county and by year vs. net population outflow
     """)
-    st.markdown("""The correlation between total number of jobs (full-time and part-time) and net population outflow is the strongest of the factors considered (0.491) as we display in Figure 9. This correlation is similar to the calculated correlation between total population and net population outflow. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue all of these factors further in our statistical modeling.
+    st.markdown("""The correlation between total number of jobs (full-time and part-time) and net population outflow is the strongest of the factors considered (0.491) as we display in the figure above. This correlation is similar to the calculated correlation between total population and net population outflow. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue all of these factors further in our statistical modeling.
     """)
 
-     
+#### METHODOLOGY ####
 elif section =="Methodology":
   st.markdown("""
   # Methodology
@@ -739,7 +775,7 @@ elif section =="Methodology":
 
 
   ### Data Structure
-  For the linear regression and XGBoost model, we transformed our problem into a supervised regression problem. The response variable is the net migration number at a given year. On the other hand, the features we incorporated were features with a one-year lag. For example, for the net migration value at 2010, we used feature values from 2009. An example of the data structure can be seen in the figure below, where “num_ind” is our response variable. Note that the first row has NaN values because we don’t have information from the year 1992. This row is later dropped.      
+  For the linear regression and XGBoost model, we transformed our problem into a supervised regression problem. The response variable is the net migration number at a given year. On the other hand, the features we incorporated were features with a one-year lag. For example, for the net migration value at 2010, we used feature values from 2009. An example of the data structure can be seen in the Figure below, where “num_ind” is our response variable. Note that the first row has NaN values because we don’t have information from the year 1992. This row is later dropped.        
   ''')
 
   data_struct_df = pd.read_csv('Datasets/all_features_dataframe.csv',index_col="Unnamed: 0")
@@ -777,24 +813,27 @@ elif section =="Methodology":
 
   We used future values of total population based on the methodology described in [Hauer et al., 2016](https://mathewhauer.github.io/papers/2016-NCLIMHauer.pdf) and [Robinson et al. 2019](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0227436), which is publicly available [here](https://github.com/calebrob6/migration-slr). The population numbers are estimated based on a linear combination of housing units and population per housing unit in each block group from 1940-2010. The numbers are then aggregated to obtain a per county value. 
 
-To project the total number of disasters per county per year into future years, we fit the aggregate number of disasters per county to a Poisson distribution. We calculated random samples of potential distributions of future disasters per year and averaged them over 100 samples in order to estimate the number of disasters per year but still provide a degree of variability per year.
+  To project the total number of disasters per county per year into future years, we fit the aggregate number of disasters per county to a Poisson distribution. We calculated random samples of potential distributions of future disasters per year and averaged them over 100 samples in order to estimate the number of disasters per year but still provide a degree of variability per year.
 
-In order to project housing price index values into future years for incorporation into the model, we first converted the historic HPI values per county to a logarithmic scale. The subprime mortgage crisis of 2008 caused extreme levels of fluctuations in the HPI trends, but when plotted logarithmically the trend appears to be approximately linear for each county, with minor deviations due to the subprime mortgage crisis. We applied a linear fit to the logarithmic HPI values for each county. We then exponentiated this to generate future HPI values. We expected that more significant fluctuations will occur in housing markets in the next 30 years that are not accounted for in this fit, however based on the historic data it is likely that these crises will only cause temporary deviations from the overall exponential trend.
+  In order to project housing price index values into future years for incorporation into the model, we first converted the historic HPI values per county to a logarithmic scale. The subprime mortgage crisis of 2008 caused extreme levels of fluctuations in the HPI trends, but when plotted logarithmically the trend appears to be approximately linear for each county, with minor deviations due to the subprime mortgage crisis. We applied a linear fit to the logarithmic HPI values for each county. We then exponentiated this to generate future HPI values. We expected that more significant fluctuations will occur in housing markets in the next 30 years that are not accounted for in this fit, however based on the historic data it is likely that these crises will only cause temporary deviations from the overall exponential trend.
 
-We projected personal income per capita using an exponential fit for each county, which is reasonable due to the income data not being adjusted for inflation.
+  We projected personal income per capita using an exponential fit for each county, which is reasonable due to the income data not being adjusted for inflation.
 
-To project total employment numbers (full-time plus part-time jobs) into future years for incorporation into the statistical model, we applied a linear fit to the historic number of jobs per county per year. 
+  To project total employment numbers (full-time plus part-time jobs) into future years for incorporation into the statistical model, we applied a linear fit to the historic number of jobs per county per year. 
 
-Once we obtained the projections of our individual feature variables, we used it as input into our migration projection model. Because our migration prediction models only predict a one-step forecast, thus the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030.  
+  Once we obtained the projections of our individual feature variables, we used it as input into our migration projection model. Because our migration prediction models only predict a one-step forecast, the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030. 
+
   """)
+
+#### RESULTS AND DISCUSSION ####
 elif section == "Results & Discussion":
   st.markdown(""" # Results and Discussion
-  In this section we discuss the results of our three models and use the linear regression model, our best performing model, to do the population migration projections for 2030. We also discuss limitations of our approach and future work.
+  In this section we discuss the results of our three models and use the linear regression model, our best performing model, to do the population migration projections for 2030.
    """)
 
   st.markdown(""" 
   ## Projections for 2030 - Linear Regression
-  Based on our comparative analysis (described below), both the linear regression and XGBoost model had comparable RMSE and R2 values. However, based on the tables below, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2030. 
+  Based on our comparative analysis (described below), both the linear regression and XGBoost model had comparable RMSE and R$^2$ values. However, based on the tables below, the linear regression model performs better than the XGBoost model for all years except for 2015.  Given that 2015 was an anomalous year, we decided to use the linear regression model for our population migration projections in 2020-2030. 
   """)
   st.markdown("""
   #### Projected total net outflow by county using linear regression model
@@ -841,7 +880,7 @@ elif section == "Results & Discussion":
       </script>
         """, height = 600,)
   st.markdown("""
-  Given that the population migration projections heavily depend on the total population numbers of the county itself, we also calculated the normalized projections, which are the number of migrants divided by the population of the county itself. This can be seen in the figure above. Interestingly, we see that in the West and western edge of the Midwest areas the population influx caused by the migration is significant compared to the population of the counties themselves. This is important as infrastructure in those counties and states might not be prepared to handle a large population influx. """)
+  Given that the population migration projections heavily depend on the total population numbers of the county itself, we also calculated the normalized projections, which are the number of migrants divided by the population of the county itself. This can be seen in the heat map above. Interestingly, we see that in the West and western edge of the Midwest areas the population influx caused by the migration is significant compared to the population of the counties themselves. This is important as infrastructure in those counties and states might not be prepared to handle a large population influx. Further, we see the counties that are predicted to experience the largest net outflow, such as those in the Bay Area, Southern California, and Arizona displayed in deep purple in the first heat map exhibit much smaller normalized outflows, close to 0%. The conclusion that we draw from this is that we can expect counties with large populations to generally maintain large populations - the primary trend will be that sparsely populated counties will grow substantially relative to their current populations. """)
 
   st.markdown("""
   ## Comparative Results
@@ -867,17 +906,17 @@ elif section == "Results & Discussion":
 
   st.markdown("""
   
-  For ARIMA and linear regression, we noticed that the R2 was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
+  For ARIMA and linear regression, we noticed that the R$^2$ was unusual for 2015-it was highly negative; however for XGBoost, there was not as much of a negative swing which suggests that the model was better at correcting for high fluctuations in migration that particular year.
 
-  The ARIMA model, which is our baseline model, only uses historical net migration data per county to predict future values. We used parameters (1,0,0) for the ARIMA model. From the second, it can be seen that the R2 values of the ARIMA model are very close to 0. This might be caused by several factors:
-  - The ARIMA model only has a very limited number of datapoints to train on. For each county, the ARIMA model only has 17 data points (one for each year from 1993-2010) to train from.
-  - ARIMA model uses the whole time series data to predict future values. However, including values from 10 years ago, for example, may not be useful and may even cause the performance to degrade over time. 
+  The ARIMA model, which is our baseline model, only uses historical net migration data per county to predict future values. We used parameters (1,0,0) for the ARIMA model. From the second, it can be seen that the R$^2$ values of the ARIMA model are very close to 0. This might be caused by several factors:
+  - The ARIMA model has a very limited number of datapoints to train on. For each county, the ARIMA model only has 17 data points (one for each year from 1993-2010) to train from.
+  - ARIMA model uses the whole time series data to predict future values. However, including values from 10 years ago, for example, may not be useful and may even decrease model performance. 
   - Additional features are needed to predict future net migration values.  
 
   
   Given the poor performance on the ARIMA model, we experimented with the linear regression and XGBoost model. 
 
-  The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R squared actually improved. We chose to drop employment from the final model of our linear regression model. 
+  The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R$^2$ actually improved. We chose to drop employment from the final model of our linear regression model. The coefficients from the linear regression model can be seen in the table below.  
   """)
 
   coeffs = pd.read_csv('Datasets/coef_linreg.csv',index_col='Year').drop(columns=['Unnamed: 0'])
@@ -901,7 +940,7 @@ elif section == "Results & Discussion":
     st.pyplot(fig)
 
   st.markdown("""
-  Finally, we experimented with the XGBoost model. Even though linear models were good enough to predict the net migration numbers, we still wanted to see if the XGBoost model is able to capture any non-linear relationships that may not have been captured by our linear regression model. In our initial XGBoost model, we included all features and calculated the average feature importance for each feature, shown in the figure below. The net migration value was, unsurprisingly, the most important feature, followed by population number and the number of disasters. Using this result, we then trained various XGBoost models based on a subset of the features. The best result was obtained by using only two features: net migration and total population. The RMSE and R2 of this model is shown in Tables 1 and 2. 
+  Finally, we experimented with the XGBoost model. Even though linear models were good enough to predict the net migration numbers, we still wanted to see if the XGBoost model was able to capture any non-linear relationships that may not have been captured by our linear regression model. In our initial XGBoost model, we included all features and calculated the average feature importance for each feature, shown in the figure below. The net migration value was, unsurprisingly, the most important feature, followed by population number and the number of disasters. Using this result, we then trained various XGBoost models based on a subset of the features. The best result was obtained by using only two features: net migration and total population. The RMSE and R$^2$ of this model is shown in the tables above.  
   """)
   features = ['Net Migration (Lag 1)', 'Population', 'Number of Disasters', 'Per Capita Income', 'Employment', 'HPI']
   f_score = [0.748288, 0.115359, 0.080625, 0.024867, 0.017184, 0.013677]
@@ -921,7 +960,7 @@ elif section == "Results & Discussion":
   st.caption("Average feature Importance for the XGBoost Model")
 
   st.markdown("""
-  In addition to the RMSE and R$^2$ values of the model, we also looked at the difference in prediction for each of the different counties. From Figure 12, certain counties in Southern California and Arizona like Pinal, Los Angeles, and San Bernardino are extremely underpredicted by our models. On the other hand, several counties that the model overpredicts include Miami-Dade, Florida, Harris, Texas, and San Diego, California. These counties are the outliers and suggest that there are other factors that are affecting the number of people migrating out of the county we have not accounted for. It is interesting to note that Linear Regression underestimates while XGBoost overestimates, and vice versa. This can be seen in the Florida region.  
+  In addition to the RMSE and R$^2$ values of the model, we also looked at the difference in prediction for each of the different counties. From the heat maps below, certain counties in Southern California and Arizona like Pinal, Los Angeles, and San Bernardino are extremely underpredicted by our models. On the other hand, several counties that the model overpredicts include Miami-Dade, FL, Harris, TX, and San Diego, CA. These counties are the outliers and suggest that there are other factors that are affecting the number of people migrating out of the county we have not accounted for. It is interesting to note that in some counties, Linear Regression underestimates while XGBoost overestimates, and vice versa. For example, this can be seen in the Florida region.   
   """)
   components.html(
           """
@@ -961,62 +1000,57 @@ elif section == "Results & Discussion":
           """, height = 600,)
   st.caption("""XGBoost Model: Difference between Prediction and Actual""")
 
+#### LIMITATIONS AND FUTURE WORK ####
 elif section == "Limitations & Future Work":
   st.markdown("""
   # Limitations and Future Work
   The limitations of our study can be broadly separated into two categories: data limitations and methodology approaches. We also propose directions for future work that mitigate our limitations and go beyond the current scope of this project.
 
-  #### Data Limitations
+  ### Data Limitations
   In regards to our data, one main limitation of this approach is that it uses tax return data to calculate the net migration outflow for each county. Tax returns are usually only filed per household, so although the data approximates the number of individuals using the number of total exemptions, it may not be accurate. This also means that this data only tracks households/individuals who file taxes in the US.
 
   Another significant limitation of the approach is that it doesn’t account for international immigration into the counties. Therefore although counties might have negative net migration outflows every year, the total populations of the counties could still be growing, either due to births or immigration. 
 
   Additionally, our income and housing price index data is not adjusted for inflation, which over-values incomes in later years. If we had more time, we would incorporate an inflation adjustment in the dataset.
 
-  Moreover, there were other variables of interest we would have liked to look into such as property taxes, but we didn’t have more granular data sets that collected property taxes of each individual county which made it difficult to predict how they would impact inflow/outflow.
- 
+  Moreover, there were other variables of interest we would have liked to look into such as property taxes, but we didn’t have more granular data sets that collected property taxes of each individual county which made it difficult to predict how they would impact inflow/outflow.   
 
-  #### Methodology Limitations
+  ### Methodology Limitations
   In this study, we developed our model to be a one-step forecast. Therefore, predictions of a specific year highly depend on the predictions of previous years. The farther away we attempt to project, the more inaccurate our results. 
 
   In addition, we focused on the net migration outflow instead of individual origin-destination pairs. As such, we lose granular information regarding the makeup of people that are moving to specific counties.  
 
-  #### Future Work
+
+  ### Future Work
   There are several next steps to improve the results of our study. 
 
-  First, we can include more features to help predict our outcome variables. For example, using other sporadic data such as the policy change, or granular data such as temperature, drought, sea-level rise, or voting propensity to see if they impact the population migration in certain regions. 
+  First, we can include more features to help predict our outcome variables. For example, using other sporadic data such as the policy change, or granular data such as temperature, drought, sea-level rise, and voting propensity to see if it impacts the population migration in certain regions. 
 
-  Instead of a one-step forecast, future work may involve building models for multi-step forecasts. However, we expect that the predictive power would significantly reduce. Further, we can leverage more complex methods such as RNN for predicting future values of population migration. 
+  Instead of a one-step forecast, future work may involve building models for multi-step forecasts. However, we expect that the predictive power would significantly reduce. To mitigate this, we can leverage more complex methods such as RNN for predicting future values of population migration. 
 
   Finally, we can include more specificity in our predicted variable. Future work can focus on explicitly modeling the outflows and inflows of each origin-destination pair. We can also subdivide migration by specific demographic groups. By modeling each individual origin-destination pair and including demographic groups, more granular information and outcomes such as redistribution of different demographics may be understood.
   """)
 
-
-
-  
-
-
-
+#### CONCLUSIONS ####
 elif section=="Conclusions":
   st.markdown("""
   # Conclusions and Impact
-  In conclusion, we developed a linear regression model to predict the net changes in population by county in the US due to intercounty domestic migration between 2019 and 2030. We used an ARIMA model as our baseline model for comparison to forecast the net population outflow for each county, given only historical time data. The features that we considered in developing our models were total population, frequency of natural disasters, housing price index, per capita income, number of jobs, and prior net migration outflow data. In order to use our features to predict net population outflow in future years, we applied simple curve fitting to project future values of each feature. For our main models, we used (1) a linear regression model to predict the net migration outflow for a county in the future, and (2) and XGBoost Model with similar features. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model, but that the two models are comparable. 
+  In conclusion, we developed three models to predict the net changes in population by county in the US due to intercounty domestic migration between 2019 and 2030. We used an ARIMA model as our comparison baseline model to forecast the net population outflow for each county, given only historical time data. The features that we considered in developing our models were total population, frequency of natural disasters, housing price index, per capita income, number of jobs, and prior net migration outflow data. In order to use our features to predict net population outflow in future years, we applied simple curve fitting to project future values of each feature. For our main models, we used (1) a linear regression model to predict the net migration outflow for a county in the future, and (2) and XGBoost Model with similar features. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model, but that the two models are comparable. 
 
-  Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the fraction of the population that net outflow corresponded to in highly populated counties was actually minimal. Counties in the West and western parts of the Midwest are predicted to have the highest net population inflow compared to their total population. 
+  Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the net migration was actually a small percentage of the total population in highly populated counties. Counties in the West and western parts of the Midwest are predicted to have the highest net population inflow compared to their total population. 
 
   The data used in our analysis did not include data from 2020 and hence does not include a consideration of the impact of COVID-19 on population migration. However, our results are consistent with the trends observed in the past year with respect to population migration as a result of the increasing prevalence of jobs that allow employees to work from home. If anything, we expect the rise of remote work positions to amplify the trends that our models have predicted.
 
-  Our results are significant for numerous stakeholders. Businesses that require in-person work and are planning to expand to new locations should consider smaller Western counties that are expected to see large population growth. Real estate developers will benefit from focusing on building new housing units in these less densely populated counties as well. Elected officials in rural Western counties will need to prepare for potential changes in voting patterns in their regions. Further analysis of which specific counties the newcomers to these counties are expected to migrate out of will be very important in forecasting future election results.
+  Our results are impactful for numerous stakeholders. Businesses that require in-person work and are planning to expand to new locations should consider smaller Western counties that are expected to see large population growth. Real estate developers will benefit from focusing on building new housing units in these less densely populated counties as well. Elected officials in rural Western counties will need to prepare for potential changes in voting patterns in their regions. Further analysis of which specific counties the newcomers to these counties are expected to migrate out of will be very important in forecasting future election results.
 
   In summary, the landscape of the US population in 2030 is expected to be characterized by (1) net outflow of individuals from densely populated counties (without large changes in the total population of these counties) and (2)  significant migration into smaller counties, especially in the West and parts of the Midwest, where businesses, developers, and other stakeholders should focus their efforts towards building infrastructure and jobs.
-
   """)
   
 
 elif section=="Supplemental Information":
   st.markdown("""
   # Supplemental Information
-  During our EDA phase, we experimented with several other variables of interest. However, given that these variables have a lot of missing data, we were unable to use it for our analysis. 
+  During our EDA phase, we experimented with several other variables of interest. However, given that these variables have a lot of missing data, we were unable to use them for our analysis. 
   """)
   st.markdown(''' 
   ### AQI 
