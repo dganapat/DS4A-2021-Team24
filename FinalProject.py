@@ -147,7 +147,7 @@ if section == "Executive Summary":
     st.image('Team Photos/Danah.jpeg')
     st.caption('Danah')
     st.image('Team Photos/Gaby.jpeg')
-    st.caption('Gaby')
+    st.caption('Gaby: Team Leader, Project Management, and Design')
   with col2:
     st.image('Team Photos/Devi.jpeg')
     st.caption('Devi: Web Application, EDA, Visualization')
@@ -155,7 +155,7 @@ if section == "Executive Summary":
     st.caption('Irene: Modeling, Analysis, Interactive Visualization')
   with col3:
     st.image('Team Photos/Liz.jpeg')
-    st.caption('Elizabeth: EDA, Future Feature Projection, Visualization')
+    st.caption('Elizabeth: EDA, Feature Projection, Visualization')
     st.image('Team Photos/Noemi.jpeg')
     st.caption('Noemi: EDA, analysis')
   with col4:
