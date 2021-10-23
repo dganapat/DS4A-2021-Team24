@@ -134,11 +134,11 @@ if section == "Executive Summary":
   st.markdown("""
     As the United States grows in population, migration patterns in our future population will influence our country’s socioeconomic communities. Using variables such as population estimates, population migration, climate variables such as natural disasters, and social demographic variables like housing, economic and income data, we modeled how the US social landscape and redistribution of populations will look in 2030. 
 
-  We experimented with three models: an ARIMA model, linear regression, and XGboost model. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model with an R2 value of 0.52 and 0.54 respectively, but that the two models were comparable. 
+    We experimented with three models: an ARIMA model, linear regression, and XGboost model. We found that both the linear regression and XGBoost models significantly outperformed the baseline ARIMA model with an R2 value of 0.52 and 0.54 respectively, but that the two models were comparable. 
 
-  Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the net migration was actually a small percentage of the total population in highly populated counties. 
+    Using the linear regression model, we projected the net migration outflow of each county in the US in 2030. We found that in terms of absolute numbers, counties that had higher total population numbers experienced the highest net number of individuals migrating out of these counties. However, when normalized by the total population per county, we found that the net migration was actually a small percentage of the total population in highly populated counties. 
 
-  The landscape of the US population in 2030 is expected to be characterized by (1) net outflow of individuals from densely populated counties (without large changes in the total population of these counties) and (2) significant migration into smaller counties, especially in the West and parts of the Midwest, where businesses, developers, and other stakeholders should focus their efforts towards building infrastructure and jobs.
+    The landscape of the US population in 2030 is expected to be characterized by (1) net outflow of individuals from densely populated counties (without large changes in the total population of these counties) and (2) significant migration into smaller counties, especially in the West and parts of the Midwest, where businesses, developers, and other stakeholders should focus their efforts towards building infrastructure and jobs.
   """)
   st.markdown(""" ## The Team """)
   col1,col2,col3,col4 = st.columns([2,2,2,2])
@@ -323,6 +323,7 @@ elif section == "Exploratory Data Analysis":
     plt.legend(['Net Outflow', 'Net Inflow'], loc='upper left', bbox_to_anchor=(1.03, 0.95),  frameon=False, fontsize = 18)
 
     st.pyplot(fig)
+    st.caption(""" Net population outflow (total outflow minus total inflow) per year, averaged separately between counties that had overall net outflow and overall net inflow. In general, the net number of individuals leaving or entering a county each year is in the hundreds.""")
 
     # Make top 10 bottom 10 time series plot for net migration outflow
     migration_highNet10, migration_lowNet10 = get_high_low_10_dfs(migration_net,highNet,lowNet)
@@ -354,7 +355,7 @@ elif section == "Exploratory Data Analysis":
     plt.legend(migration_high_low_10.loc[migration_high_low_10.year == 2018].sort_values('net_out', ascending = False)['County-State']
               , ncol = 2, loc='upper left', bbox_to_anchor=(1.03, 0.95),  frameon=False, fontsize = 18)
     st.pyplot(fig)
-
+    st.caption(""" Net population outflow for the 10 counties with the largest net outflow and the 10 counties with the largest net inflow. In general counties, that experience net outflow loses more individuals than the counties that experience net inflow gain.""")
     st.markdown("""
     We plot the net population outflow for the 10 counties with the largest net outflow and net inflow in the figure above. The 10 darkest and lightest lines are for the counties with the highest net outflow and highest net inflow respectively. Los Angeles, CA, with the exception of a few years in the early 2000s, consistently experienced the highest net migration outflow. This could be a reflection of Los Angeles, CA having one of the largest populations of counties in the US. The population of Los Angeles, CA was approximately 10 million individuals in 2018. Maricopa, AZ had the highest net inflow in 2018 and generally had one of the highest net inflows except for a few years around 2010. The population of Maricopa, AZ in 2018 was about 4 million individuals. This suggests that total population is likely a relevant factor in determining the *magnitude* of net migration, but that additional features must account for the directionality.
 
@@ -406,7 +407,7 @@ elif section == "Exploratory Data Analysis":
     ax.set_ylabel('Net Population Outflow')
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
     st.pyplot(fig)
-    st.caption("Correlation between total population and net population outflow")
+    st.caption("Correlation between total population and net population outflow. There is a positive correlation between total population and net population outflow")
     st.markdown("""
     We calculated the correlation between the total population of a county and the net population outflow including all counties and all years. In the figure above we show that there is a positive correlation (0.493) between total population and net population outflow. This is very reasonable given that intuitively we would expect counties with more people to lose more people and counties with fewer people to lose fewer people. Further, counties with high populations tend to be urban centers that have higher cost of living, as is addressed in further analysis.
     """)
@@ -455,7 +456,7 @@ elif section == "Exploratory Data Analysis":
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
 
     st.pyplot(fig)
-    st.caption("Total number of disasters by type that have occurred in the US between 1993-2019")
+    st.caption("The total number of disasters by type that have occurred in the US between 1993- 2019. Severe storms and hurricanes which mostly affect coastal communities are the most common")
 
     st.markdown('''
     Many different types of natural disasters occur in the US, ranging from tornadoes to droughts. However, some are more common than others. In the figure above the total number of disasters that have occurred in the US between 1993-2019 are aggregated by type. Hurricanes and severe storms are by far the most common type of disaster, followed by floods and fires. As hurricanes and severe storms tend to affect coastal areas the most, we would expect disasters to drive migration into and out of these regions most significantly.
@@ -487,7 +488,7 @@ elif section == "Exploratory Data Analysis":
     ax[1].set_xticks([1995,2000,2005,2010,2015])
     st.pyplot(fig)
 
-    st.caption("""Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019""")
+    st.caption("""Total number of disasters, of all types, aggregated for the 10 counties with the highest net outflow and the highest net inflow from 1993-2019. Counties that experienced the highest net inflow experienced more disasters in general than counties that experienced the highest net outflow.""")
 
     st.markdown(""" Aggregation of the total number of disasters of all types for the 10 counties with the highest net outflow and the 10 counties with the highest net inflow (lowest net outflow) reveals a counterintuitive trend. In the figure above we see that the counties with the highest net inflow of individuals actually have historically tended to experience more disasters per year than the counties with the highest net outflow. A potential explanation could be that housing prices decrease in areas that have experienced significant natural disasters which may serve as a counterweight to the risk incurred by living in an area prone to disasters.
     """)
@@ -598,7 +599,7 @@ elif section == "Exploratory Data Analysis":
 
     st.write(fig)
 
-    st.caption(""" Housing Price Index by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively""")
+    st.caption(""" Housing Price Index by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively. Counties with the highest net outflow in general have higher housing price indices than counties with the highest net inflow""")
 
     st.markdown("""
     In the figure above, the Housing Price Index (HPI) is plotted by year for the 10 counties with the highest net outflow and inflow. The color of each line corresponds to the magnitude of the net outflow or inflow respectively. The subprime mortgage crisis of 2008 clearly had a strong influence on housing prices, although in general housing prices rebounded in both groups. The three curves in the Highest Population Outflow plot that have the highest HPI levels in 2019 are all in the Bay Area. This concurs with anecdotal references to people leaving the Bay Area because of the excessive cost of living. Analysis of the effect of dramatically increasing income levels on both HPI and migration is warranted given these results. The two highest curves in the Lowest Population Outflow are also in California, but in rural California - specifically San Bernardino and Riverside counties. 
@@ -626,7 +627,7 @@ elif section == "Exploratory Data Analysis":
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
     st.pyplot(fig)
 
-    st.caption("""Correlation between housing price index and net population outflow """)
+    st.caption("""Correlation between housing price index and net population outflow. A small positive correlation exists between housing price indices and net population outflow """)
 
     st.markdown(""" The Housing Price Index dataset incorporating data from all counties in the US (excluding a few hundred rural counties with no data) indicates that there is a small positive correlation (0.117) between increased housing price index and increased net population outflow, as plotted in the figure above. This also agrees with anecdotal evidence indicating that there is a trend in people moving out of areas as they become more expensive.
     """)
@@ -695,7 +696,7 @@ elif section == "Exploratory Data Analysis":
     cb.ax.tick_params(size = 0)
     st.pyplot(fig)
 
-    st.caption("""Per capita personal income by year for the 20 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively
+    st.caption("""Per capita personal income by year for the 10 counties with the highest net outflow and highest net inflow, color coded by the magnitude of their net outflow or inflow, respectively. With the exception of two counties, both high outflow and high inflow counties have similar per capita income.
     """)
 
     st.markdown("""
@@ -721,7 +722,7 @@ elif section == "Exploratory Data Analysis":
     ax.set_ylabel('Net Population Outflow')
     plt.tick_params(axis='both', which='major', length = 10, width = 2)
     st.pyplot(fig)
-    st.caption("Correlation between per capita personal income and net population outflow")
+    st.caption("Correlation between total number of jobs and net population outflow. There is a positive correlation between total number of jobs and net population outflow.")
 
     st.markdown("""
     To further assess the relationship between the net population outflow and income, we computed the correlation between net outflow and per capita income. We found that the correlation between per capita income and net population outflow (0.038), is very weak. One factor that is not accounted for in our income dataset that could be relevant is income inequality. For example, Teton, WY has the largest income per capita in the United States. However, the per capita income in Teton, WY is expected to be strongly bimodal, as this county has become a popular location for wealthy people to purchase large tracts of land, while the local population has income levels more in line with what would be expected for Wyoming. 
@@ -811,7 +812,7 @@ elif section == "Exploratory Data Analysis":
 
     st.caption("""Total number of jobs by county and by year vs. net population outflow
     """)
-    st.markdown("""The correlation between total number of jobs (full-time and part-time) and net population outflow is the strongest of the factors considered (0.491) as we display in the figure above. This correlation is similar to the calculated correlation between total population and net population outflow. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue all of these factors further in our statistical modeling.
+    st.markdown("""The correlation between total number of jobs (full-time and part-time) and net population outflow is the strongest of the factors considered (0.491) as we display in the figure above. This correlation is similar to the calculated correlation between total population and net population outflow. Higher net outflow froom counties with more jobs is counterintuitive at first glance, but likely reflects a hidden variable - incoome inequality. Large urban centers tend to have more jobs but also have higher cost of living, which may be driving llower paid workers out of these areas. A combined analysis of job numbers, income, and housing prices could shed more light on this relationship and we pursue all of these factors further in our statistical modeling.
     """)
 
 #### METHODOLOGY ####
@@ -904,7 +905,7 @@ elif section =="Methodology":
 
   To project total employment numbers (full-time plus part-time jobs) into future years for incorporation into the statistical model, we applied a linear fit to the historic number of jobs per county per year. 
 
-  Once we obtained the projections of our individual feature variables, we used it as input into our migration projection model. Because our migration prediction models only predict a one-step forecast, the projections were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030. 
+  Once we obtained the projections of our individual feature variables, we used it as input into our migration projection model. Because our migration prediction models only predict a one-step forecast, the net population migration projections (our response variable of interest) were obtained through a feedback loop. That is, we use our best model to predict the value for the next year, and use that predicted value as a feature to predict the next year. This loop is performed for every year from 2020 until 2030. 
 
   """)
 
@@ -977,7 +978,7 @@ elif section == "Results & Discussion":
   
   with col1:
     st.dataframe(results_table_1.style.format("{:.2f}"))
-    st.caption("""RMSE results for the best models using three approaches""")
+    st.caption("""RMSE results for the best models using three approaches. Linear regression model produces the smallest average RMSE.""")
   
   results_table_2 = pd.DataFrame(index=["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Average"])
   results_table_2['ARIMA'] = [-0.285,-1.481,-0.297,0.405,0.519,-2.204,0.758,0.767,0.920,0.930,0.003]
@@ -985,7 +986,7 @@ elif section == "Results & Discussion":
   results_table_2['XGBoost'] = [0.571,0.451,0.440,0.718,0.570,-0.278,0.712,0.706,0.676,0.904,0.547]
   with col2:
     st.dataframe(results_table_2.style.format("{:.2f}"))
-    st.caption("R$^2$ results for the best models using three approaches")
+    st.caption("R$^2$ results for the best models using the three approaches. Both Linear regression and XGBoost produce comparable results. The R2 value for 2015 is very low due to an anomalous year.")
 
   st.markdown("""
   
@@ -999,14 +1000,17 @@ elif section == "Results & Discussion":
   
   Given the poor performance on the ARIMA model, we experimented with the linear regression and XGBoost model. 
 
-  The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R$^2$ actually improved. We chose to drop employment from the final model of our linear regression model. The coefficients from the linear regression model can be seen in the table below.  
-  """)
+  The linear regression model incorporated additional variables to determine if there were other factors with explanatory power that impacted population migration. We trained and tested models with the following variables: population totals, number of disasters, per capita income, employment, and housing prices. With all variables, the linear regression model performed better than the ARIMA model; however, employment was not statistically significant (p > 0.05) for all projected years. On the other hand, the number of disasters was close to statistically significant (p ~ 0.05) for most of the test years.  We decided to keep the number of disasters but  removed employment and found that the R$^2$ actually improved. We chose to drop employment from the final model of our linear regression model. The coefficients from the linear regression model can be seen in the table below our regression formula: """)
+
+  st.latex(r'''y = \epsilon + \beta_1(per \; capita \; income) + \beta_2(population) + \beta_3(HPI) + \\ \beta_4(num \; disasters) + \beta_5(net \; migration)_{t-1}''')
 
   coeffs = pd.read_csv('Datasets/coef_linreg.csv',index_col='Year').drop(columns=['Unnamed: 0'])
   st.dataframe(coeffs)
-  st.caption('Linear Regression model coefficients for each projected year')
+  st.caption('Coefficients from the linear regression model for each projected year')
 
   st.markdown("""
+  Since we trained multiple iterations of the linear regression model and dropped variables that were not statistically significant, all the explanatory variables had a low p-value. For earlier years (2010-2014), num_disasters was not statistically significant but became increasingly more significant in more recent years. In terms of coefficient magnitude, num_disasters was also very high, averaging at 13.422 across all years, indicating that for the years that num_disasters was an important determinant of net migration in the years when the variable was statistically significant. The variable net_migration(t-1) was statistically significant across all years and had an average coefficient of 1.659, indicating that historical patterns are an important predictor of future migration.
+
   We plotted the expected values vs predicted values obtained from the linear regression model in the figure below and found that our model does quite well. 
   """)
   col1,col2,col3=st.columns([1,4,1])
@@ -1021,7 +1025,7 @@ elif section == "Results & Discussion":
     ax.set_xlabel('Actual Net Migration Outflow')
     ax.set_ylabel('Predicted Net Migration Outflow')
     st.pyplot(fig)
-
+    st.caption(""" Predicted vs expected values (net migration) from linear regression.""")
   st.markdown("""
   Finally, we experimented with the XGBoost model. Even though linear models were good enough to predict the net migration numbers, we still wanted to see if the XGBoost model was able to capture any non-linear relationships that may not have been captured by our linear regression model. In our initial XGBoost model, we included all features and calculated the average feature importance for each feature, shown in the figure below. The net migration value was, unsurprisingly, the most important feature, followed by population number and the number of disasters. Using this result, we then trained various XGBoost models based on a subset of the features. The best result was obtained by using only two features: net migration and total population. The RMSE and R$^2$ of this model is shown in the tables above.  
   """)
