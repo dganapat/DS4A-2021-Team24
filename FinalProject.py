@@ -301,6 +301,29 @@ elif section == "Exploratory Data Analysis":
 
     st.markdown(""" In the figure above, the net population outflow per year is plotted for each county, where each line represents the net outflow of each county. Positive values indicate that more individuals moved out of a county and negative values indicate that more individuals moved into a county. The opacity of the lines reflects the density of overlapping lines. Most counties do not appear to experience a net outflow or inflow of more than a few thousand individuals per year. We can see that in general, many counties have constant net migration near 0, which means that as many people are moving out as they are moving in. """)
 
+    # Average Net Migration Plot
+    migration_net_avg = migration_net.copy()
+    migration_net_avg['more_out'] = True
+    migration_net_avg.loc[migration_net_avg.net_out < 0, 'more_out'] = False
+    migration_net_avg = migration_net_avg.groupby(['year', 'more_out']).agg({'net_out':'mean'}).reset_index()
+    fig, ax = plt.subplots(figsize= (10,6))
+
+    color = {True: plt.get_cmap('viridis')(0.25), False: plt.get_cmap('viridis')(0.75)}
+
+    for x in [True, False]:
+        plt.plot(migration_net_avg.loc[migration_net_avg.more_out == x].year, migration_net_avg.loc[migration_net_avg.more_out == x].net_out, color = color[x])
+
+    ax.set_title('Average Net Migration by Year', pad = 15)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Average Net Outflow/Inflow')
+
+    ax.tick_params(axis='both', which='major', length = 10, width = 2)
+    ax.set_xlim([min(migration_net.year),max(migration_net.year)])
+
+    plt.legend(['Net Outflow', 'Net Inflow'], loc='upper left', bbox_to_anchor=(1.03, 0.95),  frameon=False, fontsize = 18)
+
+    st.pyplot(fig)
+
     # Make top 10 bottom 10 time series plot for net migration outflow
     migration_highNet10, migration_lowNet10 = get_high_low_10_dfs(migration_net,highNet,lowNet)
     migration_high_low_10 = pd.concat([migration_highNet10, migration_lowNet10], axis = 0)
@@ -416,6 +439,7 @@ elif section == "Exploratory Data Analysis":
     st.caption("Note: Click the play button to see where disasters are happening over time! You can also hover over a county to see more information.")
 
     # Number of Incidents by Disaster Type Bar Plot
+    disaster_types = disaster_types.sort_values('num_incidents', ascending = False).reset_index()
     fig, ax = plt.subplots(figsize= (10,5))
     plt.bar(disaster_types.index, disaster_types.num_incidents, color = plt.get_cmap('viridis')(0.1), edgecolor = 'k')
 
@@ -441,15 +465,26 @@ elif section == "Exploratory Data Analysis":
     disaster_highNet, disaster_lowNet = get_high_low_dfs(disaster_migration,highNet,lowNet)
     disaster_highNet_all = disaster_highNet.groupby(['year']).agg({'num_disasters':'sum'}).reset_index()
     disaster_lowNet_all = disaster_lowNet.groupby(['year']).agg({'num_disasters':'sum'}).reset_index()
-    fig, ax = plt.subplots(figsize= (10,6))
-    width = 0.4
-    plt.bar(disaster_highNet_all.year - width/2, disaster_highNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.25), edgecolor = 'k')
-    plt.bar(disaster_lowNet_all.year + width/2, disaster_lowNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.75), edgecolor = 'k')
-    ax.set_title('Number of Disasters by Year', pad = 15)
-    ax.set_xlabel('Year')
-    ax.set_ylabel('Number of Disasters')
-    plt.tick_params(axis='both', which='major', length = 10, width = 2)
-    plt.legend(['Highest Outflow','Highest Inflow'], loc='upper right', bbox_to_anchor=(0.42, 0.95),  frameon=False, fontsize = 18)
+    fig, ax = plt.subplots(1, 2, figsize= (12,5))
+    width = 0.8
+    ax[0].bar(disaster_highNet_all.year, disaster_highNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.25), edgecolor = 'k')
+    ax[1].bar(disaster_lowNet_all.year, disaster_lowNet_all.num_disasters, width, color = plt.get_cmap('viridis')(0.75), edgecolor = 'k')
+
+    fig.suptitle('Number of Disasters by Year', y = 1.03)
+    ax[0].set_title('Highest Population Outflow', pad = 15)
+    ax[1].set_title('Highest Population Inflow', pad = 15)
+    ax[0].set_xlabel('Year')
+    ax[1].set_xlabel('Year')
+    ax[0].set_ylabel('Number of Disasters')
+
+    ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
+    ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
+
+    ax[0].set_ylim([0,32])
+    ax[1].set_ylim([0,32])
+
+    ax[0].set_xticks([1995,2000,2005,2010,2015])
+    ax[1].set_xticks([1995,2000,2005,2010,2015])
     st.pyplot(fig)
 
     st.caption("""Total number of disasters, of all types, aggregated for the 20 counties with the highest net outflow and the 20 counties with the highest net inflow from 1993-2019""")
@@ -523,6 +558,16 @@ elif section == "Exploratory Data Analysis":
     for FIPS in hpi_lowNet.FIPS.drop_duplicates():
         ax[1].plot(hpi_lowNet.loc[hpi_lowNet.FIPS == FIPS].year, hpi_lowNet.loc[hpi_lowNet.FIPS == FIPS].hpi,  color = color_dict_lowNet[FIPS])
 
+    fig, ax = plt.subplots(1,2,figsize= (13,6), gridspec_kw={'width_ratios': [1, 1.25]})
+    color_dict_highNet = get_color_dict(hpi_highNet.loc[hpi_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
+    color_dict_lowNet = get_color_dict(hpi_lowNet.loc[hpi_lowNet.year == 2018].sort_values('net_out', ascending = False), 'FIPS')
+
+    for FIPS in hpi_highNet.FIPS.drop_duplicates():
+        ax[0].plot(hpi_highNet.loc[hpi_highNet.FIPS == FIPS].year, hpi_highNet.loc[hpi_highNet.FIPS == FIPS].hpi, color = color_dict_highNet[FIPS])
+
+    for FIPS in hpi_lowNet.FIPS.drop_duplicates():
+        ax[1].plot(hpi_lowNet.loc[hpi_lowNet.FIPS == FIPS].year, hpi_lowNet.loc[hpi_lowNet.FIPS == FIPS].hpi,  color = color_dict_lowNet[FIPS])
+
     fig.suptitle('Housing Price Index by Year', y = 1.01)
     ax[0].set_title('Highest Population Outflow', pad = 15)
     ax[0].set_xlabel('Year')
@@ -533,6 +578,17 @@ elif section == "Exploratory Data Analysis":
 
     ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
     ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
+
+    ax[0].set_xlim([min(hpi_highNet.year), max(hpi_highNet.year)])
+    ax[1].set_xlim([min(hpi_lowNet.year), max(hpi_lowNet.year)])
+
+    ax[0].set_ylim([100,2200])
+    ax[1].set_ylim([100,2200])
+
+
+    ax[0].set_xticks([1995, 2000, 2005, 2010, 2015])
+    ax[1].set_xticks([1995, 2000, 2005, 2010, 2015])
+
 
     # Color bar indicating most/least outflow/inflow
     cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
@@ -602,15 +658,16 @@ elif section == "Exploratory Data Analysis":
 
     # Per Capita Income By Year Time Series Plots 
     income_highNet, income_lowNet = get_high_low_10_dfs(income_migration,highNet,lowNet)
+    fig, ax = plt.subplots(1,2,figsize= (18,8), gridspec_kw={'width_ratios': [1, 1.25]})
     color_dict_highNet = get_color_dict(income_highNet.loc[income_highNet.year == 2018].sort_values('net_out', ascending = True), 'FIPS')
     color_dict_lowNet = get_color_dict(income_lowNet.loc[income_lowNet.year == 2018].sort_values('net_out', ascending = False), 'FIPS')
 
-    fig, ax = plt.subplots(1,2,figsize= (15,6), gridspec_kw={'width_ratios': [1, 1.25]})
     for FIPS in income_highNet.FIPS.drop_duplicates():
         ax[0].plot(income_highNet.loc[income_highNet.FIPS == FIPS].year, income_highNet.loc[income_highNet.FIPS == FIPS].per_capita_personal_income_dollars, color = color_dict_highNet[FIPS])
 
     for FIPS in income_lowNet.FIPS.drop_duplicates():
         ax[1].plot(income_lowNet.loc[income_lowNet.FIPS == FIPS].year, income_lowNet.loc[income_lowNet.FIPS == FIPS].per_capita_personal_income_dollars,  color = color_dict_lowNet[FIPS])
+
     fig.suptitle('Per Capita Income by Year', y = 1.01)
     ax[0].set_title('Highest Population Outflow', pad = 15)
     ax[0].set_xlabel('Year')
@@ -618,8 +675,18 @@ elif section == "Exploratory Data Analysis":
     ax[1].set_title('Highest Population Inflow', pad = 15)
     ax[1].set_xlabel('Year')
     ax[1].set_ylabel('')
+
     ax[0].tick_params(axis='both', which='major', length = 10, width = 2)
     ax[1].tick_params(axis='both', which='major', length = 10, width = 2)
+
+    ax[0].set_xlim([min(income_highNet.year), max(income_highNet.year)])
+    ax[1].set_xlim([min(income_lowNet.year), max(income_lowNet.year)])
+
+    ax[0].set_ylim([0,200000])
+    ax[1].set_ylim([0,200000])
+
+    ax[0].set_xticks([1995, 2000, 2005, 2010, 2015])
+    ax[1].set_xticks([1995, 2000, 2005, 2010, 2015])
 
     # Color bar indicating most/least outflow/inflow
     cb = plt.colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(0,1), cmap='viridis'))
